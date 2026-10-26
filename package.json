@@ -8,7 +8,8 @@
   "scripts": {
     "start": "node src/server.js",
     "mock": "node mock/mock-server.js",
-    "dev:mock": "node mock/mock-server.js & SAO_PROTOCOL=protocol.mock.json node src/server.js",
+    "dev": "node mock/mock-server.js & SAO_PROTOCOL=protocol.mock.json node src/server.js",
+    "dev:mock": "npm run dev",
     "test": "node --test test/*.test.js",
     "build:ui": "node build/compile-templates.mjs"
   },

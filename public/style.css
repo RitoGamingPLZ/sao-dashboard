@@ -283,11 +283,11 @@ label.checkbox input[type="checkbox"]:checked::after { transform: scale(1); }
 .char-row .sb-track.mini.warn > i { background: var(--warn); }
 .char-row .sb-track.mini.sb-exp > i { background: var(--exp); }
 .char-row .cell-sub { color: var(--dim); font-size: 11px; flex: none; }
-.row-bar .cell-sub { margin-left: 1.85em; }
+.row-bar .cell-sub { margin-left: 1.85em; line-height: 1.1; }
 
-.row-stats { display: flex; flex-wrap: wrap; gap: .25rem .75rem; }
-.row-stats .field { display: inline-flex; align-items: center; gap: .25rem; white-space: nowrap; }
-.row-stats .field b { color: var(--dim); font-weight: 700; font-size: 11px; }
+.row-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: .25rem .75rem; }
+.row-stats .field { display: inline-flex; align-items: center; gap: .25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+.row-stats .field b { color: var(--dim); font-weight: 700; font-size: 11px; flex: none; }
 
 .row-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: .5rem; }
 .row-alerts { display: flex; flex-direction: column; gap: .1rem; }
