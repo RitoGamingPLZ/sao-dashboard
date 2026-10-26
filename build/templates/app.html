@@ -23,11 +23,7 @@
         <section class="widget" aria-labelledby="parties-heading">
           <div class="widget-head">
             <h2 id="parties-heading">{{ t('parties') }} <span class="muted">({{ activePartiesCount }} {{ t('active') }})</span></h2>
-            <form v-if="isAddingParty" class="inline-form" @submit.prevent="createParty">
-              <input v-model="newPartyName" :placeholder="t('partyNamePlaceholder')" maxlength="32" :aria-label="t('partyNamePlaceholder')" autofocus>
-              <button class="button small">{{ t('create') }}</button>
-            </form>
-            <button class="button small" @click="isAddingParty = !isAddingParty">{{ t('newParty') }}</button>
+            <button class="button small" @click="openCreatePartyDialog">{{ t('newParty') }}</button>
           </div>
           <p v-if="!snapshot.parties.length" class="empty">{{ t('noParties') }}</p>
           <party-card v-for="party in snapshot.parties" :key="party.id" :party="party" :accounts="snapshot.accounts" :taken-ids="takenAccountIds" @open-profile="openProfile"></party-card>
@@ -47,14 +43,12 @@
         <section class="widget" aria-labelledby="log-heading">
           <div class="widget-head">
             <h2 id="log-heading">{{ t('eventLog') }}</h2>
-            <select v-if="isLogOpen" v-model="logFilter" :aria-label="t('filterByAccount')">
+            <select v-model="logFilter" class="log-filter" :aria-label="t('filterByAccount')">
               <option value="">{{ t('allAccounts') }}</option>
               <option v-for="account in snapshot.accounts" :key="account.id" :value="account.id">{{ account.name }}</option>
             </select>
-            <button class="button small" @click="isLogOpen = !isLogOpen">{{ isLogOpen ? t('hide') : t('show') }}</button>
           </div>
-          <p v-if="!isLogOpen" class="muted hint">{{ logEvents.length }} {{ t('events') }}<template v-if="latestAlert"> · {{ latestAlert }}</template></p>
-          <ol v-else class="event-log">
+          <ol class="event-log">
             <li v-for="(event, i) in visibleLogEvents" :key="i" class="log-row" :class="'kind-' + event.kind">
               <time>{{ formatTime(event.ts) }}</time>
               <span class="log-account">{{ event.account }}</span>
@@ -100,4 +94,24 @@
         </div>
       </template>
       <div class="dialog-actions"><button type="button" class="button" @click="$refs.profileDialog.close()">{{ t('close') }}</button></div>
+    </dialog>
+
+    <dialog ref="createPartyDialog" class="dialog">
+      <h3>{{ t('newParty') }}</h3>
+      <form class="stack" @submit.prevent="submitCreateParty">
+        <label>{{ t('partyNamePlaceholder') }} <input v-model="newPartyName" required maxlength="32" autofocus></label>
+        <div>
+          <div class="section-title">{{ t('addMember') }}</div>
+          <p v-if="!freeAccountsForNewParty.length" class="muted">{{ t('noFree') }}</p>
+          <label v-for="account in freeAccountsForNewParty" :key="account.id" class="checkbox">
+            <input type="checkbox" :value="account.id" v-model="newPartyMemberIds"> {{ account.name }}
+          </label>
+        </div>
+        <label>{{ t('retreatLabel') }} <input type="number" min="10" max="90" v-model.number="newPartyRetreatPct"></label>
+        <p class="form-error">{{ createPartyError }}</p>
+        <div class="dialog-actions">
+          <button type="button" class="button" @click="$refs.createPartyDialog.close()">{{ t('close') }}</button>
+          <button class="button primary">{{ t('create') }}</button>
+        </div>
+      </form>
     </dialog>

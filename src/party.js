@@ -26,7 +26,7 @@ export function newParty(name) {
     isActive: false,
     goal: null, // { areaId, shouldHunt }
     tankRetreatPct: 40,
-    shouldSyncInGame: false,
+    shouldSyncInGame: true,
   };
 }
 

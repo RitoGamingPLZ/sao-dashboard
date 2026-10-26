@@ -2,9 +2,8 @@
 // the server's CSP is default-src 'self', so no CDN script and no in-browser
 // template compilation, which needs eval/new Function). Templates are
 // precompiled offline to render-app.js / render-character-row.js /
-// render-party-card.js (see $CLAUDE_JOB_DIR/tmp/compile.mjs from the session
-// that built this, using @vue/compiler-dom with mode:'module'); re-run that
-// if you edit markup — there's no template string left in this file.
+// render-party-card.js from build/templates/*.html — edit those, then run
+// `npm run build:ui`; there's no template string left in this file.
 // Listens to the server's live stream and re-renders from each snapshot;
 // every control posts an intent to the JSON API.
 
@@ -19,6 +18,12 @@ const i18nState = reactive({ lang: localStorage.getItem('sao-lang') === 'zh' ? '
 
 const WEAPON_TYPES = ['one-handed-sword', 'rapier', 'dual-blades', 'spear', 'two-handed-sword', 'short-sword'];
 const MAX_LOG_ROWS = 300;
+const TOP_FLOOR = 40;
+const AREA_KINDS = ['town', 'field', 'outskirts', 'depths', 'labyrinth', 'wilds', 'secret', 'bossroom'];
+const parseAreaId = (areaId) => {
+  const match = /^f(\d+)-(.+)$/.exec(areaId || '');
+  return match ? { floor: Number(match[1]), kind: match[2] } : null;
+};
 
 // ---- i18n -------------------------------------------------------------------
 
@@ -27,18 +32,18 @@ const MESSAGES = {
     addAccount: '+ Add account', pauseAll: 'Pause all', parties: 'Parties', active: 'active',
     newParty: '+ New', partyNamePlaceholder: 'Party name', create: 'Create', noParties: 'No parties yet.',
     characters: 'Characters', noAccounts: 'No characters yet. Use "+ Add account" to log in or create one.',
-    name: 'Name', lv: 'Lv', hp: 'HP', exp: 'EXP', atk: 'ATK', area: 'Area', doing: 'Doing',
-    gold: '摳', expMin: 'EXP/min', actions: 'Actions', eventLog: 'Event log', hide: 'Hide', show: 'Show',
-    events: 'events', filterByAccount: 'Filter log by account', allAccounts: 'All accounts',
+    eventLog: 'Event log', filterByAccount: 'Filter log by account', allAccounts: 'All accounts',
     weaponGoal: 'Unique weapon goal', skills: 'Skills', equipment: 'Equipment', none: 'None', noData: 'Not available yet',
     resumeBot: 'Resume bot', healthPotions: 'Health & potions', showPassword: 'Show password', rawCommand: 'Raw command…',
     removeAccount: 'Remove from dashboard', close: 'Close',
     farm: 'Farm', boss: 'Boss', mission: 'Mission',
     doing_idle: 'Idle', doing_hunting: 'Farming', doing_boss: 'Boss fight',
     leader: 'Leader', tank: 'Tank', addMember: '+ Add member…', noFree: 'No free characters',
-    goalPlaceholder: 'Goal area (blank = leader\'s area)', startParty: 'Start party', huntHere: 'Hunt here',
-    hold: 'Hold (no fighting)', stopParty: 'Stop party', deleteParty: 'Delete party',
-    retreatLabel: 'Tank retreat HP %', syncLabel: 'Also form the party in-game (experimental)',
+    goalFloor: 'Goal floor', goalAreaKind: 'Goal area kind', startParty: 'Start party', huntHere: 'Hunt here',
+    hold: 'Hold (no fighting)', stopParty: 'Stop party', deleteParty: 'Delete party', settings: 'Settings',
+    retreatLabel: 'Tank retreat HP %',
+    areaKind_town: 'Town', areaKind_field: 'Field', areaKind_outskirts: 'Outskirts', areaKind_depths: 'Depths',
+    areaKind_labyrinth: 'Labyrinth', areaKind_wilds: 'Wilds', areaKind_secret: 'Secret', areaKind_bossroom: 'Boss room',
     noMembers: 'No members yet', untank: 'Untank', online: 'Online', totalGold: 'Total 摳',
     goldPerHour: '摳 / hour', activeParties: 'Active parties', alerts: 'Alerts',
   },
@@ -46,18 +51,18 @@ const MESSAGES = {
     addAccount: '+ 新增角色', pauseAll: '全部暫停', parties: '隊伍', active: '啟用中',
     newParty: '+ 新增', partyNamePlaceholder: '隊伍名稱', create: '建立', noParties: '尚無隊伍。',
     characters: '角色', noAccounts: '尚無角色，使用「+ 新增角色」登入或建立。',
-    name: '名稱', lv: '等級', hp: 'HP', exp: '經驗', atk: '攻擊', area: '區域', doing: '狀態',
-    gold: '摳', expMin: '經驗/分', actions: '操作', eventLog: '事件紀錄', hide: '隱藏', show: '顯示',
-    events: '筆事件', filterByAccount: '依角色篩選紀錄', allAccounts: '全部角色',
+    eventLog: '事件紀錄', filterByAccount: '依角色篩選紀錄', allAccounts: '全部角色',
     weaponGoal: '專武目標', skills: '技能', equipment: '裝備', none: '無', noData: '暫無資料',
     resumeBot: '恢復機器人', healthPotions: '血量與補藥', showPassword: '顯示密碼', rawCommand: '原始指令…',
     removeAccount: '從儀表板移除', close: '關閉',
     farm: '練功', boss: '王戰', mission: '任務',
     doing_idle: '待機', doing_hunting: '練功中', doing_boss: '王戰中',
     leader: '隊長', tank: '坦', addMember: '+ 新增隊員…', noFree: '無空閒角色',
-    goalPlaceholder: '目標區域（留空＝跟隨隊長）', startParty: '出發', huntHere: '就地開打',
-    hold: '待命（不戰鬥）', stopParty: '停止隊伍', deleteParty: '刪除隊伍',
-    retreatLabel: '坦退避HP %', syncLabel: '同步遊戲內隊伍（實驗性）',
+    goalFloor: '目標樓層', goalAreaKind: '目標區域類型', startParty: '出發', huntHere: '就地開打',
+    hold: '待命（不戰鬥）', stopParty: '停止隊伍', deleteParty: '刪除隊伍', settings: '設定',
+    retreatLabel: '坦退避HP %',
+    areaKind_town: '城鎮', areaKind_field: '平原', areaKind_outskirts: '郊外', areaKind_depths: '深處',
+    areaKind_labyrinth: '迷宮', areaKind_wilds: '荒野', areaKind_secret: '秘境', areaKind_bossroom: '王房',
     noMembers: '尚無隊員', untank: '解除坦', online: '上線', totalGold: '總摳',
     goldPerHour: '摳/時', activeParties: '啟用隊伍', alerts: '警示',
   },
@@ -125,7 +130,7 @@ const hpBarClass = (account) => {
 // ---- CharacterRow: one <tr> per account; shared by the Characters table and party member lists ----
 
 const CharacterRow = {
-  props: { account: { type: Object, required: true } },
+  props: { account: { type: Object, required: true }, showActions: { type: Boolean, default: true } },
   emits: ['open-profile'],
   computed: {
     mode() { return modeOf(this.account); },
@@ -134,8 +139,8 @@ const CharacterRow = {
       return this.account.isStale ? 'stale' : 'live';
     },
     hpFillStyle() { return { width: `${Math.max(0, Math.min(100, this.account.player?.hpPct ?? 0))}%` }; },
-    hpBarClass() { return hpBarClass(this.account); },
     expFillStyle() { return { width: `${Math.max(0, Math.min(100, this.account.player?.expPct ?? 0))}%` }; },
+    hpBarClass() { return hpBarClass(this.account); },
   },
   methods: {
     t, fmt: formatNumber, fmtCompact: formatCompact,
@@ -161,15 +166,29 @@ const PartyCard = {
   emits: ['open-profile'],
   inject: ['patchParty'],
   data() {
-    return { goalAreaId: this.party.goal?.areaId || '', addMemberId: '' };
+    const currentGoal = parseAreaId(this.party.goal?.areaId);
+    return {
+      goalFloor: currentGoal?.floor ?? 1,
+      goalKind: currentGoal?.kind ?? 'field',
+      addMemberQuery: '',
+      isAddMemberOpen: false,
+    };
   },
   computed: {
     freeAccounts() { return this.accounts.filter((account) => !this.takenIds.has(account.id)); },
+    filteredFreeAccounts() {
+      const query = this.addMemberQuery.trim().toLowerCase();
+      if (!query) return this.freeAccounts;
+      return this.freeAccounts.filter((account) => account.name.toLowerCase().includes(query));
+    },
     members() {
       return this.party.memberIds
         .map((id) => this.accounts.find((account) => account.id === id))
         .filter(Boolean);
     },
+    floorOptions() { return Array.from({ length: TOP_FLOOR }, (_, i) => i + 1); },
+    areaKinds() { return AREA_KINDS; },
+    goalAreaId() { return `f${this.goalFloor}-${this.goalKind}`; },
   },
   methods: {
     t,
@@ -190,19 +209,18 @@ const PartyCard = {
       if (result?.party) this.patchParty(result.party);
       return result;
     },
-    addMember() {
-      if (!this.addMemberId) return;
-      this.applyPartyUpdate({ memberIds: [...this.party.memberIds, this.addMemberId] });
-      this.addMemberId = '';
+    selectMember(id) {
+      this.applyPartyUpdate({ memberIds: [...this.party.memberIds, id] });
+      this.addMemberQuery = '';
+      this.isAddMemberOpen = false;
     },
     removeMember(id) { this.applyPartyUpdate({ memberIds: this.party.memberIds.filter((memberId) => memberId !== id) }); },
     makeLeader(id) { this.applyPartyUpdate({ leaderId: id }); },
     makeTank(id) { this.applyPartyUpdate({ tankId: id }); },
     untank() { this.applyPartyUpdate({ tankId: null }); },
     updateRetreat(event) { this.applyPartyUpdate({ tankRetreatPct: Number(event.target.value) }); },
-    toggleSync(event) { this.applyPartyUpdate({ shouldSyncInGame: event.target.checked }); },
     startParty(shouldHunt) {
-      const areaId = this.goalAreaId.trim() || undefined;
+      const areaId = this.goalAreaId;
       const path = this.party.isActive ? `/api/parties/${this.party.id}/goal` : `/api/parties/${this.party.id}/start`;
       const body = this.party.isActive ? { areaId, shouldHunt } : { goal: { areaId, shouldHunt } };
       this.applyPartyAction(path, body, shouldHunt ? 'Party heading out' : 'Party holding');
@@ -223,10 +241,11 @@ const app = createApp({
     return {
       snapshot: { accounts: [], parties: [] },
       logEvents: [],
-      isLogOpen: false,
       logFilter: '',
-      isAddingParty: false,
       newPartyName: '',
+      newPartyMemberIds: [],
+      newPartyRetreatPct: 40,
+      createPartyError: '',
       i18nState,
       linkState: 'connecting',
       profileAccountId: null,
@@ -254,14 +273,11 @@ const app = createApp({
     },
     activePartiesCount() { return this.snapshot.parties.filter((party) => party.isActive).length; },
     takenAccountIds() { return new Set(this.snapshot.parties.flatMap((party) => party.memberIds)); },
-    latestAlert() {
-      const withAlert = [...this.logEvents].reverse().find((event) => event.kind === 'alert' || event.kind === 'error');
-      return withAlert ? `${withAlert.account}: ${withAlert.detail}` : '';
-    },
     visibleLogEvents() {
       return this.logEvents.filter((event) => !this.logFilter || event.accountId === this.logFilter).slice(-120).reverse();
     },
     profileAccount() { return this.snapshot.accounts.find((account) => account.id === this.profileAccountId) || null; },
+    freeAccountsForNewParty() { return this.snapshot.accounts.filter((account) => !this.takenAccountIds.has(account.id)); },
   },
   provide() {
     return { patchParty: this.patchParty };
@@ -281,12 +297,36 @@ const app = createApp({
     pauseAll() {
       if (confirm('Stop every party and every hunt?')) runAndReport(() => callApi('POST', '/api/pause-all', {}), 'Everything paused');
     },
-    createParty() {
-      if (!this.newPartyName.trim()) return;
-      runAndReport(() => callApi('POST', '/api/parties', { name: this.newPartyName }), 'Party created').then(() => {
-        this.newPartyName = '';
-        this.isAddingParty = false;
-      });
+    openCreatePartyDialog() {
+      this.newPartyName = '';
+      this.newPartyMemberIds = [];
+      this.newPartyRetreatPct = 40;
+      this.createPartyError = '';
+      this.$refs.createPartyDialog.showModal();
+    },
+    async submitCreateParty() {
+      this.createPartyError = '';
+      let party;
+      try {
+        party = await callApi('POST', '/api/parties', { name: this.newPartyName });
+      } catch (error) {
+        this.createPartyError = error.message;
+        return;
+      }
+      this.snapshot.parties.push(party);
+      if (this.newPartyMemberIds.length || this.newPartyRetreatPct !== 40) {
+        try {
+          const result = await callApi('PUT', `/api/parties/${party.id}`, {
+            memberIds: this.newPartyMemberIds,
+            tankRetreatPct: this.newPartyRetreatPct,
+          });
+          this.patchParty(result.party);
+        } catch (error) {
+          showToast(error.message, 'error');
+        }
+      }
+      this.$refs.createPartyDialog.close();
+      showToast('Party created');
     },
     openProfile(accountId) {
       this.profileAccountId = accountId;
