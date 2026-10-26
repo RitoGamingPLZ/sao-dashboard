@@ -34,6 +34,8 @@ describe('pure rules', () => {
     const state = { player: { hp: 10, buffs: { a: 1 } } }
     applyPatch(state, [[['player', 'hp'], 7], [['player', 'buffs', 'a']], [['player', 'areaId'], 'f1-town']])
     expect(state).toEqual({ player: { hp: 7, buffs: {}, areaId: 'f1-town' } })
+    applyPatch(state, [[['__proto__', 'polluted'], 1], [['player', 'constructor', 'prototype', 'polluted'], 1]])
+    expect(({} as Record<string, unknown>).polluted).toBeUndefined()
   })
 
   test('safety: heal ladder and hard minimums', () => {

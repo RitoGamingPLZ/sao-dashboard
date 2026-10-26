@@ -117,10 +117,13 @@ const MAX_BACKOFF_MS = 30000
 const INITIAL_BACKOFF_MS = 1000
 const FULL_RETRY_MS = 15000
 
+// Patches come from the game server: never let a key reach Object.prototype.
+const UNSAFE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+
 export function applyPatch(state: Record<string, unknown>, operations: PatchOp[]) {
   for (const operation of operations) {
     const [path, value] = operation
-    if (!Array.isArray(path) || path.length === 0) continue
+    if (!Array.isArray(path) || path.length === 0 || path.some((key) => UNSAFE_KEYS.has(String(key)))) continue
     let parent = state as Record<string | number, unknown>
     for (let i = 0; i < path.length - 1; i++) {
       const key = path[i]!
