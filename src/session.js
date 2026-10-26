@@ -29,6 +29,7 @@ export class Session extends EventEmitter {
     this.busyLabel = null; // the multi-step sequence holding the lock
     this.haltReason = null; // why the safety engine stopped this bot
     this.partyRole = null;
+    this.preferredWeapon = settings.preferredWeapon || null; // dashboard-only: which unique-weapon questline to pursue
     this.events = [];
     this.alertsByKey = new Map();
     this.criticalTimes = [];
@@ -202,6 +203,11 @@ export class Session extends EventEmitter {
     this.log('mode', 'Resumed by user');
   }
 
+  setPreferredWeapon(weapon) {
+    this.preferredWeapon = weapon || null;
+    this.log('mode', weapon ? `Weapon goal set: ${weapon}` : 'Weapon goal cleared');
+  }
+
   // ---- main loop: low-stock alerts + auto-restock ------------------------
 
   restockPlan() {
@@ -298,6 +304,7 @@ export class Session extends EventEmitter {
       busyLabel: this.busyLabel,
       haltReason: this.haltReason,
       partyRole: this.partyRole,
+      preferredWeapon: this.preferredWeapon,
       alerts: [...this.alertsByKey.values()].map((alert) => alert.text),
       safety: this.safety,
       player: player && {
@@ -310,6 +317,9 @@ export class Session extends EventEmitter {
         maxHp: maxHp.value,
         isMaxHpEstimated: maxHp.isEstimated,
         hpPct: this.hpPct(),
+        attack: this.client.attack(),
+        equipment: player.equipment || player.gear || null,
+        skills: player.skills || null,
         gold: player.col,
         areaId: player.areaId,
         areaLevel: areaLevel(player.areaId),

@@ -1,33 +1,69 @@
-// Dashboard UI. Listens to the server's live stream and redraws from each
-// snapshot; every control posts an intent to the JSON API. No framework.
+// Dashboard UI, built on Vue (vendored locally in vue.global.prod.js — the
+// server's CSP is default-src 'self', so no CDN script tags). Listens to the
+// server's live stream and re-renders from each snapshot; every control
+// posts an intent to the JSON API.
 
+const { createApp, reactive } = Vue;
+
+// Reactive so every component that calls t() during its own render gets
+// tracked as a dependent and re-renders on toggle, not just the root.
+const i18nState = reactive({ lang: localStorage.getItem('sao-lang') === 'zh' ? 'zh' : 'en' });
+
+const WEAPON_TYPES = ['one-handed-sword', 'rapier', 'dual-blades', 'spear', 'two-handed-sword', 'short-sword'];
 const MAX_LOG_ROWS = 300;
-const ROLE_BADGES = { leader: '隊長 Leader', tank: '坦 Tank', member: '隊員 Member' };
 
-let latestSnapshot = { accounts: [], parties: [] };
-const logEvents = [];
+// ---- i18n -------------------------------------------------------------------
 
-// ---- small helpers -------------------------------------------------------
+const MESSAGES = {
+  en: {
+    addAccount: '+ Add account', pauseAll: 'Pause all', parties: 'Parties', active: 'active',
+    newParty: '+ New', partyNamePlaceholder: 'Party name', create: 'Create', noParties: 'No parties yet.',
+    characters: 'Characters', noAccounts: 'No characters yet. Use "+ Add account" to log in or create one.',
+    name: 'Name', lv: 'Lv', hp: 'HP', exp: 'EXP', atk: 'ATK', area: 'Area', doing: 'Doing',
+    gold: '摳', expMin: 'EXP/min', actions: 'Actions', eventLog: 'Event log', hide: 'Hide', show: 'Show',
+    events: 'events', filterByAccount: 'Filter log by account', allAccounts: 'All accounts',
+    weaponGoal: 'Unique weapon goal', skills: 'Skills', equipment: 'Equipment', none: 'None', noData: 'Not available yet',
+    resumeBot: 'Resume bot', healthPotions: 'Health & potions', showPassword: 'Show password', rawCommand: 'Raw command…',
+    removeAccount: 'Remove from dashboard', close: 'Close',
+    farm: 'Farm', boss: 'Boss', mission: 'Mission',
+    doing_idle: 'Idle', doing_hunting: 'Farming', doing_boss: 'Boss fight',
+    leader: 'Leader', tank: 'Tank', addMember: '+ Add member…', noFree: 'No free characters',
+    goalPlaceholder: 'Goal area (blank = leader\'s area)', startParty: 'Start party', huntHere: 'Hunt here',
+    hold: 'Hold (no fighting)', stopParty: 'Stop party', deleteParty: 'Delete party',
+    retreatLabel: 'Tank retreat HP %', syncLabel: 'Also form the party in-game (experimental)',
+    noMembers: 'No members yet', untank: 'Untank', online: 'Online', totalGold: 'Total 摳',
+    goldPerHour: '摳 / hour', activeParties: 'Active parties', alerts: 'Alerts',
+  },
+  zh: {
+    addAccount: '+ 新增角色', pauseAll: '全部暫停', parties: '隊伍', active: '啟用中',
+    newParty: '+ 新增', partyNamePlaceholder: '隊伍名稱', create: '建立', noParties: '尚無隊伍。',
+    characters: '角色', noAccounts: '尚無角色，使用「+ 新增角色」登入或建立。',
+    name: '名稱', lv: '等級', hp: 'HP', exp: '經驗', atk: '攻擊', area: '區域', doing: '狀態',
+    gold: '摳', expMin: '經驗/分', actions: '操作', eventLog: '事件紀錄', hide: '隱藏', show: '顯示',
+    events: '筆事件', filterByAccount: '依角色篩選紀錄', allAccounts: '全部角色',
+    weaponGoal: '專武目標', skills: '技能', equipment: '裝備', none: '無', noData: '暫無資料',
+    resumeBot: '恢復機器人', healthPotions: '血量與補藥', showPassword: '顯示密碼', rawCommand: '原始指令…',
+    removeAccount: '從儀表板移除', close: '關閉',
+    farm: '練功', boss: '王戰', mission: '任務',
+    doing_idle: '待機', doing_hunting: '練功中', doing_boss: '王戰中',
+    leader: '隊長', tank: '坦', addMember: '+ 新增隊員…', noFree: '無空閒角色',
+    goalPlaceholder: '目標區域（留空＝跟隨隊長）', startParty: '出發', huntHere: '就地開打',
+    hold: '待命（不戰鬥）', stopParty: '停止隊伍', deleteParty: '刪除隊伍',
+    retreatLabel: '坦退避HP %', syncLabel: '同步遊戲內隊伍（實驗性）',
+    noMembers: '尚無隊員', untank: '解除坦', online: '上線', totalGold: '總摳',
+    goldPerHour: '摳/時', activeParties: '啟用隊伍', alerts: '警示',
+  },
+};
 
-const findElement = (selector, root = document) => root.querySelector(selector);
-
-// Build DOM nodes without innerHTML, so names from the game are never parsed as HTML.
-function buildElement(tagName, properties = {}, children = []) {
-  const element = document.createElement(tagName);
-  for (const [key, value] of Object.entries(properties)) {
-    if (value == null || value === false) continue;
-    if (key === 'className') element.className = value;
-    else if (key === 'text') element.textContent = value;
-    else if (key === 'dataset') Object.assign(element.dataset, value);
-    else if (key.startsWith('on')) element.addEventListener(key.slice(2).toLowerCase(), value);
-    else element.setAttribute(key, value === true ? '' : value);
-  }
-  for (const child of [].concat(children)) if (child != null) element.append(child);
-  return element;
+function t(key) {
+  return (MESSAGES[i18nState.lang] && MESSAGES[i18nState.lang][key]) ?? MESSAGES.en[key] ?? key;
 }
+
+// ---- small helpers -----------------------------------------------------------
 
 const formatNumber = (value) => (value == null ? '—' : Number(value).toLocaleString());
 const formatCompact = (value) => (value == null ? '—' : Intl.NumberFormat(undefined, { notation: 'compact', maximumFractionDigits: 1 }).format(value));
+const formatTime = (ts) => new Date(ts).toLocaleTimeString();
 
 async function callApi(method, path, body) {
   const response = await fetch(path, {
@@ -41,7 +77,10 @@ async function callApi(method, path, body) {
 }
 
 function showToast(message, tone = 'info') {
-  const toast = buildElement('div', { className: `toast ${tone}`, role: 'status', text: message });
+  const toast = document.createElement('div');
+  toast.className = `toast ${tone}`;
+  toast.setAttribute('role', 'status');
+  toast.textContent = message;
   document.body.append(toast);
   setTimeout(() => toast.remove(), 4200);
 }
@@ -57,455 +96,387 @@ async function runAndReport(action, successMessage) {
   }
 }
 
-const accountName = (accountId) => latestSnapshot.accounts.find((account) => account.id === accountId)?.name ?? '?';
+const Api = {
+  accountAction: (accountId, action, extra = {}) => runAndReport(() => callApi('POST', `/api/accounts/${accountId}/action`, { action, ...extra })),
+  updateParty: (partyId, changes) => runAndReport(() => callApi('PUT', `/api/parties/${partyId}`, changes)),
+};
 
-// ---- live stream -----------------------------------------------------------
+const modeOf = (account) => {
+  const activity = account.player?.activity;
+  return activity === 'hunting' ? 'farm' : activity === 'boss' ? 'boss' : 'idle';
+};
 
-function connectStream() {
-  const linkStatus = findElement('#link-status');
-  const stream = new EventSource('/api/stream');
-  stream.addEventListener('open', () => { linkStatus.dataset.state = 'live'; linkStatus.textContent = 'live'; });
-  stream.addEventListener('error', () => { linkStatus.dataset.state = 'down'; linkStatus.textContent = 'dashboard offline — retrying'; });
-  stream.addEventListener('snapshot', (message) => { latestSnapshot = JSON.parse(message.data); render(); });
-  stream.addEventListener('log', (message) => {
-    logEvents.push(JSON.parse(message.data));
-    if (logEvents.length > MAX_LOG_ROWS) logEvents.shift();
-    renderLog();
-  });
-}
-
-// ---- rendering -------------------------------------------------------------
-
-function render() {
-  renderOverview();
-  // Don't redraw a region while someone is typing or choosing in it.
-  const partiesRegion = findElement('#parties');
-  if (!partiesRegion.contains(document.activeElement) || document.activeElement === document.body) renderParties();
-  renderAccounts();
-  renderLogFilter();
-}
-
-function renderOverview() {
-  const accounts = latestSnapshot.accounts;
-  const onlineCount = accounts.filter((account) => account.isConnected).length;
-  const totalGold = accounts.reduce((sum, account) => sum + (account.player?.gold ?? 0), 0);
-  const goldPerHour = accounts.reduce((sum, account) => sum + (account.rates.goldPerHour ?? 0), 0);
-  const alertCount = accounts.reduce((sum, account) => sum + account.alerts.length, 0);
-  const activeParties = latestSnapshot.parties.filter((party) => party.isActive).length;
-  const tiles = [
-    ['Online', `${onlineCount} / ${accounts.length}`],
-    ['Total 摳', formatCompact(totalGold)],
-    ['摳 / hour', goldPerHour ? formatCompact(goldPerHour) : '—'],
-    ['Active parties', String(activeParties)],
-    ['Alerts', String(alertCount), alertCount ? 'warn' : ''],
-  ];
-  findElement('#overview').replaceChildren(...tiles.map(([label, value, tone]) =>
-    buildElement('div', { className: `stat-tile ${tone || ''}` }, [
-      buildElement('span', { className: 'stat-label', text: label }),
-      buildElement('span', { className: 'stat-value', text: value }),
-    ])));
-}
-
-// The game's own .stat-bar markup: label | bordered track, numbers below.
-function statBar({ label, valuePct, leftText, rightText, barClass, markers = [] }) {
-  const fill = buildElement('i');
-  fill.style.width = `${Math.max(0, Math.min(100, valuePct ?? 0))}%`;
-  const track = buildElement('span', { className: `sb-track ${barClass}` }, [fill]);
-  for (const marker of markers) {
-    const markerElement = buildElement('span', { className: 'sb-marker', title: marker.title });
-    markerElement.style.left = `${marker.pct}%`;
-    track.append(markerElement);
-  }
-  return buildElement('div', { className: 'stat-bar' }, [
-    buildElement('span', { className: 'sb-label', text: label }),
-    track,
-    buildElement('span', { className: 'sb-num' }, [
-      buildElement('span', { text: leftText }),
-      buildElement('span', { className: 'dim', text: rightText || '' }),
-    ]),
-  ]);
-}
-
-function hpBarClass(hpPct, thresholds) {
-  if (hpPct == null || hpPct > thresholds.potionPct + 15) return 'sb-hp';
+const hpBarClass = (account) => {
+  const hpPct = account.player?.hpPct;
+  if (hpPct == null) return 'sb-hp';
+  const thresholds = account.player.activity === 'boss' ? account.safety.boss : account.safety.normal;
+  if (hpPct > thresholds.potionPct + 15) return 'sb-hp';
   return hpPct <= thresholds.emergencyPct ? 'sb-hp low' : 'sb-hp warn';
-}
+};
 
-function stockGauge(label, quantity, minimum) {
-  const isLow = quantity < minimum;
-  return buildElement('div', { className: `stock ${isLow ? 'low' : ''}`, title: `Restock below ${minimum}` }, [
-    buildElement('span', { className: 'stock-label', text: label }),
-    buildElement('span', { className: 'stock-value', text: formatNumber(quantity) }),
-  ]);
-}
+// ---- CharacterRow: one <tr> per account; shared by the Characters table and party member lists ----
 
-function renderAccountCard(account) {
-  const player = account.player;
-  const thresholds = player?.activity === 'boss' ? account.safety.boss : account.safety.normal;
-  const roleBadges = account.partyRole
-    ? account.partyRole.roles.map((role) => buildElement('span', { className: `badge role-${role}`, text: `${ROLE_BADGES[role]} · ${account.partyRole.partyName}` }))
-    : [];
-  const statusDotState = !account.isConnected ? 'down' : account.isStale ? 'stale' : 'live';
+const CharacterRow = {
+  props: { account: { type: Object, required: true } },
+  emits: ['open-profile'],
+  computed: {
+    mode() { return modeOf(this.account); },
+    statusDotState() {
+      if (!this.account.isConnected) return 'down';
+      return this.account.isStale ? 'stale' : 'live';
+    },
+    hpFillStyle() { return { width: `${Math.max(0, Math.min(100, this.account.player?.hpPct ?? 0))}%` }; },
+    hpBarClass() { return hpBarClass(this.account); },
+  },
+  methods: {
+    t, fmt: formatNumber, fmtCompact: formatCompact,
+    doingLabel(account) { return account.player ? t(`doing_${account.player.activity || 'idle'}`) : '—'; },
+    toggleFarm() {
+      Api.accountAction(this.account.id, this.mode === 'farm' ? 'stopHunt' : 'startHunt');
+    },
+    toggleBoss() {
+      Api.accountAction(this.account.id, this.mode === 'boss' ? 'stopBoss' : 'startBoss');
+    },
+    doMission() {
+      Api.accountAction(this.account.id, 'completeMission');
+    },
+  },
+  template: `
+    <tr :class="{ dead: account.player?.isDead }">
+      <slot name="leading"></slot>
+      <td><span class="status-dot" :data-state="statusDotState" :title="statusDotState"></span></td>
+      <td><button class="link-name" @click="$emit('open-profile', account.id)">{{ account.name }}</button></td>
+      <td>{{ account.player?.level ?? '—' }}</td>
+      <td class="cell-hp">
+        <span class="sb-track mini" :class="hpBarClass"><i :style="hpFillStyle"></i></span>
+        <span class="cell-sub">{{ account.player?.hpPct != null ? account.player.hpPct + '%' : '—' }}</span>
+      </td>
+      <td>{{ account.player?.expPct != null ? account.player.expPct + '%' : fmt(account.player?.exp) }}</td>
+      <td>{{ fmt(account.player?.attack) }}</td>
+      <td :title="account.player?.areaId || ''">{{ account.player?.areaId || '—' }}</td>
+      <td>{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></td>
+      <td>{{ fmtCompact(account.player?.gold) }}</td>
+      <td>{{ fmt(account.rates?.expPerMin) }}</td>
+      <td class="cell-actions">
+        <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!account.player" @click="toggleFarm">{{ t('farm') }}</button>
+        <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!account.player" @click="toggleBoss">{{ t('boss') }}</button>
+        <button class="button small" :disabled="!account.player" @click="doMission">{{ t('mission') }}</button>
+      </td>
+      <slot name="trailing"></slot>
+    </tr>
+    <tr v-if="account.alerts.length" class="alert-row"><td :colspan="11"><p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p></td></tr>
+  `,
+};
 
-  const header = buildElement('div', { className: 'card-head' }, [
-    buildElement('span', { className: 'status-dot', dataset: { state: statusDotState }, title: statusDotState }),
-    buildElement('h3', { text: account.name }),
-    buildElement('span', { className: 'level', text: player ? `Lv ${player.level}` : '' }),
-    ...roleBadges,
-  ]);
+// ---- PartyCard ----------------------------------------------------------------
 
-  if (!player) {
-    return buildElement('article', { className: 'account-card offline' }, [
-      header,
-      buildElement('p', { className: 'muted', text: account.isConnected ? 'Waiting for state…' : 'Connecting to the game…' }),
-      ...account.alerts.map((text) => buildElement('p', { className: 'alert', text })),
-      accountButtons(account),
-    ]);
-  }
+const PartyCard = {
+  components: { CharacterRow },
+  props: { party: { type: Object, required: true }, accounts: { type: Array, required: true }, takenIds: { type: Set, required: true } },
+  emits: ['open-profile'],
+  data() {
+    return { goalAreaId: this.party.goal?.areaId || '', addMemberId: '' };
+  },
+  computed: {
+    freeAccounts() { return this.accounts.filter((account) => !this.takenIds.has(account.id)); },
+    members() {
+      return this.party.memberIds
+        .map((id) => this.accounts.find((account) => account.id === id))
+        .filter(Boolean);
+    },
+  },
+  methods: {
+    t,
+    accountName(id) { return this.accounts.find((account) => account.id === id)?.name ?? '?'; },
+    addMember() {
+      if (!this.addMemberId) return;
+      Api.updateParty(this.party.id, { memberIds: [...this.party.memberIds, this.addMemberId] });
+      this.addMemberId = '';
+    },
+    removeMember(id) { Api.updateParty(this.party.id, { memberIds: this.party.memberIds.filter((memberId) => memberId !== id) }); },
+    makeLeader(id) { Api.updateParty(this.party.id, { leaderId: id }); },
+    makeTank(id) { Api.updateParty(this.party.id, { tankId: id }); },
+    untank() { Api.updateParty(this.party.id, { tankId: null }); },
+    updateRetreat(event) { Api.updateParty(this.party.id, { tankRetreatPct: Number(event.target.value) }); },
+    toggleSync(event) { Api.updateParty(this.party.id, { shouldSyncInGame: event.target.checked }); },
+    startParty(shouldHunt) {
+      const areaId = this.goalAreaId.trim() || undefined;
+      const path = this.party.isActive ? `/api/parties/${this.party.id}/goal` : `/api/parties/${this.party.id}/start`;
+      const body = this.party.isActive ? { areaId, shouldHunt } : { goal: { areaId, shouldHunt } };
+      runAndReport(() => callApi('POST', path, body), shouldHunt ? 'Party heading out' : 'Party holding');
+    },
+    stopParty() { runAndReport(() => callApi('POST', `/api/parties/${this.party.id}/stop`, {}), 'Party stopped'); },
+    deleteParty() {
+      if (confirm(`${t('deleteParty')} "${this.party.name}"?`)) runAndReport(() => callApi('DELETE', `/api/parties/${this.party.id}`), 'Party deleted');
+    },
+  },
+  template: `
+    <article class="party-card" :class="{ active: party.isActive }">
+      <div class="card-head">
+        <h3>{{ party.name }}</h3>
+        <span class="badge" :class="{ on: party.isActive }">{{ party.isActive ? 'ACTIVE' : 'off' }}</span>
+        <span class="party-status">{{ party.status }}</span>
+      </div>
+      <div class="char-table-scroll">
+        <table class="char-table party-table">
+          <thead>
+            <tr>
+              <th>{{ t('leader') }}/{{ t('tank') }}</th><th></th><th>{{ t('name') }}</th><th>{{ t('lv') }}</th><th>{{ t('hp') }}</th>
+              <th>{{ t('exp') }}</th><th>{{ t('atk') }}</th><th>{{ t('area') }}</th><th>{{ t('doing') }}</th><th>{{ t('gold') }}</th>
+              <th>{{ t('expMin') }}</th><th>{{ t('actions') }}</th><th></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-if="!members.length"><td colspan="13" class="empty">{{ t('noMembers') }}</td></tr>
+            <character-row v-for="member in members" :key="member.id" :account="member" @open-profile="(id) => $emit('open-profile', id)">
+              <template #leading>
+                <td class="cell-role">
+                  <span v-if="member.id === party.leaderId" class="badge role-leader">{{ t('leader') }}</span>
+                  <span v-if="member.id === party.tankId" class="badge role-tank">{{ t('tank') }}</span>
+                </td>
+              </template>
+              <template #trailing>
+                <td class="cell-party-controls">
+                  <button v-if="member.id !== party.leaderId" class="button small" @click="makeLeader(member.id)">{{ t('leader') }}</button>
+                  <button v-if="member.id === party.tankId" class="button small" @click="untank">{{ t('untank') }}</button>
+                  <button v-else class="button small" @click="makeTank(member.id)">{{ t('tank') }}</button>
+                  <button class="button small danger" @click="removeMember(member.id)">✕</button>
+                </td>
+              </template>
+            </character-row>
+          </tbody>
+        </table>
+      </div>
+      <div class="party-controls">
+        <select v-model="addMemberId" @change="addMember" :aria-label="t('addMember')">
+          <option value="">{{ freeAccounts.length ? t('addMember') : t('noFree') }}</option>
+          <option v-for="account in freeAccounts" :key="account.id" :value="account.id">{{ account.name }}</option>
+        </select>
+        <input v-model="goalAreaId" :placeholder="t('goalPlaceholder')" :aria-label="t('goalPlaceholder')">
+        <button class="button primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
+        <button class="button" @click="startParty(false)">{{ t('hold') }}</button>
+        <button v-if="party.isActive" class="button danger" @click="stopParty">{{ t('stopParty') }}</button>
+      </div>
+      <div class="party-options">
+        <label>{{ t('retreatLabel') }} <input type="number" min="10" max="90" :value="party.tankRetreatPct" @change="updateRetreat"></label>
+        <label class="checkbox" :title="t('syncLabel')"><input type="checkbox" :checked="party.shouldSyncInGame" @change="toggleSync"> {{ t('syncLabel') }}</label>
+        <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
+      </div>
+    </article>
+  `,
+};
 
-  const hpMarkers = [
-    { pct: thresholds.potionPct, title: `Potion at ${thresholds.potionPct}%` },
-    { pct: thresholds.emergencyPct, title: `Emergency at ${thresholds.emergencyPct}%` },
-    { pct: thresholds.crystalPct, title: `Crystal at ${thresholds.crystalPct}%` },
-  ];
-  const hpText = `${formatNumber(player.hp)} / ${formatNumber(player.maxHp)}`;
-  const expText = player.expNeeded ? `${formatNumber(player.exp)} / ${formatNumber(player.expNeeded)}` : formatNumber(player.exp);
-  const consumables = player.consumables;
-  const restockLimits = account.safety.restock;
+// ---- root app -----------------------------------------------------------------
 
-  const facts = buildElement('dl', { className: 'facts' }, [
-    ['Area', `${player.areaId}${player.areaLevel ? ` · mob Lv ${player.areaLevel}` : ''}`],
-    ['Doing', `${player.activity}${player.enemyCount ? ` · ${player.enemyCount} enemies` : ''}`],
-    ['摳', `${formatNumber(player.gold)}${account.rates.goldPerHour ? ` · ${formatCompact(account.rates.goldPerHour)}/h` : ''}`],
-    ['EXP / min', formatNumber(account.rates.expPerMin)],
-    ['Frontier', `Floor ${player.frontierFloor}`],
-    ['Heal mode', account.safety.isEnabled ? account.safety.healMode : 'OFF'],
-  ].map(([term, value]) => buildElement('div', { title: `${term} ${value}` }, [buildElement('dt', { text: term }), buildElement('dd', { text: value })])));
-
-  const isSuggestedItemDifferent = consumables.autoDrink && player.recommendedKit && consumables.autoDrink.itemId !== player.recommendedKit.autoDrink;
-
-  return buildElement('article', { className: `account-card ${player.isDead ? 'dead' : ''}` }, [
-    header,
-    statBar({ label: 'HP', valuePct: player.hpPct, leftText: hpText, rightText: player.isMaxHpEstimated ? 'max est.' : `${player.hpPct}%`, barClass: hpBarClass(player.hpPct, thresholds), markers: hpMarkers }),
-    statBar({ label: 'EXP', valuePct: player.expPct, leftText: expText, rightText: player.expPct != null ? `${player.expPct}%` : '', barClass: 'sb-exp' }),
-    facts,
-    buildElement('div', { className: 'section-title', text: 'Supplies' }),
-    buildElement('div', { className: 'stock-row' }, [
-      stockGauge(consumables.autoDrink?.name || consumables.autoDrink?.itemId || 'Auto-drink', consumables.autoDrink?.quantity ?? 0, restockLimits.autoDrinkMin),
-      stockGauge('Potions', consumables.potionsTotal, 100),
-      stockGauge('回復水晶', consumables.crystalHeal, restockLimits.crystalHealMin),
-      stockGauge('轉移水晶', consumables.crystalTeleport, restockLimits.teleportMin),
-    ]),
-    isSuggestedItemDifferent ? buildElement('p', { className: 'hint', text: `Suggested auto-drink at Lv ${player.level}: ${player.recommendedKit.autoDrink}` }) : null,
-    player.miasmaStage ? buildElement('p', { className: 'alert', text: `Miasma stage ${player.miasmaStage} (+${player.miasmaStage * 15}% damage taken)` }) : null,
-    account.busyLabel ? buildElement('p', { className: 'busy', text: `Busy: ${account.busyLabel}` }) : null,
-    ...account.alerts.map((text) => buildElement('p', { className: 'alert', text })),
-    accountButtons(account),
-  ]);
-}
-
-function accountButtons(account) {
-  const accountAction = (action, extra = {}) => runAndReport(() => callApi('POST', `/api/accounts/${account.id}/action`, { action, ...extra }));
-  const isHunting = account.player?.activity === 'hunting';
-  return buildElement('div', { className: 'card-actions' }, [
-    isHunting
-      ? buildElement('button', { className: 'button', text: 'Stop hunt', onClick: () => accountAction('stopHunt') })
-      : buildElement('button', { className: 'button', text: 'Start hunt', onClick: () => accountAction('startHunt'), disabled: !account.player }),
-    buildElement('button', { className: 'button', text: 'Go to…', disabled: !account.player, onClick: () => {
-      const areaId = prompt('Area id (e.g. f40-field, f16-town):', account.player?.areaId || '');
-      if (areaId) accountAction('goto', { areaId: areaId.trim() });
-    } }),
-    buildElement('button', { className: 'button danger', text: 'Town now', title: 'Use a teleport crystal', onClick: () => accountAction('town') }),
-    buildElement('button', { className: 'button', text: 'Restock', onClick: () => accountAction('restock') }),
-    account.haltReason ? buildElement('button', { className: 'button primary', text: 'Resume bot', onClick: () => accountAction('resume') }) : null,
-    buildElement('button', { className: 'button', text: 'Health & potions', onClick: () => openSettings(account) }),
-    buildElement('details', { className: 'more' }, [
-      buildElement('summary', { text: 'More' }),
-      buildElement('button', { className: 'button', text: 'Show password', onClick: async () => {
-        const result = await runAndReport(() => callApi('POST', `/api/accounts/${account.id}/password`, {}));
-        if (result) prompt(`Password for ${account.name} (copy it now):`, result.password);
-      } }),
-      buildElement('button', { className: 'button', text: 'Raw command…', onClick: () => {
-        const commandText = prompt('Command JSON, e.g. {"type":"startHunt"}');
-        if (!commandText) return;
-        let command;
-        try { command = JSON.parse(commandText); } catch { return showToast('That is not valid JSON', 'error'); }
-        runAndReport(() => callApi('POST', `/api/accounts/${account.id}/action`, { action: 'raw', command }), 'Sent');
-      } }),
-      buildElement('button', { className: 'button danger', text: 'Remove from dashboard', onClick: () => {
-        if (confirm(`Remove ${account.name}? The game account itself is not deleted.`)) runAndReport(() => callApi('DELETE', `/api/accounts/${account.id}`), 'Removed');
-      } }),
-    ]),
-  ]);
-}
-
-function renderAccounts() {
-  const grid = findElement('#accounts');
-  if (!latestSnapshot.accounts.length) {
-    grid.replaceChildren(buildElement('p', { className: 'empty', text: 'No characters yet. Use “+ Add account” to log in or create one.' }));
-    return;
-  }
-  // Keep any open "More" menu open across redraws.
-  const openMenuAccountIds = new Set([...grid.querySelectorAll('details[open]')].map((menu) => menu.closest('[data-account-id]')?.dataset.accountId));
-  grid.replaceChildren(...latestSnapshot.accounts.map((account) => {
-    const card = renderAccountCard(account);
-    card.dataset.accountId = account.id;
-    if (openMenuAccountIds.has(account.id)) findElement('details', card)?.setAttribute('open', '');
-    return card;
-  }));
-}
-
-// ---- parties ---------------------------------------------------------------
-
-function updateParty(party, changes) {
-  return runAndReport(() => callApi('PUT', `/api/parties/${party.id}`, changes));
-}
-
-function renderPartyCard(party) {
-  const takenIds = new Set(latestSnapshot.parties.flatMap((otherParty) => otherParty.memberIds));
-  const freeAccounts = latestSnapshot.accounts.filter((account) => !takenIds.has(account.id));
-
-  const memberRows = party.memberIds.map((memberId) => {
-    const account = latestSnapshot.accounts.find((candidate) => candidate.id === memberId);
-    const isLeader = memberId === party.leaderId;
-    const isTank = memberId === party.tankId;
-    const hpPct = account?.player?.hpPct;
-    const isOnline = !!account?.player;
-    const hpFill = buildElement('i');
-    hpFill.style.width = `${hpPct ?? 0}%`;
-    return buildElement('li', { className: `member ${isOnline ? '' : 'away'} ${isTank ? 'is-tank' : ''}` }, [
-      buildElement('div', { className: 'member-head' }, [
-        buildElement('span', { className: 'member-name', text: accountName(memberId) }),
-        isLeader ? buildElement('span', { className: 'badge role-leader', text: '隊長 Leader' }) : null,
-        isTank ? buildElement('span', { className: 'badge role-tank', text: '坦 Tank' }) : null,
-      ]),
-      buildElement('span', { className: 'member-sub', text: isOnline ? `Lv${account.player.level} · ${account.player.areaId} · ${account.player.activity}` : 'offline' }),
-      buildElement('span', { className: `mate-bar ${hpPct != null && hpPct < 30 ? 'low' : ''}`, title: `HP ${hpPct ?? '?'}%` }, [hpFill]),
-      buildElement('span', { className: 'member-actions' }, [
-        isLeader ? null : buildElement('button', { className: 'button small', text: 'Leader', title: 'Make leader', onClick: () => updateParty(party, { leaderId: memberId }) }),
-        isTank
-          ? buildElement('button', { className: 'button small', text: 'Untank', title: 'Unset tank', onClick: () => updateParty(party, { tankId: null }) })
-          : buildElement('button', { className: 'button small', text: 'Tank', title: 'Make tank', onClick: () => updateParty(party, { tankId: memberId }) }),
-        buildElement('button', { className: 'button small danger', text: '✕', title: 'Remove from party', onClick: () => updateParty(party, { memberIds: party.memberIds.filter((id) => id !== memberId) }) }),
-      ]),
-    ]);
-  });
-
-  const addMemberSelect = buildElement('select', { 'aria-label': 'Add member' }, [
-    buildElement('option', { value: '', text: freeAccounts.length ? '+ Add member…' : 'No free characters' }),
-    ...freeAccounts.map((account) => buildElement('option', { value: account.id, text: account.name })),
-  ]);
-  addMemberSelect.addEventListener('change', () => {
-    if (addMemberSelect.value) updateParty(party, { memberIds: [...party.memberIds, addMemberSelect.value] });
-  });
-
-  const goalInput = buildElement('input', { value: party.goal?.areaId || '', placeholder: 'Goal area, e.g. f40-field (blank = where the leader is)', 'aria-label': 'Goal area' });
-  const retreatInput = buildElement('input', { type: 'number', min: 10, max: 90, value: party.tankRetreatPct, 'aria-label': 'Tank retreat HP %' });
-  retreatInput.addEventListener('change', () => updateParty(party, { tankRetreatPct: Number(retreatInput.value) }));
-  const syncCheckbox = buildElement('input', { type: 'checkbox', checked: party.shouldSyncInGame });
-  syncCheckbox.addEventListener('change', () => updateParty(party, { shouldSyncInGame: syncCheckbox.checked }));
-
-  const startParty = (shouldHunt) => {
-    const areaId = goalInput.value.trim() || undefined;
-    const path = party.isActive ? `/api/parties/${party.id}/goal` : `/api/parties/${party.id}/start`;
-    const body = party.isActive ? { areaId, shouldHunt } : { goal: { areaId, shouldHunt } };
-    runAndReport(() => callApi('POST', path, body), shouldHunt ? 'Party heading out' : 'Party holding');
-  };
-
-  return buildElement('article', { className: `party-card ${party.isActive ? 'active' : ''}` }, [
-    buildElement('div', { className: 'card-head' }, [
-      buildElement('h3', { text: party.name }),
-      buildElement('span', { className: `badge ${party.isActive ? 'on' : ''}`, text: party.isActive ? 'ACTIVE' : 'off' }),
-      buildElement('span', { className: 'party-status', text: party.status }),
-    ]),
-    buildElement('ul', { className: 'members' }, memberRows.length ? memberRows : [buildElement('li', { className: 'muted', text: 'No members yet' })]),
-    buildElement('div', { className: 'party-controls' }, [
-      addMemberSelect,
-      goalInput,
-      buildElement('button', { className: 'button primary', text: party.isActive ? 'Hunt here' : 'Start party', onClick: () => startParty(true) }),
-      buildElement('button', { className: 'button', text: 'Hold (no fighting)', onClick: () => startParty(false) }),
-      party.isActive ? buildElement('button', { className: 'button danger', text: 'Stop party', onClick: () => runAndReport(() => callApi('POST', `/api/parties/${party.id}/stop`, {}), 'Party stopped') }) : null,
-    ]),
-    buildElement('div', { className: 'party-options' }, [
-      buildElement('label', {}, ['Tank retreat HP % ', retreatInput]),
-      buildElement('label', { className: 'checkbox', title: 'Uses the unverified in-game party commands from protocol.js' }, [syncCheckbox, ' Also form the party in-game (experimental)']),
-      buildElement('button', { className: 'button small danger', text: 'Delete party', onClick: () => {
-        if (confirm(`Delete party ${party.name}?`)) runAndReport(() => callApi('DELETE', `/api/parties/${party.id}`), 'Party deleted');
-      } }),
-    ]),
-  ]);
-}
-
-function renderParties() {
-  const container = findElement('#parties');
-  const parties = latestSnapshot.parties;
-  container.replaceChildren(...(parties.length ? parties.map(renderPartyCard) : [buildElement('p', { className: 'empty', text: 'No parties yet.' })]));
-}
-
-// ---- log -------------------------------------------------------------------
-
-function renderLogFilter() {
-  const filter = findElement('#log-filter');
-  const knownIds = new Set([...filter.options].map((option) => option.value));
-  for (const account of latestSnapshot.accounts) {
-    if (!knownIds.has(account.id)) filter.append(buildElement('option', { value: account.id, text: account.name }));
-  }
-}
-
-function renderLog() {
-  const selectedAccountId = findElement('#log-filter').value;
-  const visibleEvents = logEvents.filter((event) => !selectedAccountId || event.accountId === selectedAccountId).slice(-120).reverse();
-  findElement('#event-log').replaceChildren(...visibleEvents.map((event) =>
-    buildElement('li', { className: `log-row kind-${event.kind}` }, [
-      buildElement('time', { text: new Date(event.ts).toLocaleTimeString() }),
-      buildElement('span', { className: 'log-account', text: event.account }),
-      buildElement('span', { className: 'log-kind', text: event.kind }),
-      buildElement('span', { className: 'log-detail', text: event.source ? `${event.detail} (${event.source})` : event.detail }),
-    ])));
-}
-
-// ---- dialogs ---------------------------------------------------------------
-
-function setupAddAccountDialog() {
-  const dialog = findElement('#add-account-dialog');
-  const loginForm = findElement('#login-form');
-  const createForm = findElement('#create-form');
-  findElement('#open-add-account').addEventListener('click', () => dialog.showModal());
-  for (const closeButton of dialog.querySelectorAll('[data-close]')) closeButton.addEventListener('click', () => dialog.close());
-  dialog.addEventListener('close', () => {
-    loginForm.reset();
-    createForm.reset();
-    findElement('[data-password]', createForm).hidden = true;
-    findElement('[data-password-value]', createForm).textContent = '';
-    for (const errorLine of dialog.querySelectorAll('[data-error]')) errorLine.textContent = '';
-  });
-
-  for (const tab of dialog.querySelectorAll('[data-tab]')) {
-    tab.addEventListener('click', () => {
-      for (const otherTab of dialog.querySelectorAll('[data-tab]')) otherTab.setAttribute('aria-selected', String(otherTab === tab));
-      loginForm.hidden = tab.dataset.tab !== 'login';
-      createForm.hidden = tab.dataset.tab !== 'create';
-    });
-  }
-
-  loginForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const formData = new FormData(loginForm);
-    const errorLine = findElement('[data-error]', loginForm);
-    errorLine.textContent = 'Logging in…';
-    try {
-      const result = await callApi('POST', '/api/accounts/login', {
-        name: formData.get('name'),
-        password: formData.get('password'),
-        shouldRememberPassword: formData.get('shouldRememberPassword') === 'on',
+const app = createApp({
+  components: { CharacterRow, PartyCard },
+  data() {
+    return {
+      snapshot: { accounts: [], parties: [] },
+      logEvents: [],
+      isLogOpen: false,
+      logFilter: '',
+      isAddingParty: false,
+      newPartyName: '',
+      i18nState,
+      linkState: 'connecting',
+      profileAccountId: null,
+      weaponTypes: WEAPON_TYPES,
+      settingsAccountId: null,
+    };
+  },
+  computed: {
+    linkLabel() {
+      return { connecting: 'connecting…', live: 'live', down: 'dashboard offline — retrying' }[this.linkState];
+    },
+    overviewTiles() {
+      const accounts = this.snapshot.accounts;
+      const onlineCount = accounts.filter((account) => account.isConnected).length;
+      const totalGold = accounts.reduce((sum, account) => sum + (account.player?.gold ?? 0), 0);
+      const goldPerHour = accounts.reduce((sum, account) => sum + (account.rates.goldPerHour ?? 0), 0);
+      const alertCount = accounts.reduce((sum, account) => sum + account.alerts.length, 0);
+      return [
+        { label: this.t('online'), value: `${onlineCount} / ${accounts.length}` },
+        { label: this.t('totalGold'), value: formatCompact(totalGold) },
+        { label: this.t('goldPerHour'), value: goldPerHour ? formatCompact(goldPerHour) : '—' },
+        { label: this.t('activeParties'), value: String(this.activePartiesCount) },
+        { label: this.t('alerts'), value: String(alertCount), tone: alertCount ? 'warn' : '' },
+      ];
+    },
+    activePartiesCount() { return this.snapshot.parties.filter((party) => party.isActive).length; },
+    takenAccountIds() { return new Set(this.snapshot.parties.flatMap((party) => party.memberIds)); },
+    latestAlert() {
+      const withAlert = [...this.logEvents].reverse().find((event) => event.kind === 'alert' || event.kind === 'error');
+      return withAlert ? `${withAlert.account}: ${withAlert.detail}` : '';
+    },
+    visibleLogEvents() {
+      return this.logEvents.filter((event) => !this.logFilter || event.accountId === this.logFilter).slice(-120).reverse();
+    },
+    profileAccount() { return this.snapshot.accounts.find((account) => account.id === this.profileAccountId) || null; },
+  },
+  methods: {
+    t,
+    formatTime,
+    toggleLang() {
+      i18nState.lang = i18nState.lang === 'en' ? 'zh' : 'en';
+      localStorage.setItem('sao-lang', i18nState.lang);
+    },
+    openAddAccountDialog() { document.getElementById('add-account-dialog').showModal(); },
+    pauseAll() {
+      if (confirm('Stop every party and every hunt?')) runAndReport(() => callApi('POST', '/api/pause-all', {}), 'Everything paused');
+    },
+    createParty() {
+      if (!this.newPartyName.trim()) return;
+      runAndReport(() => callApi('POST', '/api/parties', { name: this.newPartyName }), 'Party created').then(() => {
+        this.newPartyName = '';
+        this.isAddingParty = false;
       });
-      dialog.close();
-      showToast(`${result.name} added`);
-    } catch (error) {
-      errorLine.textContent = error.message;
-    }
-  });
-
-  createForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const formData = new FormData(createForm);
-    const errorLine = findElement('[data-error]', createForm);
-    errorLine.textContent = 'Creating…';
+    },
+    openProfile(accountId) {
+      this.profileAccountId = accountId;
+      this.$refs.profileDialog.showModal();
+    },
+    accountAction(account, action, extra) { return Api.accountAction(account.id, action, extra); },
+    setWeapon(account, weapon) { runAndReport(() => callApi('PUT', `/api/accounts/${account.id}/weapon`, { weapon: weapon || null })); },
+    async showPassword(account) {
+      const result = await runAndReport(() => callApi('POST', `/api/accounts/${account.id}/password`, {}));
+      if (result) prompt(`Password for ${account.name} (copy it now):`, result.password);
+    },
+    rawCommand(account) {
+      const commandText = prompt('Command JSON, e.g. {"type":"startHunt"}');
+      if (!commandText) return;
+      let command;
+      try { command = JSON.parse(commandText); } catch { return showToast('That is not valid JSON', 'error'); }
+      runAndReport(() => callApi('POST', `/api/accounts/${account.id}/action`, { action: 'raw', command }), 'Sent');
+    },
+    removeAccount(account) {
+      if (confirm(`Remove ${account.name}? The game account itself is not deleted.`)) {
+        runAndReport(() => callApi('DELETE', `/api/accounts/${account.id}`), 'Removed').then(() => {
+          this.$refs.profileDialog.close();
+        });
+      }
+    },
+    openSettings(account) {
+      this.settingsAccountId = account.id;
+      const dialog = document.getElementById('settings-dialog');
+      const form = document.getElementById('settings-form');
+      form.querySelector('[data-account-name]').textContent = account.name;
+      form.querySelector('[data-error]').textContent = '';
+      const safety = account.safety;
+      form.elements.isEnabled.checked = safety.isEnabled;
+      form.elements.isAutoRestockOn.checked = safety.isAutoRestockOn;
+      form.elements.healMode.value = safety.healMode;
+      for (const input of form.querySelectorAll('input[name*="."]')) {
+        const [group, key] = input.name.split('.');
+        input.value = safety[group][key];
+      }
+      dialog.showModal();
+    },
+    connectStream() {
+      const stream = new EventSource('/api/stream');
+      stream.addEventListener('open', () => { this.linkState = 'live'; });
+      stream.addEventListener('error', () => { this.linkState = 'down'; });
+      stream.addEventListener('snapshot', (message) => { this.snapshot = JSON.parse(message.data); });
+      stream.addEventListener('log', (message) => {
+        this.logEvents.push(JSON.parse(message.data));
+        if (this.logEvents.length > MAX_LOG_ROWS) this.logEvents.shift();
+      });
+    },
+    setupAddAccountDialog() {
+      const dialog = document.getElementById('add-account-dialog');
+      const loginForm = document.getElementById('login-form');
+      const createForm = document.getElementById('create-form');
+      for (const closeButton of dialog.querySelectorAll('[data-close]')) closeButton.addEventListener('click', () => dialog.close());
+      dialog.addEventListener('close', () => {
+        loginForm.reset();
+        createForm.reset();
+        createForm.querySelector('[data-password]').hidden = true;
+        createForm.querySelector('[data-password-value]').textContent = '';
+        for (const errorLine of dialog.querySelectorAll('[data-error]')) errorLine.textContent = '';
+      });
+      for (const tab of dialog.querySelectorAll('[data-tab]')) {
+        tab.addEventListener('click', () => {
+          for (const otherTab of dialog.querySelectorAll('[data-tab]')) otherTab.setAttribute('aria-selected', String(otherTab === tab));
+          loginForm.hidden = tab.dataset.tab !== 'login';
+          createForm.hidden = tab.dataset.tab !== 'create';
+        });
+      }
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(loginForm);
+        const errorLine = loginForm.querySelector('[data-error]');
+        errorLine.textContent = 'Logging in…';
+        try {
+          const result = await callApi('POST', '/api/accounts/login', {
+            name: formData.get('name'),
+            password: formData.get('password'),
+            shouldRememberPassword: formData.get('shouldRememberPassword') === 'on',
+          });
+          dialog.close();
+          showToast(`${result.name} added`);
+        } catch (error) {
+          errorLine.textContent = error.message;
+        }
+      });
+      createForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const formData = new FormData(createForm);
+        const errorLine = createForm.querySelector('[data-error]');
+        errorLine.textContent = 'Creating…';
+        try {
+          const result = await callApi('POST', '/api/accounts/create', { name: formData.get('name') });
+          errorLine.textContent = '';
+          createForm.querySelector('[data-password-name]').textContent = result.name;
+          createForm.querySelector('[data-password-value]').textContent = result.password;
+          createForm.querySelector('[data-password]').hidden = false;
+          showToast(`${result.name} created — copy the password now`);
+        } catch (error) {
+          errorLine.textContent = error.message;
+        }
+      });
+      createForm.querySelector('[data-copy]').addEventListener('click', async () => {
+        const password = createForm.querySelector('[data-password-value]').textContent;
+        try { await navigator.clipboard.writeText(password); showToast('Password copied'); } catch { showToast('Copy failed — select it by hand', 'error'); }
+      });
+    },
+    setupSettingsDialog() {
+      const dialog = document.getElementById('settings-dialog');
+      const form = document.getElementById('settings-form');
+      form.querySelector('[data-close]').addEventListener('click', () => dialog.close());
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const errorLine = form.querySelector('[data-error]');
+        const update = {
+          isEnabled: form.elements.isEnabled.checked,
+          isAutoRestockOn: form.elements.isAutoRestockOn.checked,
+          healMode: form.elements.healMode.value,
+          normal: {}, boss: {}, restock: {},
+        };
+        for (const input of form.querySelectorAll('input[name*="."]')) {
+          const [group, key] = input.name.split('.');
+          update[group][key] = Number(input.value);
+        }
+        const save = (isUnsafeConfirmed) => callApi('PUT', `/api/accounts/${this.settingsAccountId}/safety`, { safety: update, isUnsafeConfirmed });
+        try {
+          await save(false);
+        } catch (error) {
+          if (!error.result?.needsConfirm) { errorLine.textContent = error.message; return; }
+          if (!confirm(`${error.message}.\n\nLower thresholds make death more likely. Save anyway?`)) return;
+          try { await save(true); } catch (retryError) { errorLine.textContent = retryError.message; return; }
+        }
+        dialog.close();
+        showToast('Settings saved');
+      });
+    },
+  },
+  async mounted() {
+    this.setupAddAccountDialog();
+    this.setupSettingsDialog();
     try {
-      const result = await callApi('POST', '/api/accounts/create', { name: formData.get('name') });
-      errorLine.textContent = '';
-      findElement('[data-password-name]', createForm).textContent = result.name;
-      findElement('[data-password-value]', createForm).textContent = result.password;
-      findElement('[data-password]', createForm).hidden = false;
-      showToast(`${result.name} created — copy the password now`);
-    } catch (error) {
-      errorLine.textContent = error.message;
-    }
-  });
+      this.logEvents.push(...(await callApi('GET', '/api/events')));
+    } catch { /* the stream will fill it in */ }
+    this.connectStream();
+  },
+});
 
-  findElement('[data-copy]', createForm).addEventListener('click', async () => {
-    const password = findElement('[data-password-value]', createForm).textContent;
-    try { await navigator.clipboard.writeText(password); showToast('Password copied'); } catch { showToast('Copy failed — select it by hand', 'error'); }
-  });
-}
-
-let settingsAccountId = null;
-
-function openSettings(account) {
-  settingsAccountId = account.id;
-  const dialog = findElement('#settings-dialog');
-  const form = findElement('#settings-form');
-  findElement('[data-account-name]', form).textContent = account.name;
-  findElement('[data-error]', form).textContent = '';
-  const safety = account.safety;
-  form.elements.isEnabled.checked = safety.isEnabled;
-  form.elements.isAutoRestockOn.checked = safety.isAutoRestockOn;
-  form.elements.healMode.value = safety.healMode;
-  for (const input of form.querySelectorAll('input[name*="."]')) {
-    const [group, key] = input.name.split('.');
-    input.value = safety[group][key];
-  }
-  dialog.showModal();
-}
-
-function readSettingsForm(form) {
-  const update = {
-    isEnabled: form.elements.isEnabled.checked,
-    isAutoRestockOn: form.elements.isAutoRestockOn.checked,
-    healMode: form.elements.healMode.value,
-    normal: {}, boss: {}, restock: {},
-  };
-  for (const input of form.querySelectorAll('input[name*="."]')) {
-    const [group, key] = input.name.split('.');
-    update[group][key] = Number(input.value);
-  }
-  return update;
-}
-
-function setupSettingsDialog() {
-  const dialog = findElement('#settings-dialog');
-  const form = findElement('#settings-form');
-  findElement('[data-close]', form).addEventListener('click', () => dialog.close());
-  form.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const errorLine = findElement('[data-error]', form);
-    const safety = readSettingsForm(form);
-    const save = (isUnsafeConfirmed) => callApi('PUT', `/api/accounts/${settingsAccountId}/safety`, { safety, isUnsafeConfirmed });
-    try {
-      await save(false);
-    } catch (error) {
-      if (!error.result?.needsConfirm) { errorLine.textContent = error.message; return; }
-      if (!confirm(`${error.message}.\n\nLower thresholds make death more likely. Save anyway?`)) return;
-      try { await save(true); } catch (retryError) { errorLine.textContent = retryError.message; return; }
-    }
-    dialog.close();
-    showToast('Settings saved');
-  });
-}
-
-// ---- page setup ------------------------------------------------------------
-
-function setupTopBar() {
-  findElement('#pause-all').addEventListener('click', () => {
-    if (confirm('Stop every party and every hunt?')) runAndReport(() => callApi('POST', '/api/pause-all', {}), 'Everything paused');
-  });
-  findElement('#new-party-form').addEventListener('submit', (event) => {
-    event.preventDefault();
-    const nameInput = findElement('#new-party-name');
-    runAndReport(() => callApi('POST', '/api/parties', { name: nameInput.value }), 'Party created').then(() => { nameInput.value = ''; });
-  });
-  findElement('#log-filter').addEventListener('change', renderLog);
-}
-
-async function start() {
-  setupTopBar();
-  setupAddAccountDialog();
-  setupSettingsDialog();
-  try {
-    logEvents.push(...(await callApi('GET', '/api/events')));
-    renderLog();
-  } catch { /* the stream will fill it in */ }
-  connectStream();
-}
-
-start();
+app.mount('#app');

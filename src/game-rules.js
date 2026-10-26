@@ -3,6 +3,10 @@
 
 export const TOP_FLOOR = 40;
 
+// Unique-weapon questlines a character can be pointed at. Dashboard-only
+// categorization — not a game protocol field — used to tag completeMission.
+export const WEAPON_TYPES = ['one-handed-sword', 'rapier', 'dual-blades', 'spear', 'two-handed-sword', 'short-sword'];
+
 export const AREA_LEVEL_OFFSETS = { town: 0, field: 1, outskirts: 1, depths: 3, labyrinth: 4, wilds: 4, secret: 9, bossroom: 6 };
 
 // Unknown story areas are assumed as hard as the hardest normal area.

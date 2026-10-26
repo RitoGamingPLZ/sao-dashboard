@@ -40,11 +40,14 @@ export const DEFAULT_PROTOCOL = {
   fields: {
     maxHp: ['maxHp', 'hpMax', 'mhp', 'stats.maxHp', 'stats.hp'],
     expNeeded: ['expNeeded', 'expNext', 'nextExp', 'expMax'],
+    attack: ['attack', 'atk', 'stats.attack', 'stats.atk'],
   },
 
   commands: {
     travel: 'travel', gate: 'gate', startHunt: 'startHunt', stopHunt: 'stopHunt',
     emergency: 'emergency', drink: 'drink', use: 'use', buy: 'buy',
+    // UNVERIFIED: no known boss-fight or mission commands either; same guess pattern as startHunt.
+    startBoss: 'startBoss', stopBoss: 'stopBoss', completeMission: 'completeMission',
     // UNVERIFIED party commands. `null` disables syncing that step to the game.
     partyCreate: 'partyCreate',
     partyInvite: 'partyInvite', // { name }

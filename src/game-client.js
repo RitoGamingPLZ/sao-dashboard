@@ -153,6 +153,16 @@ export class GameClient extends EventEmitter {
     return null;
   }
 
+  attack() {
+    const player = this.player;
+    if (!player) return null;
+    for (const fieldPath of this.protocol.fields.attack) {
+      const value = getPath(player, fieldPath);
+      if (typeof value === 'number' && value > 0) return value;
+    }
+    return null;
+  }
+
   async waitForRateLimit() {
     for (;;) {
       const currentTime = this.now();

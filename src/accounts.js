@@ -10,6 +10,7 @@ import { Vault, generatePassword } from './vault.js';
 import { login, register, ACCOUNT_NAME_PATTERN, AuthError } from './game-auth.js';
 import { PartyManager } from './party.js';
 import { validateSafety } from './safety.js';
+import { WEAPON_TYPES } from './game-rules.js';
 
 export class AccountManager {
   constructor({ protocol, dataDir, sessionTiming, partyTickMs }) {
@@ -43,7 +44,7 @@ export class AccountManager {
 
   saveSettings() {
     const settings = {
-      accounts: this.sessions.map((session) => ({ id: session.id, name: session.name, safety: session.safety })),
+      accounts: this.sessions.map((session) => ({ id: session.id, name: session.name, safety: session.safety, preferredWeapon: session.preferredWeapon })),
       parties: this.partyManager?.parties ?? [],
     };
     const temporaryFile = `${this.settingsFile}.tmp`;
@@ -129,6 +130,15 @@ export class AccountManager {
     this.saveSettings();
     session.log('mode', 'Safety settings changed');
     return { safety: session.safety };
+  }
+
+  setPreferredWeapon(accountId, weapon) {
+    const session = this.sessionsById.get(accountId);
+    if (!session) return { error: 'No such account' };
+    if (weapon && !WEAPON_TYPES.includes(weapon)) return { error: 'Unknown weapon type' };
+    session.setPreferredWeapon(weapon);
+    this.saveSettings();
+    return { preferredWeapon: session.preferredWeapon };
   }
 
   snapshot() {

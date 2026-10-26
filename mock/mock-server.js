@@ -52,10 +52,12 @@ function createFrameReader(onText, onClose) {
 
 function newPlayer(name, level = 30) {
   return {
-    name, level, exp: 0, hp: 5000, maxHp: 5000, col: 400000,
+    name, level, exp: 0, hp: 5000, maxHp: 5000, col: 400000, attack: 80 + level * 6,
     areaId: `f20-town`, activity: { type: 'idle' }, enemies: [],
     inventory: { 'potion-2b': 150, 'instant-2': 40, 'crystal-heal': 12, 'crystal-teleport': 25 },
-    gear: {}, equipment: {}, clearedFloors: [...Array(24).keys()].map((i) => i + 1),
+    gear: {}, equipment: { weapon: 'Practice Rapier', armor: 'Leather Coat (demo)' },
+    skills: ['Battle Healing', 'Parry', 'Sprint'],
+    clearedFloors: [...Array(24).keys()].map((i) => i + 1),
     instantCdMs: 0, settings: { autoPotion: false, potionItem: 'potion-2b', potionPct: 20, restPct: 80, stopOnNoPotion: true },
     miasmaSince: null, miasmaMs: null, dead: null,
   };
@@ -167,8 +169,30 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
         player.activity = { type: 'hunting' };
         return { ok: true };
       case 'stopHunt':
-        player.activity = { type: 'idle' };
+        if (player.activity.type === 'hunting') player.activity = { type: 'idle' };
         return { ok: true };
+      case 'startBoss':
+        if (player.areaId.endsWith('-town')) return { error: 'noBossInTown' };
+        player.activity = { type: 'boss' };
+        return { ok: true };
+      case 'stopBoss':
+        if (player.activity.type === 'boss') player.activity = { type: 'idle' };
+        return { ok: true };
+      case 'completeMission': {
+        const floor = floorOf(player.areaId);
+        if (command.questType === 'uniqueWeapon') {
+          if (!command.weapon) return { error: 'noWeaponGoal' };
+          const itemId = `weapon-${command.weapon}`;
+          inventory[itemId] = (inventory[itemId] || 0) + 1;
+          player.exp += 500;
+          return { ok: true, reward: itemId };
+        }
+        if (player.clearedFloors.includes(floor)) return { error: 'alreadyCleared' };
+        player.clearedFloors.push(floor);
+        player.exp += 300;
+        player.col += 1000;
+        return { ok: true, reward: `floor-${floor}-cleared` };
+      }
       case 'drink': {
         const potionId = Object.keys(inventory).find((itemId) => /^(potion|instant)-/.test(itemId) && inventory[itemId] > 0);
         if (!potionId) return { error: 'noPotion' };
@@ -205,10 +229,11 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
       const player = account.player;
       player.instantCdMs = Math.max(0, player.instantCdMs - TICK_MS);
       if (player.dead) continue;
-      if (player.activity.type === 'hunting') {
-        player.hp -= Math.round(damagePerTick * (0.6 + Math.random() * 0.8));
-        player.exp += 40;
-        player.col += 60;
+      if (player.activity.type === 'hunting' || player.activity.type === 'boss') {
+        const isBoss = player.activity.type === 'boss';
+        player.hp -= Math.round(damagePerTick * (isBoss ? 2 : 1) * (0.6 + Math.random() * 0.8));
+        player.exp += isBoss ? 150 : 40;
+        player.col += isBoss ? 200 : 60;
         if (player.hp <= 0) { player.hp = 0; player.dead = true; player.activity = { type: 'idle' }; }
       } else {
         player.hp = Math.min(player.maxHp, player.hp + 120);

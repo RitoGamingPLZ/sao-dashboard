@@ -65,8 +65,16 @@ export function createDashboard({
     switch (body.action) {
       case 'startHunt':
       case 'stopHunt':
+      case 'startBoss':
+      case 'stopBoss':
         if (session.busyLabel) return busyError;
         return session.sendCommand(session.commandOf(body.action), 'dashboard');
+      case 'completeMission': {
+        if (session.busyLabel) return busyError;
+        const weapon = session.preferredWeapon;
+        const extra = weapon ? { questType: 'uniqueWeapon', weapon } : {};
+        return session.sendCommand(session.commandOf('completeMission', extra), 'dashboard');
+      }
       case 'town': // emergency teleport crystal; skips the lock on purpose
         if (!(player?.inventory?.['crystal-teleport'] > 0)) return { error: 'No teleport crystals' };
         return session.sendCommand(session.commandOf('use', { itemId: 'crystal-teleport' }), 'dashboard');
@@ -142,6 +150,7 @@ export function createDashboard({
       if (method === 'PUT' && subResource === 'safety') {
         return sendResult(response, accountManager.updateSafety(session.id, body.safety || {}, { isUnsafeConfirmed: !!body.isUnsafeConfirmed }));
       }
+      if (method === 'PUT' && subResource === 'weapon') return sendResult(response, accountManager.setPreferredWeapon(session.id, body.weapon));
       if (method === 'POST' && subResource === 'password') return sendResult(response, accountManager.revealPassword(session.id), 404);
     }
 

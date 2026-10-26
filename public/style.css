@@ -284,6 +284,38 @@ label.checkbox input[type="checkbox"]:checked::after { transform: scale(1); }
 }
 .toast.error { color: var(--danger); border-color: var(--danger); }
 
+/* ---- widgets grid (dashboard-level: dense data, few buttons) ---- */
+.widgets-grid { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr)); align-items: start; }
+.widgets-grid .widget:first-child { grid-column: 1 / -1; }
+.widget { border: 1px solid var(--line); padding: .75rem 1rem; min-width: 0; }
+.widget-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; justify-content: space-between; margin: 0 0 .4rem; }
+.widget-head h2 { font-weight: 700; }
+
+/* ---- compact character table: name/lv/hp/exp/atk/area/doing/gold/exp-min + 3 mode buttons ---- */
+.char-table-scroll { overflow-x: auto; max-height: 26em; overflow-y: auto; }
+.char-table { border-collapse: collapse; width: 100%; font-size: 12px; white-space: nowrap; }
+.char-table th, .char-table td { padding: .2rem .4rem; border-bottom: 1px dotted var(--dim); text-align: left; }
+.char-table thead th { position: sticky; top: 0; background: var(--bg); border-bottom: 1px solid var(--line); font-weight: 700; z-index: 1; }
+.char-table tr.dead { color: var(--danger); }
+.char-table .cell-hp { display: flex; align-items: center; gap: .3rem; }
+.char-table .sb-track.mini { width: 3.2em; height: .65em; border: 1px solid var(--line); position: relative; flex: none; }
+.char-table .sb-track.mini > i { display: block; height: 100%; background: var(--hp); }
+.char-table .sb-track.mini.low > i { background: var(--hp-low); }
+.char-table .sb-track.mini.warn > i { background: var(--warn); }
+.char-table .cell-sub { color: var(--dim); font-size: 11px; }
+.char-table .cell-actions { display: flex; gap: .15rem; }
+.char-table .cell-actions .button { padding: 0 .35rem; font-size: 11px; }
+.char-table .cell-role, .char-table .cell-party-controls { white-space: nowrap; }
+.char-table .cell-party-controls { display: flex; gap: .15rem; }
+.char-table .cell-party-controls .button { padding: 0 .3rem; font-size: 11px; }
+.char-table .alert-row td { border-bottom: 1px dotted var(--dim); padding: 0 .4rem .3rem; }
+.char-table .alert-row .alert { font-size: 11px; margin: 0; }
+.link-name { background: none; border: none; padding: 0; margin: 0; font: inherit; font-weight: 700; color: inherit; text-decoration: underline dotted; cursor: pointer; }
+.link-name:hover { color: var(--mate-blue); }
+
+.plain-list { margin: 0; padding: 0 0 0 1.1em; }
+.plain-list li { padding: .05rem 0; }
+
 @media (max-width: 640px) {
   body { border: 0; }
   main { padding: .5rem; }
