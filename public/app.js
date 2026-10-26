@@ -1,9 +1,17 @@
-// Dashboard UI, built on Vue (vendored locally in vue.global.prod.js — the
-// server's CSP is default-src 'self', so no CDN script tags). Listens to the
-// server's live stream and re-renders from each snapshot; every control
-// posts an intent to the JSON API.
+// Dashboard UI, built on Vue (vendored locally in vue.esm-browser.prod.js —
+// the server's CSP is default-src 'self', so no CDN script and no in-browser
+// template compilation, which needs eval/new Function). Templates are
+// precompiled offline to render-app.js / render-character-row.js /
+// render-party-card.js (see $CLAUDE_JOB_DIR/tmp/compile.mjs from the session
+// that built this, using @vue/compiler-dom with mode:'module'); re-run that
+// if you edit markup — there's no template string left in this file.
+// Listens to the server's live stream and re-renders from each snapshot;
+// every control posts an intent to the JSON API.
 
-const { createApp, reactive } = Vue;
+import { createApp, reactive } from './vue.esm-browser.prod.js';
+import { render as renderApp } from './render-app.js';
+import { render as renderCharacterRow } from './render-character-row.js';
+import { render as renderPartyCard } from './render-party-card.js';
 
 // Reactive so every component that calls t() during its own render gets
 // tracked as a dependent and re-renders on toggle, not just the root.
@@ -141,31 +149,7 @@ const CharacterRow = {
       Api.accountAction(this.account.id, 'completeMission');
     },
   },
-  template: `
-    <tr :class="{ dead: account.player?.isDead }">
-      <slot name="leading"></slot>
-      <td><span class="status-dot" :data-state="statusDotState" :title="statusDotState"></span></td>
-      <td><button class="link-name" @click="$emit('open-profile', account.id)">{{ account.name }}</button></td>
-      <td>{{ account.player?.level ?? '—' }}</td>
-      <td class="cell-hp">
-        <span class="sb-track mini" :class="hpBarClass"><i :style="hpFillStyle"></i></span>
-        <span class="cell-sub">{{ account.player?.hpPct != null ? account.player.hpPct + '%' : '—' }}</span>
-      </td>
-      <td>{{ account.player?.expPct != null ? account.player.expPct + '%' : fmt(account.player?.exp) }}</td>
-      <td>{{ fmt(account.player?.attack) }}</td>
-      <td :title="account.player?.areaId || ''">{{ account.player?.areaId || '—' }}</td>
-      <td>{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></td>
-      <td>{{ fmtCompact(account.player?.gold) }}</td>
-      <td>{{ fmt(account.rates?.expPerMin) }}</td>
-      <td class="cell-actions">
-        <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!account.player" @click="toggleFarm">{{ t('farm') }}</button>
-        <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!account.player" @click="toggleBoss">{{ t('boss') }}</button>
-        <button class="button small" :disabled="!account.player" @click="doMission">{{ t('mission') }}</button>
-      </td>
-      <slot name="trailing"></slot>
-    </tr>
-    <tr v-if="account.alerts.length" class="alert-row"><td :colspan="11"><p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p></td></tr>
-  `,
+  render: renderCharacterRow,
 };
 
 // ---- PartyCard ----------------------------------------------------------------
@@ -210,60 +194,7 @@ const PartyCard = {
       if (confirm(`${t('deleteParty')} "${this.party.name}"?`)) runAndReport(() => callApi('DELETE', `/api/parties/${this.party.id}`), 'Party deleted');
     },
   },
-  template: `
-    <article class="party-card" :class="{ active: party.isActive }">
-      <div class="card-head">
-        <h3>{{ party.name }}</h3>
-        <span class="badge" :class="{ on: party.isActive }">{{ party.isActive ? 'ACTIVE' : 'off' }}</span>
-        <span class="party-status">{{ party.status }}</span>
-      </div>
-      <div class="char-table-scroll">
-        <table class="char-table party-table">
-          <thead>
-            <tr>
-              <th>{{ t('leader') }}/{{ t('tank') }}</th><th></th><th>{{ t('name') }}</th><th>{{ t('lv') }}</th><th>{{ t('hp') }}</th>
-              <th>{{ t('exp') }}</th><th>{{ t('atk') }}</th><th>{{ t('area') }}</th><th>{{ t('doing') }}</th><th>{{ t('gold') }}</th>
-              <th>{{ t('expMin') }}</th><th>{{ t('actions') }}</th><th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="!members.length"><td colspan="13" class="empty">{{ t('noMembers') }}</td></tr>
-            <character-row v-for="member in members" :key="member.id" :account="member" @open-profile="(id) => $emit('open-profile', id)">
-              <template #leading>
-                <td class="cell-role">
-                  <span v-if="member.id === party.leaderId" class="badge role-leader">{{ t('leader') }}</span>
-                  <span v-if="member.id === party.tankId" class="badge role-tank">{{ t('tank') }}</span>
-                </td>
-              </template>
-              <template #trailing>
-                <td class="cell-party-controls">
-                  <button v-if="member.id !== party.leaderId" class="button small" @click="makeLeader(member.id)">{{ t('leader') }}</button>
-                  <button v-if="member.id === party.tankId" class="button small" @click="untank">{{ t('untank') }}</button>
-                  <button v-else class="button small" @click="makeTank(member.id)">{{ t('tank') }}</button>
-                  <button class="button small danger" @click="removeMember(member.id)">✕</button>
-                </td>
-              </template>
-            </character-row>
-          </tbody>
-        </table>
-      </div>
-      <div class="party-controls">
-        <select v-model="addMemberId" @change="addMember" :aria-label="t('addMember')">
-          <option value="">{{ freeAccounts.length ? t('addMember') : t('noFree') }}</option>
-          <option v-for="account in freeAccounts" :key="account.id" :value="account.id">{{ account.name }}</option>
-        </select>
-        <input v-model="goalAreaId" :placeholder="t('goalPlaceholder')" :aria-label="t('goalPlaceholder')">
-        <button class="button primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
-        <button class="button" @click="startParty(false)">{{ t('hold') }}</button>
-        <button v-if="party.isActive" class="button danger" @click="stopParty">{{ t('stopParty') }}</button>
-      </div>
-      <div class="party-options">
-        <label>{{ t('retreatLabel') }} <input type="number" min="10" max="90" :value="party.tankRetreatPct" @change="updateRetreat"></label>
-        <label class="checkbox" :title="t('syncLabel')"><input type="checkbox" :checked="party.shouldSyncInGame" @change="toggleSync"> {{ t('syncLabel') }}</label>
-        <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
-      </div>
-    </article>
-  `,
+  render: renderPartyCard,
 };
 
 // ---- root app -----------------------------------------------------------------
@@ -469,6 +400,7 @@ const app = createApp({
       });
     },
   },
+  render: renderApp,
   async mounted() {
     this.setupAddAccountDialog();
     this.setupSettingsDialog();

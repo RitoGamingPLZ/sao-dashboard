@@ -5,6 +5,7 @@
 //
 //   node mock/mock-server.js            # listens on 127.0.0.1:8787
 //   MOCK_DAMAGE=900 node mock/...       # make monsters hit harder
+//   MOCK_EXP_MULTIPLIER=20 node mock/.. # level up faster (doesn't change damage, so the safety loop still keeps pace)
 
 import { createServer } from 'node:http';
 import { createHash, randomBytes } from 'node:crypto';
@@ -12,6 +13,9 @@ import { fileURLToPath } from 'node:url';
 
 const WEBSOCKET_GUID = '258EAFA5-E914-47DA-95CA-C5AB0DC85B11';
 const TICK_MS = 500;
+const EXP_MULTIPLIER = Number(process.env.MOCK_EXP_MULTIPLIER || 1);
+// Toy level curve — numbers mean nothing (see header comment).
+const expToLevelUp = (level) => level * 200;
 
 // ---- minimal WebSocket server framing (text frames only) -----------------
 
@@ -232,9 +236,16 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
       if (player.activity.type === 'hunting' || player.activity.type === 'boss') {
         const isBoss = player.activity.type === 'boss';
         player.hp -= Math.round(damagePerTick * (isBoss ? 2 : 1) * (0.6 + Math.random() * 0.8));
-        player.exp += isBoss ? 150 : 40;
+        player.exp += (isBoss ? 150 : 40) * EXP_MULTIPLIER;
         player.col += isBoss ? 200 : 60;
         if (player.hp <= 0) { player.hp = 0; player.dead = true; player.activity = { type: 'idle' }; }
+        while (!player.dead && player.exp >= expToLevelUp(player.level)) {
+          player.exp -= expToLevelUp(player.level);
+          player.level += 1;
+          player.attack += 6;
+          player.maxHp += 200;
+          player.hp = player.maxHp;
+        }
       } else {
         player.hp = Math.min(player.maxHp, player.hp + 120);
       }

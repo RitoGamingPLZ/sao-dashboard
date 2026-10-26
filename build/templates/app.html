@@ -1,0 +1,112 @@
+    <header class="top-bar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">⚔</span>
+        <h1>Snored Art Online · Command Deck</h1>
+        <span class="link-status" :data-state="linkState">{{ linkLabel }}</span>
+      </div>
+      <div class="top-actions">
+        <button class="button small" @click="toggleLang">{{ i18nState.lang === 'en' ? '中文' : 'EN' }}</button>
+        <button class="button primary" @click="openAddAccountDialog">{{ t('addAccount') }}</button>
+        <button class="button danger" title="Stop every party and every hunt" @click="pauseAll">{{ t('pauseAll') }}</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="overview" aria-label="Totals">
+        <div class="stat-tile" v-for="tile in overviewTiles" :key="tile.label" :class="tile.tone">
+          <span class="stat-label">{{ tile.label }}</span>
+          <span class="stat-value">{{ tile.value }}</span>
+        </div>
+      </section>
+
+      <div class="widgets-grid">
+        <section class="widget" aria-labelledby="parties-heading">
+          <div class="widget-head">
+            <h2 id="parties-heading">{{ t('parties') }} <span class="muted">({{ activePartiesCount }} {{ t('active') }})</span></h2>
+            <button class="button small" @click="isAddingParty = !isAddingParty">{{ t('newParty') }}</button>
+          </div>
+          <form v-if="isAddingParty" class="inline-form" @submit.prevent="createParty">
+            <input v-model="newPartyName" :placeholder="t('partyNamePlaceholder')" maxlength="32" :aria-label="t('partyNamePlaceholder')" autofocus>
+            <button class="button">{{ t('create') }}</button>
+          </form>
+          <p v-if="!snapshot.parties.length" class="empty">{{ t('noParties') }}</p>
+          <party-card v-for="party in snapshot.parties" :key="party.id" :party="party" :accounts="snapshot.accounts" :taken-ids="takenAccountIds" @open-profile="openProfile"></party-card>
+        </section>
+
+        <section class="widget" aria-labelledby="accounts-heading">
+          <div class="widget-head"><h2 id="accounts-heading">{{ t('characters') }} ({{ snapshot.accounts.length }})</h2></div>
+          <p v-if="!snapshot.accounts.length" class="empty">{{ t('noAccounts') }}</p>
+          <div v-else class="char-table-scroll">
+            <table class="char-table">
+              <thead>
+                <tr>
+                  <th></th><th>{{ t('name') }}</th><th>{{ t('lv') }}</th><th>{{ t('hp') }}</th><th>{{ t('exp') }}</th>
+                  <th>{{ t('atk') }}</th><th>{{ t('area') }}</th><th>{{ t('doing') }}</th><th>{{ t('gold') }}</th><th>{{ t('expMin') }}</th><th>{{ t('actions') }}</th>
+                </tr>
+              </thead>
+              <tbody>
+                <character-row v-for="account in snapshot.accounts" :key="account.id" :account="account" @open-profile="openProfile"></character-row>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="widget" aria-labelledby="log-heading">
+          <div class="widget-head">
+            <h2 id="log-heading">{{ t('eventLog') }}</h2>
+            <button class="button small" @click="isLogOpen = !isLogOpen">{{ isLogOpen ? t('hide') : t('show') }}</button>
+          </div>
+          <p v-if="!isLogOpen" class="muted hint">{{ logEvents.length }} {{ t('events') }}<template v-if="latestAlert"> · {{ latestAlert }}</template></p>
+          <template v-else>
+            <select v-model="logFilter" :aria-label="t('filterByAccount')">
+              <option value="">{{ t('allAccounts') }}</option>
+              <option v-for="account in snapshot.accounts" :key="account.id" :value="account.id">{{ account.name }}</option>
+            </select>
+            <ol class="event-log">
+              <li v-for="(event, i) in visibleLogEvents" :key="i" class="log-row" :class="'kind-' + event.kind">
+                <time>{{ formatTime(event.ts) }}</time>
+                <span class="log-account">{{ event.account }}</span>
+                <span class="log-detail">{{ event.source ? event.detail + ' (' + event.source + ')' : event.detail }}</span>
+              </li>
+            </ol>
+          </template>
+        </section>
+      </div>
+    </main>
+
+    <dialog ref="profileDialog" class="dialog">
+      <template v-if="profileAccount">
+        <h3>{{ profileAccount.name }} <span class="level">Lv {{ profileAccount.player?.level ?? '—' }}</span></h3>
+        <div class="stack">
+          <div>
+            <div class="section-title">{{ t('weaponGoal') }}</div>
+            <select :value="profileAccount.preferredWeapon || ''" @change="setWeapon(profileAccount, $event.target.value)">
+              <option value="">{{ t('none') }}</option>
+              <option v-for="weapon in weaponTypes" :key="weapon" :value="weapon">{{ weapon }}</option>
+            </select>
+          </div>
+          <div>
+            <div class="section-title">{{ t('skills') }}</div>
+            <ul v-if="profileAccount.player?.skills?.length" class="plain-list">
+              <li v-for="skill in profileAccount.player.skills" :key="skill">{{ skill }}</li>
+            </ul>
+            <p v-else class="muted">{{ t('noData') }}</p>
+          </div>
+          <div>
+            <div class="section-title">{{ t('equipment') }}</div>
+            <ul v-if="profileAccount.player?.equipment && Object.keys(profileAccount.player.equipment).length" class="plain-list">
+              <li v-for="(value, slot) in profileAccount.player.equipment" :key="slot"><b>{{ slot }}:</b> {{ value }}</li>
+            </ul>
+            <p v-else class="muted">{{ t('noData') }}</p>
+          </div>
+          <p v-if="profileAccount.haltReason" class="alert">{{ profileAccount.haltReason }} — <button class="button small" @click="accountAction(profileAccount, 'resume')">{{ t('resumeBot') }}</button></p>
+          <div class="dialog-actions" style="justify-content:flex-start; flex-wrap:wrap;">
+            <button type="button" class="button" @click="openSettings(profileAccount)">{{ t('healthPotions') }}</button>
+            <button type="button" class="button" @click="showPassword(profileAccount)">{{ t('showPassword') }}</button>
+            <button type="button" class="button" @click="rawCommand(profileAccount)">{{ t('rawCommand') }}</button>
+            <button type="button" class="button danger" @click="removeAccount(profileAccount)">{{ t('removeAccount') }}</button>
+          </div>
+        </div>
+      </template>
+      <div class="dialog-actions"><button type="button" class="button" @click="$refs.profileDialog.close()">{{ t('close') }}</button></div>
+    </dialog>

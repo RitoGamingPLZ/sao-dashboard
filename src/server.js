@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 import { timingSafeEqual } from 'node:crypto';
 import { AccountManager } from './accounts.js';
 import { loadProtocol } from './protocol.js';
-import { areaLevel, parseArea } from './game-rules.js';
+import { areaLevel, parseArea, safeAreaFor } from './game-rules.js';
 
 const PROJECT_ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const CONTENT_TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.svg': 'image/svg+xml' };
@@ -64,8 +64,24 @@ export function createDashboard({
     const busyError = { error: `Account busy: ${session.busyLabel}` };
     switch (body.action) {
       case 'startHunt':
+      case 'startBoss': {
+        if (session.busyLabel) return busyError;
+        if (!player) return { error: 'disconnected' };
+        // Dashboard only exposes Farm/Boss/Mission, not a manual "go to" —
+        // auto-travel to a safe area first if the character is in town.
+        if (parseArea(player.areaId)?.kind === 'town') {
+          const targetAreaId = safeAreaFor(player.level, body.action === 'startBoss' ? 'bossroom' : 'field');
+          if (!targetAreaId) return { error: 'noSafeArea' };
+          session.withLock(`go to ${targetAreaId}`, () => session.goTo(targetAreaId))
+            .then(async (result) => {
+              if (result?.error) return session.log('error', `Travel: ${result.error}`);
+              await session.sendCommand(session.commandOf(body.action), 'dashboard');
+            });
+          return { ok: true, isStarted: true };
+        }
+        return session.sendCommand(session.commandOf(body.action), 'dashboard');
+      }
       case 'stopHunt':
-      case 'startBoss':
       case 'stopBoss':
         if (session.busyLabel) return busyError;
         return session.sendCommand(session.commandOf(body.action), 'dashboard');

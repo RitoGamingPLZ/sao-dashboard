@@ -1,0 +1,23 @@
+    <tr :class="{ dead: account.player?.isDead }">
+      <slot name="leading"></slot>
+      <td><span class="status-dot" :data-state="statusDotState" :title="statusDotState"></span></td>
+      <td><button class="link-name" @click="$emit('open-profile', account.id)">{{ account.name }}</button></td>
+      <td>{{ account.player?.level ?? '—' }}</td>
+      <td class="cell-hp">
+        <span class="sb-track mini" :class="hpBarClass"><i :style="hpFillStyle"></i></span>
+        <span class="cell-sub">{{ account.player?.hpPct != null ? account.player.hpPct + '%' : '—' }}</span>
+      </td>
+      <td>{{ account.player?.expPct != null ? account.player.expPct + '%' : fmt(account.player?.exp) }}</td>
+      <td>{{ fmt(account.player?.attack) }}</td>
+      <td :title="account.player?.areaId || ''">{{ account.player?.areaId || '—' }}</td>
+      <td>{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></td>
+      <td>{{ fmtCompact(account.player?.gold) }}</td>
+      <td>{{ fmt(account.rates?.expPerMin) }}</td>
+      <td class="cell-actions">
+        <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!account.player" @click="toggleFarm">{{ t('farm') }}</button>
+        <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!account.player" @click="toggleBoss">{{ t('boss') }}</button>
+        <button class="button small" :disabled="!account.player" @click="doMission">{{ t('mission') }}</button>
+      </td>
+      <slot name="trailing"></slot>
+    </tr>
+    <tr v-if="account.alerts.length" class="alert-row"><td :colspan="11"><p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p></td></tr>

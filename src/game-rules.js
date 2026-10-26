@@ -92,3 +92,15 @@ export function totalPotions(inventory) {
 }
 
 export const currentFloorOf = (areaId) => parseArea(areaId)?.floor ?? null;
+
+// Highest-floor area of the given kind that's still safe for playerLevel
+// (spec §6/invariant 2: monster level must stay below the player's level).
+// Used to auto-travel out of town for Farm/Boss instead of exposing a
+// manual "go to" control.
+export function safeAreaFor(playerLevel, kind = 'field') {
+  for (let floor = TOP_FLOOR; floor >= 1; floor--) {
+    const areaId = `f${floor}-${kind}`;
+    if (areaLevel(areaId) < playerLevel) return areaId;
+  }
+  return null;
+}
