@@ -4,35 +4,22 @@
         <span class="badge" :class="{ on: party.isActive }">{{ party.isActive ? 'ACTIVE' : 'off' }}</span>
         <span class="party-status">{{ party.status }}</span>
       </div>
-      <div class="char-table-scroll">
-        <table class="char-table party-table">
-          <thead>
-            <tr>
-              <th>{{ t('leader') }}/{{ t('tank') }}</th><th></th><th>{{ t('name') }}</th><th>{{ t('lv') }}</th><th>{{ t('hp') }}</th>
-              <th>{{ t('exp') }}</th><th>{{ t('atk') }}</th><th>{{ t('area') }}</th><th>{{ t('doing') }}</th><th>{{ t('gold') }}</th>
-              <th>{{ t('expMin') }}</th><th>{{ t('actions') }}</th><th></th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr v-if="!members.length"><td colspan="13" class="empty">{{ t('noMembers') }}</td></tr>
-            <character-row v-for="member in members" :key="member.id" :account="member" @open-profile="(id) => $emit('open-profile', id)">
-              <template #leading>
-                <td class="cell-role">
-                  <span v-if="member.id === party.leaderId" class="badge role-leader">{{ t('leader') }}</span>
-                  <span v-if="member.id === party.tankId" class="badge role-tank">{{ t('tank') }}</span>
-                </td>
-              </template>
-              <template #trailing>
-                <td class="cell-party-controls">
-                  <button v-if="member.id !== party.leaderId" class="button small" @click="makeLeader(member.id)">{{ t('leader') }}</button>
-                  <button v-if="member.id === party.tankId" class="button small" @click="untank">{{ t('untank') }}</button>
-                  <button v-else class="button small" @click="makeTank(member.id)">{{ t('tank') }}</button>
-                  <button class="button small danger" @click="removeMember(member.id)">✕</button>
-                </td>
-              </template>
-            </character-row>
-          </tbody>
-        </table>
+      <div class="char-list">
+        <p v-if="!members.length" class="empty">{{ t('noMembers') }}</p>
+        <character-row v-for="member in members" :key="member.id" :account="member" @open-profile="(id) => $emit('open-profile', id)">
+          <template #leading>
+            <span v-if="member.id === party.leaderId" class="badge role-leader">{{ t('leader') }}</span>
+            <span v-if="member.id === party.tankId" class="badge role-tank">{{ t('tank') }}</span>
+          </template>
+          <template #trailing>
+            <span class="row-party-controls">
+              <button v-if="member.id !== party.leaderId" class="button small" @click="makeLeader(member.id)">{{ t('leader') }}</button>
+              <button v-if="member.id === party.tankId" class="button small" @click="untank">{{ t('untank') }}</button>
+              <button v-else class="button small" @click="makeTank(member.id)">{{ t('tank') }}</button>
+              <button class="button small danger" @click="removeMember(member.id)">✕</button>
+            </span>
+          </template>
+        </character-row>
       </div>
       <div class="party-controls">
         <select v-model="addMemberId" @change="addMember" :aria-label="t('addMember')">

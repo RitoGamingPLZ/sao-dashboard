@@ -34,20 +34,13 @@
         </section>
 
         <section class="widget" aria-labelledby="accounts-heading">
-          <div class="widget-head"><h2 id="accounts-heading">{{ t('characters') }} ({{ snapshot.accounts.length }})</h2></div>
+          <div class="widget-head">
+            <h2 id="accounts-heading">{{ t('characters') }} ({{ snapshot.accounts.length }})</h2>
+            <button class="button small" @click="openAddAccountDialog">{{ t('addAccount') }}</button>
+          </div>
           <p v-if="!snapshot.accounts.length" class="empty">{{ t('noAccounts') }}</p>
-          <div v-else class="char-table-scroll">
-            <table class="char-table">
-              <thead>
-                <tr>
-                  <th></th><th>{{ t('name') }}</th><th>{{ t('lv') }}</th><th>{{ t('hp') }}</th><th>{{ t('exp') }}</th>
-                  <th>{{ t('atk') }}</th><th>{{ t('area') }}</th><th>{{ t('doing') }}</th><th>{{ t('gold') }}</th><th>{{ t('expMin') }}</th><th>{{ t('actions') }}</th>
-                </tr>
-              </thead>
-              <tbody>
-                <character-row v-for="account in snapshot.accounts" :key="account.id" :account="account" @open-profile="openProfile"></character-row>
-              </tbody>
-            </table>
+          <div v-else class="char-list">
+            <character-row v-for="account in snapshot.accounts" :key="account.id" :account="account" @open-profile="openProfile"></character-row>
           </div>
         </section>
 
