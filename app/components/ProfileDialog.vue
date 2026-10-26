@@ -1,6 +1,6 @@
 <script setup lang="ts">
-// Character profile: skills, gear, weapon goal, and account management.
-import { WEAPON_TYPES } from '#shared/game-rules'
+// Character profile: skills, gear, weapon goal, default potion, and account management.
+import { ITEMS, WEAPON_TYPES, shopStock } from '#shared/game-rules'
 import type { AccountSummary } from '#shared/types'
 
 const emit = defineEmits<{ 'open-settings': [account: AccountSummary] }>()
@@ -10,7 +10,7 @@ const dialog = ref<HTMLDialogElement>()
 const accountId = ref<string | null>(null)
 const account = computed(() => accountById(accountId.value))
 const equipment = computed(() => Object.entries(account.value?.player?.equipment ?? {}))
-const canReconnect = computed(() => account.value?.alerts.some((text) => text.includes('somewhere else') || text.includes('rejected')))
+const canReconnect = computed(() => account.value?.alerts.some((alert) => alert.code.startsWith('ended_')))
 
 function open(id: string) {
   accountId.value = id
@@ -20,6 +20,22 @@ defineExpose({ open })
 
 const act = (action: string) => accountAction(account.value!.id, action)
 const setWeapon = (weapon: string) => runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/weapon`, { weapon: weapon || null }))
+
+// Default potion: what the game auto-drinks. Choices are the potions sold on unlocked floors.
+const potion = computed(() => account.value?.player?.consumables.autoDrink)
+const potionChoices = computed(() => {
+  const unlockedFloors = Array.from({ length: account.value?.player?.frontierFloor ?? 1 }, (_, i) => i + 1)
+  const itemIds = new Set([...unlockedFloors.flatMap(shopStock), potion.value?.itemId ?? ''])
+  return [...itemIds].filter((itemId) => ITEMS[itemId]?.kind === 'potion')
+})
+const setPotion = (itemId: string) =>
+  accountAction(account.value!.id, 'raw', { command: { type: 'updateSettings', settings: { potionItem: itemId } } })
+// "Keep N": restock back up to N when below half of it.
+async function setKeepCount(event: Event) {
+  const keepCount = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value)))
+  await runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/safety`,
+    { safety: { restock: { autoDrinkTarget: keepCount, autoDrinkMin: Math.ceil(keepCount / 2) } } }), t('keepingPotions', { count: keepCount }))
+}
 
 async function showPassword() {
   const result = await runAndReport(() => callApi<{ password: string }>('POST', `/api/accounts/${account.value!.id}/password`, {}))
@@ -51,6 +67,17 @@ async function removeAccount() {
             <option value="">{{ t('none') }}</option>
             <option v-for="weapon in WEAPON_TYPES" :key="weapon" :value="weapon">{{ weapon }}</option>
           </select>
+        </div>
+        <div v-if="account.player">
+          <div class="section-title">{{ t('autoDrinkItem') }}</div>
+          <p class="hint">{{ t('potionHint') }}</p>
+          <div class="row-potion">
+            <select :value="potion?.itemId" :aria-label="t('potion')" @change="setPotion(($event.target as HTMLSelectElement).value)">
+              <option v-for="itemId in potionChoices" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
+            </select>
+            <span>×{{ potion?.quantity ?? 0 }}</span>
+            <label>{{ t('keep') }} <input type="number" min="0" :value="account.safety.restock.autoDrinkTarget" @change="setKeepCount"></label>
+          </div>
         </div>
         <div>
           <div class="section-title">{{ t('skills') }}</div>

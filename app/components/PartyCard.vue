@@ -58,28 +58,33 @@ function deleteParty() {
     <div class="card-head">
       <h3>{{ party.name }}</h3>
       <span class="badge" :class="{ on: party.isActive }">{{ party.isActive ? 'ACTIVE' : 'off' }}</span>
-      <button class="button small primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
-      <button class="button small" @click="startParty(false)">{{ t('hold') }}</button>
-      <button v-if="party.isActive" class="button small danger" @click="stopParty">{{ t('stopParty') }}</button>
       <span class="party-status">{{ party.status }}</span>
-      <div class="combo">
-        <input
-          v-model="addMemberQuery" type="text" :placeholder="t('addMember')" :aria-label="t('addMember')"
-          @focus="isAddMemberOpen = true" @blur="isAddMemberOpen = false" @keydown.esc="isAddMemberOpen = false"
-        >
-        <ul v-if="isAddMemberOpen" class="combo-list">
-          <li v-for="account in filteredFreeAccounts" :key="account.id" class="combo-option" @mousedown.prevent @click="selectMember(account.id)">{{ account.name }}</li>
-          <li v-if="!filteredFreeAccounts.length" class="muted">{{ t('noFree') }}</li>
-        </ul>
-      </div>
+      <span class="head-actions">
+        <button class="button small" @click="settingsDialog?.showModal()">{{ t('settings') }}</button>
+        <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
+      </span>
+    </div>
+    <!-- Where to go, and what to do there, on one row. -->
+    <div class="party-goal">
       <select v-model.number="goalFloor" :aria-label="t('goalFloor')">
         <option v-for="floor in floorOptions" :key="floor" :value="floor">F{{ floor }}</option>
       </select>
-      <select v-model="goalAreaId" :aria-label="t('goalAreaKind')">
+      <select v-model="goalAreaId" class="goal-area" :aria-label="t('goalAreaKind')">
         <option v-for="areaId in goalAreaOptions" :key="areaId" :value="areaId">{{ areaLabel(areaId) }}</option>
       </select>
-      <button class="button small" @click="settingsDialog?.showModal()">{{ t('settings') }}</button>
-      <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
+      <button class="button small primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
+      <button class="button small" @click="startParty(false)">{{ t('hold') }}</button>
+      <button v-if="party.isActive" class="button small danger" @click="stopParty">{{ t('stopParty') }}</button>
+    </div>
+    <div class="combo">
+      <input
+        v-model="addMemberQuery" type="text" :placeholder="t('addMember')" :aria-label="t('addMember')"
+        @focus="isAddMemberOpen = true" @blur="isAddMemberOpen = false" @keydown.esc="isAddMemberOpen = false"
+      >
+      <ul v-if="isAddMemberOpen" class="combo-list">
+        <li v-for="account in filteredFreeAccounts" :key="account.id" class="combo-option" @mousedown.prevent @click="selectMember(account.id)">{{ account.name }}</li>
+        <li v-if="!filteredFreeAccounts.length" class="muted">{{ t('noFree') }}</li>
+      </ul>
     </div>
 
     <dialog ref="settingsDialog" class="dialog">
@@ -109,7 +114,7 @@ function deleteParty() {
             <button v-if="member.id !== party.leaderId" class="button small" @click="update({ leaderId: member.id })">{{ t('leader') }}</button>
             <button v-if="member.id === party.tankId" class="button small" @click="update({ tankId: null })">{{ t('untank') }}</button>
             <button v-else class="button small" @click="update({ tankId: member.id })">{{ t('tank') }}</button>
-            <button class="button small danger" @click="removeMember(member.id)">✕</button>
+            <button class="button small danger icon-button" :aria-label="`Remove ${member.name}`" @click="removeMember(member.id)">✕</button>
           </span>
         </template>
       </CharacterRow>

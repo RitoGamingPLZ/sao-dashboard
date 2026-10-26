@@ -110,7 +110,7 @@ export function decideSafety(player: GamePlayer | null, hpPct: number | null, sa
 }
 
 export interface Purchase { itemId: string, quantity: number, floor: number, cost: number }
-export type RestockPlan = Purchase[] | { blockedReason: string }
+export type RestockPlan = Purchase[] | { blockedReason: string, unaffordable: string[], budget: number }
 
 // What to buy, or { blockedReason } when gold is too short for what's needed.
 export function planRestock(player: GamePlayer | null, safety: Safety, frontier: number): RestockPlan {
@@ -145,6 +145,6 @@ export function planRestock(player: GamePlayer | null, safety: Safety, frontier:
     purchases.push({ itemId: shortage.itemId, quantity, floor: shopFloor, cost: quantity * price })
     totalCost += quantity * price
   }
-  if (!purchases.length && unaffordable.length) return { blockedReason: `Not enough gold for ${unaffordable.join(', ')} (budget ${budget})` }
+  if (!purchases.length && unaffordable.length) return { blockedReason: `Not enough gold for ${unaffordable.join(', ')} (budget ${budget})`, unaffordable, budget }
   return purchases
 }

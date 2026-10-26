@@ -84,11 +84,14 @@ export interface AccountSummary {
   partyRole: PartyRole | null
   preferredWeapon: string | null
   autoFarm: AutoFarm | null
-  alerts: string[]
+  alerts: Alert[]
   safety: Safety
   player: PlayerSummary | null
   rates: { goldPerHour: number | null, expPerMin: number | null }
 }
+
+// An alert the UI words in its own language: `alert_<code>` with {params}; `text` is the English fallback.
+export interface Alert { code: string, params?: Record<string, string | number>, text: string }
 
 // Keep farming the best safe area until untilLevel (null = no limit).
 export interface AutoFarm { untilLevel: number | null }

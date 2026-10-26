@@ -4,7 +4,7 @@
 
 import { EventEmitter } from 'node:events'
 import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS } from '#shared/game-rules'
-import type { AccountSummary, AutoFarm, LogChoice, LogEvent, PartyRole, Safety } from '#shared/types'
+import type { AccountSummary, Alert, AutoFarm, LogChoice, LogEvent, PartyRole, Safety } from '#shared/types'
 import type { SaoProtocol, CommandKey } from '../sao/protocol'
 import type { CommandResult, GameCommand, GameLogEntry, GameSocket, SaoConnector } from '../sao/connector'
 import { decideSafety, planRestock, DEFAULT_SAFETY } from './safety'
@@ -53,7 +53,7 @@ export class Session extends EventEmitter<SessionEvents> {
   readonly client: GameSocket
   readonly protocol: SaoProtocol
   private timing: SessionTiming
-  private alertsByKey = new Map<string, { ts: number, text: string }>()
+  private alertsByKey = new Map<string, Alert>()
   private criticalTimes: number[] = []
   private lastSafetyActionAt = 0
   private isRunningSafety = false
@@ -97,10 +97,10 @@ export class Session extends EventEmitter<SessionEvents> {
     client.on('close', (closeInfo) => {
       if (client.endReason) return
       this.log('alert', `Socket closed (${closeInfo.code ?? '?'})`)
-      this.raiseAlert('socket', 'Disconnected — reconnecting')
+      this.raiseAlert('socket', 'disconnected', 'Disconnected — reconnecting')
     })
     client.on('connectError', (error) => this.log('error', `Can't open the socket: ${error.message}`))
-    client.on('queued', ({ pos }) => this.raiseAlert('queue', `Server full — queued${pos ? ` (#${pos})` : ''}`))
+    client.on('queued', ({ pos }) => this.raiseAlert('queue', 'queued', `Server full — queued${pos ? ` (#${pos})` : ''}`, { pos: pos ?? '?' }))
     client.on('ended', async (reason) => {
       this.clearAlert('socket')
       if (reason === 'unauthorized' && relink) {
@@ -119,7 +119,8 @@ export class Session extends EventEmitter<SessionEvents> {
       const canReconnect = reason === 'replaced' || reason === 'idleKick' || reason === 'kicked'
       if (reason === 'replaced') { this.isOnHold = true; this.emit('settingsChanged') }
       this.log('error', text, canReconnect ? { choices: [{ label: 'Reconnect', request: { action: 'reconnect' } }] } : undefined)
-      this.raiseAlert('ended', text)
+      const knownReasons = ['unauthorized', 'replaced', 'kicked', 'banned', 'idleKick', 'dead']
+      this.raiseAlert('ended', knownReasons.includes(reason) ? `ended_${reason}` : 'ended_other', text, { reason })
     })
     let previousLevel: number | null = null
     let wasFallen = false
@@ -169,7 +170,7 @@ export class Session extends EventEmitter<SessionEvents> {
   }
 
   start() {
-    if (this.isOnHold) this.raiseAlert('ended', 'Logged in somewhere else — press Reconnect to take over')
+    if (this.isOnHold) this.raiseAlert('ended', 'ended_replaced', 'Logged in somewhere else — press Reconnect to take over')
     else this.client.connect()
     const logErrors = (error: Error) => this.log('error', error.message)
     this.timers = [
@@ -202,7 +203,7 @@ export class Session extends EventEmitter<SessionEvents> {
     this.emit('event', event)
   }
 
-  raiseAlert(key: string, text: string) { this.alertsByKey.set(key, { ts: Date.now(), text }) }
+  raiseAlert(key: string, code: string, text: string, params?: Alert['params']) { this.alertsByKey.set(key, { code, text, ...(params ? { params } : {}) }) }
   clearAlert(key: string) { this.alertsByKey.delete(key) }
 
   // ---- derived state -----------------------------------------------------
@@ -291,10 +292,10 @@ export class Session extends EventEmitter<SessionEvents> {
   async runSafetyTick() {
     if (!this.isConnected || this.isRunningSafety) return
     const player = this.player
-    if (player?.dead) { this.raiseAlert('dead', 'Character is dead!'); return }
+    if (player?.dead) { this.raiseAlert('dead', 'dead', 'Character is dead!'); return }
     this.clearAlert('dead')
     const hpPct = this.hpPct()
-    if (hpPct != null && hpPct < 15 && isFightingActivity(this.activityType)) this.raiseAlert('nearDeath', `HP ${hpPct}%`)
+    if (hpPct != null && hpPct < 15 && isFightingActivity(this.activityType)) this.raiseAlert('nearDeath', 'nearDeath', `HP ${hpPct}%`, { hp: hpPct })
     else this.clearAlert('nearDeath')
     if (Date.now() - this.lastSafetyActionAt < SAFETY_COOLDOWN_MS) return
     const safetyAction = decideSafety(player, hpPct, this.safety)
@@ -314,7 +315,7 @@ export class Session extends EventEmitter<SessionEvents> {
     this.criticalTimes.push(currentTime)
     if (this.criticalTimes.length < this.safety.haltAfterCriticalCount || this.haltReason) return
     this.haltReason = `${this.criticalTimes.length} close calls in 5 min (last: ${reason})`
-    this.raiseAlert('halted', `Bot stopped itself: ${this.haltReason}`)
+    this.raiseAlert('halted', 'halted', `Bot stopped itself: ${this.haltReason}`, { count: this.criticalTimes.length })
     this.log('alert', `Halted: ${this.haltReason}`, { choices: [{ label: 'Resume', request: { action: 'resume' } }] })
     this.emit('halted', this.haltReason)
     if (this.isHunting) this.command('stopHunt', {}, 'safety')
@@ -347,9 +348,9 @@ export class Session extends EventEmitter<SessionEvents> {
 
   private async checkRestock() {
     const plan = this.restockPlan()
-    if ('blockedReason' in plan) { this.raiseAlert('stock', plan.blockedReason); return }
+    if ('blockedReason' in plan) { this.raiseAlert('stock', 'stockBlocked', plan.blockedReason, { items: plan.unaffordable.join(','), budget: plan.budget }); return }
     if (!plan.length) { this.clearAlert('stock'); return }
-    this.raiseAlert('stock', `Low: ${plan.map((purchase) => purchase.itemId).join(', ')}`)
+    this.raiseAlert('stock', 'stockLow', `Low: ${plan.map((purchase) => purchase.itemId).join(', ')}`, { items: plan.map((purchase) => purchase.itemId).join(',') })
     // Don't walk to town for one potion at a time: wait for a batch, unless we're out.
     const plannedCount = plan.reduce((sum, purchase) => sum + purchase.quantity, 0)
     const isWorthTheTrip = plannedCount >= 5 || totalPotions(this.player?.inventory) === 0
@@ -388,7 +389,7 @@ export class Session extends EventEmitter<SessionEvents> {
       return
     }
     const bestAreaId = safeAreaFor(player.level, 'field', frontierFloor(player.clearedFloors))
-    if (!bestAreaId) { this.raiseAlert('farm', 'No safe area to farm at this level'); return }
+    if (!bestAreaId) { this.raiseAlert('farm', 'noFarmArea', 'No safe area to farm at this level'); return }
     this.clearAlert('farm')
     const isInGoodArea = parseArea(player.areaId)?.kind === 'field' && isAreaSafeFor(player.areaId, player.level)
       && (areaLevel(player.areaId) ?? 0) >= (areaLevel(bestAreaId) ?? 0)
@@ -489,7 +490,7 @@ export class Session extends EventEmitter<SessionEvents> {
       partyRole: this.partyRole,
       preferredWeapon: this.preferredWeapon,
       autoFarm: this.autoFarm,
-      alerts: [...this.alertsByKey.values()].map((alert) => alert.text),
+      alerts: [...this.alertsByKey.values()],
       safety: this.safety,
       player: player && {
         name: player.name,

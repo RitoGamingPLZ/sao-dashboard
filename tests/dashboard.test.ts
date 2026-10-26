@@ -140,7 +140,7 @@ describe('against the practice server', () => {
   test('an expired token without a saved password stops and alerts', async () => {
     const dps = sessionNamed('dps_two')
     mock.expireToken('dps_two')
-    expect(await waitUntil(() => dps.summary().alerts.some((text) => /Login rejected/.test(text)), 10000)).toBe(true)
+    expect(await waitUntil(() => dps.summary().alerts.some((alert) => alert.code === 'ended_unauthorized' && /Login rejected/.test(alert.text)), 10000)).toBe(true)
     expect(dps.client.endReason).toBe('unauthorized')
   })
 

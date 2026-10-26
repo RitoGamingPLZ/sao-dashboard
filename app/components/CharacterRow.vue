@@ -1,11 +1,10 @@
 <script setup lang="ts">
 // One compact card per character; shared by the Characters list and party member lists.
-import { ITEMS, shopStock } from '#shared/game-rules'
 import type { AccountSummary } from '#shared/types'
 
 const props = withDefaults(defineProps<{ account: AccountSummary, showActions?: boolean }>(), { showActions: true })
 defineEmits<{ 'open-profile': [accountId: string] }>()
-const { t } = useI18n()
+const { t, alertText } = useI18n()
 
 const player = computed(() => props.account.player)
 const mode = computed(() => (player.value?.activity === 'hunting' ? 'farm' : player.value?.activity === 'boss' ? 'boss' : 'idle'))
@@ -33,21 +32,7 @@ const toggleBoss = () => accountAction(props.account.id, mode.value === 'boss' ?
 const doMission = () => accountAction(props.account.id, 'completeMission')
 const reconnect = () => accountAction(props.account.id, 'reconnect')
 
-// Default potion: what the game auto-drinks. Choices are the potions sold on unlocked floors.
 const potion = computed(() => player.value?.consumables.autoDrink)
-const potionChoices = computed(() => {
-  const unlockedFloors = Array.from({ length: player.value?.frontierFloor ?? 1 }, (_, i) => i + 1)
-  const itemIds = new Set([...unlockedFloors.flatMap(shopStock), potion.value?.itemId ?? ''])
-  return [...itemIds].filter((itemId) => ITEMS[itemId]?.kind === 'potion')
-})
-const setPotion = (itemId: string) =>
-  accountAction(props.account.id, 'raw', { command: { type: 'updateSettings', settings: { potionItem: itemId } } })
-// "Keep N": restock back up to N when below half of it.
-async function setKeepCount(event: Event) {
-  const keepCount = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value)))
-  await runAndReport(() => callApi('PUT', `/api/accounts/${props.account.id}/safety`,
-    { safety: { restock: { autoDrinkTarget: keepCount, autoDrinkMin: Math.ceil(keepCount / 2) } } }), `Keeping ${keepCount} potions`)
-}
 </script>
 
 <template>
@@ -79,15 +64,13 @@ async function setKeepCount(event: Event) {
     </div>
     <div v-if="player" class="row-potion">
       <b>{{ t('potion') }}</b>
-      <select :value="potion?.itemId" :aria-label="`${t('potion')} ${account.name}`" @change="setPotion(($event.target as HTMLSelectElement).value)">
-        <option v-for="itemId in potionChoices" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
-      </select>
+      <span>{{ potion?.name ?? potion?.itemId ?? '—' }}</span>
       <span :class="{ alert: (potion?.quantity ?? 0) < account.safety.restock.autoDrinkMin }">×{{ potion?.quantity ?? 0 }}</span>
-      <label>{{ t('keep') }} <input type="number" min="0" :value="account.safety.restock.autoDrinkTarget" @change="setKeepCount"></label>
+      <span class="muted">/ {{ t('keep') }} {{ account.safety.restock.autoDrinkTarget }}</span>
     </div>
     <div class="row-bottom">
       <div class="row-alerts">
-        <p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p>
+        <p v-for="alert in account.alerts" :key="alert.code" class="alert">{{ alertText(alert) }}</p>
       </div>
       <div class="row-actions">
         <template v-if="showActions">
