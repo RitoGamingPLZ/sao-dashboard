@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// The whole dashboard is one page: totals, parties, characters, event log.
+// The whole dashboard is one page: totals, parties, characters, and the event log docked at the bottom.
 import AddAccountDialog from '~/components/AddAccountDialog.vue'
 import CreatePartyDialog from '~/components/CreatePartyDialog.vue'
 import ProfileDialog from '~/components/ProfileDialog.vue'
@@ -42,10 +42,9 @@ onMounted(connect)
             <CharacterRow v-for="account in accounts" :key="account.id" :account="account" @open-profile="openProfile" />
           </div>
         </section>
-
-        <EventLog />
       </div>
     </main>
+    <EventLog />
 
     <AddAccountDialog ref="addAccountDialog" />
     <CreatePartyDialog ref="createPartyDialog" />

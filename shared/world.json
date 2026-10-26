@@ -1,0 +1,3893 @@
+{
+ "source": "dev-sao.potato-proxy.com client (main-1nL5gxyG.js), extracted 2026-10-26",
+ "areas": {
+  "f1-town": {
+   "floor": 1,
+   "kind": "town",
+   "name": "Town of Beanings",
+   "links": [
+    "f1-west"
+   ],
+   "shop": [
+    "potion-1",
+    "instant-1",
+    "crystal-teleport",
+    "weapon-t1",
+    "rapier-t1",
+    "katana-t1",
+    "axe-t1",
+    "mace-t1",
+    "armor-t1",
+    "mid-t1",
+    "light-t1",
+    "head-t1",
+    "feet-t1",
+    "shield-t1"
+   ]
+  },
+  "f1-west": {
+   "floor": 1,
+   "kind": "field",
+   "name": "Waist Field",
+   "links": [
+    "f1-town",
+    "f1-horunka",
+    "f1-outskirts",
+    "f1-labyrinth"
+   ],
+   "minLevel": 1,
+   "maxLevel": 2
+  },
+  "f1-horunka": {
+   "floor": 1,
+   "kind": "field",
+   "name": "Hornka Woods",
+   "links": [
+    "f1-west",
+    "f1-depths"
+   ],
+   "minLevel": 3,
+   "maxLevel": 4
+  },
+  "f1-outskirts": {
+   "floor": 1,
+   "kind": "field",
+   "name": "Waist Field Outskirts",
+   "links": [
+    "f1-west"
+   ],
+   "minLevel": 1,
+   "maxLevel": 2
+  },
+  "f1-secret": {
+   "floor": 1,
+   "kind": "field",
+   "name": "Hidden Hornka Woods",
+   "links": [
+    "f1-depths"
+   ],
+   "minLevel": 10,
+   "maxLevel": 12,
+   "aggressive": true,
+   "secret": true
+  },
+  "f1-depths": {
+   "floor": 1,
+   "kind": "field",
+   "name": "Hornka Woods Depths",
+   "links": [
+    "f1-horunka",
+    "f1-secret"
+   ],
+   "minLevel": 3,
+   "maxLevel": 4
+  },
+  "f1-labyrinth": {
+   "floor": 1,
+   "kind": "labyrinth",
+   "name": "Floor 1 Laby-rinse",
+   "links": [
+    "f1-west",
+    "f1-bossroom"
+   ],
+   "minLevel": 5,
+   "maxLevel": 6,
+   "aggressive": true
+  },
+  "f1-bossroom": {
+   "floor": 1,
+   "kind": "bossroom",
+   "name": "Floor 1 Boss Room",
+   "links": [
+    "f1-labyrinth",
+    "f2-town"
+   ],
+   "maxLevel": 7
+  },
+  "f2-town": {
+   "floor": 2,
+   "kind": "town",
+   "name": "Ur-bus",
+   "links": [
+    "f1-bossroom",
+    "f2-plateau"
+   ],
+   "shop": [
+    "potion-1",
+    "instant-1",
+    "crystal-teleport"
+   ]
+  },
+  "f2-plateau": {
+   "floor": 2,
+   "kind": "field",
+   "name": "Ur-bus Plateau",
+   "links": [
+    "f2-town",
+    "f2-outskirts",
+    "f2-depths",
+    "f2-labyrinth"
+   ],
+   "minLevel": 2,
+   "maxLevel": 3
+  },
+  "f2-outskirts": {
+   "floor": 2,
+   "kind": "field",
+   "name": "Ur-bus Plateau Outskirts",
+   "links": [
+    "f2-plateau"
+   ],
+   "minLevel": 2,
+   "maxLevel": 3
+  },
+  "f2-secret": {
+   "floor": 2,
+   "kind": "field",
+   "name": "Hidden Ur-bus Plateau",
+   "links": [
+    "f2-depths"
+   ],
+   "minLevel": 11,
+   "maxLevel": 13,
+   "aggressive": true,
+   "secret": true
+  },
+  "f2-depths": {
+   "floor": 2,
+   "kind": "field",
+   "name": "Ur-bus Plateau Depths",
+   "links": [
+    "f2-plateau",
+    "f2-secret"
+   ],
+   "minLevel": 4,
+   "maxLevel": 5
+  },
+  "f2-labyrinth": {
+   "floor": 2,
+   "kind": "labyrinth",
+   "name": "Floor 2 Laby-rinse",
+   "links": [
+    "f2-plateau",
+    "f2-bossroom"
+   ],
+   "minLevel": 5,
+   "maxLevel": 6,
+   "aggressive": true
+  },
+  "f2-bossroom": {
+   "floor": 2,
+   "kind": "bossroom",
+   "name": "Floor 2 Boss Room",
+   "links": [
+    "f2-labyrinth",
+    "f3-town"
+   ],
+   "maxLevel": 8
+  },
+  "f3-town": {
+   "floor": 3,
+   "kind": "town",
+   "name": "Zoomfut",
+   "links": [
+    "f2-bossroom",
+    "f3-mist-forest"
+   ],
+   "shop": [
+    "potion-1",
+    "instant-1",
+    "crystal-teleport",
+    "mid-t1",
+    "head-t1"
+   ]
+  },
+  "f3-mist-forest": {
+   "floor": 3,
+   "kind": "field",
+   "name": "Missed Forest",
+   "links": [
+    "f3-town",
+    "f3-outskirts",
+    "f3-depths",
+    "f3-labyrinth"
+   ],
+   "minLevel": 4,
+   "maxLevel": 6
+  },
+  "f3-outskirts": {
+   "floor": 3,
+   "kind": "field",
+   "name": "Missed Forest Outskirts",
+   "links": [
+    "f3-mist-forest"
+   ],
+   "minLevel": 4,
+   "maxLevel": 5
+  },
+  "f3-secret": {
+   "floor": 3,
+   "kind": "field",
+   "name": "Hidden Missed Forest",
+   "links": [
+    "f3-depths"
+   ],
+   "minLevel": 13,
+   "maxLevel": 15,
+   "aggressive": true,
+   "secret": true
+  },
+  "f3-depths": {
+   "floor": 3,
+   "kind": "field",
+   "name": "Missed Forest Depths",
+   "links": [
+    "f3-mist-forest",
+    "f3-secret"
+   ],
+   "minLevel": 6,
+   "maxLevel": 7
+  },
+  "f3-labyrinth": {
+   "floor": 3,
+   "kind": "labyrinth",
+   "name": "Floor 3 Laby-rinse",
+   "links": [
+    "f3-mist-forest",
+    "f3-bossroom"
+   ],
+   "minLevel": 7,
+   "maxLevel": 8,
+   "aggressive": true
+  },
+  "f3-bossroom": {
+   "floor": 3,
+   "kind": "bossroom",
+   "name": "Floor 3 Boss Room",
+   "links": [
+    "f3-labyrinth",
+    "f4-town"
+   ],
+   "maxLevel": 10
+  },
+  "f4-town": {
+   "floor": 4,
+   "kind": "town",
+   "name": "Rovia-ble",
+   "links": [
+    "f3-bossroom",
+    "f4-field"
+   ],
+   "shop": [
+    "potion-1",
+    "instant-1",
+    "crystal-teleport"
+   ]
+  },
+  "f4-field": {
+   "floor": 4,
+   "kind": "field",
+   "name": "Floor 4 Canal Bank",
+   "links": [
+    "f4-town",
+    "f4-wilds",
+    "f4-outskirts",
+    "f4-labyrinth"
+   ],
+   "minLevel": 5,
+   "maxLevel": 6
+  },
+  "f4-wilds": {
+   "floor": 4,
+   "kind": "field",
+   "name": "Floor 4 Reed Marsh",
+   "links": [
+    "f4-field",
+    "f4-depths"
+   ],
+   "minLevel": 6,
+   "maxLevel": 9
+  },
+  "f4-outskirts": {
+   "floor": 4,
+   "kind": "field",
+   "name": "Floor 4 Canal Bank Outskirts",
+   "links": [
+    "f4-field"
+   ],
+   "minLevel": 5,
+   "maxLevel": 6
+  },
+  "f4-secret": {
+   "floor": 4,
+   "kind": "field",
+   "name": "Hidden Floor 4 Reed Marsh",
+   "links": [
+    "f4-depths"
+   ],
+   "minLevel": 14,
+   "maxLevel": 16,
+   "aggressive": true,
+   "secret": true
+  },
+  "f4-depths": {
+   "floor": 4,
+   "kind": "field",
+   "name": "Floor 4 Reed Marsh Depths",
+   "links": [
+    "f4-wilds",
+    "f4-secret"
+   ],
+   "minLevel": 7,
+   "maxLevel": 8
+  },
+  "f4-labyrinth": {
+   "floor": 4,
+   "kind": "labyrinth",
+   "name": "Floor 4 Laby-rinse",
+   "links": [
+    "f4-field",
+    "f4-bossroom"
+   ],
+   "minLevel": 8,
+   "maxLevel": 9,
+   "aggressive": true
+  },
+  "f4-bossroom": {
+   "floor": 4,
+   "kind": "bossroom",
+   "name": "Floor 4 Boss Room",
+   "links": [
+    "f4-labyrinth",
+    "f5-town"
+   ],
+   "maxLevel": 11
+  },
+  "f5-town": {
+   "floor": 5,
+   "kind": "town",
+   "name": "Calorie-uin",
+   "links": [
+    "f4-bossroom",
+    "f5-field"
+   ],
+   "shop": [
+    "potion-1",
+    "potion-1b",
+    "instant-1",
+    "crystal-teleport",
+    "weapon-t5",
+    "rapier-t5",
+    "katana-t5",
+    "axe-t5",
+    "mace-t5",
+    "armor-t5",
+    "light-t5",
+    "head-t5"
+   ]
+  },
+  "f5-field": {
+   "floor": 5,
+   "kind": "field",
+   "name": "Floor 5 Ruined Road",
+   "links": [
+    "f5-town",
+    "f5-wilds",
+    "f5-outskirts",
+    "f5-labyrinth"
+   ],
+   "minLevel": 6,
+   "maxLevel": 7
+  },
+  "f5-wilds": {
+   "floor": 5,
+   "kind": "field",
+   "name": "Floor 5 Dusty Ruins",
+   "links": [
+    "f5-field",
+    "f5-depths"
+   ],
+   "minLevel": 7,
+   "maxLevel": 10
+  },
+  "f5-outskirts": {
+   "floor": 5,
+   "kind": "field",
+   "name": "Floor 5 Ruined Road Outskirts",
+   "links": [
+    "f5-field"
+   ],
+   "minLevel": 6,
+   "maxLevel": 7
+  },
+  "f5-secret": {
+   "floor": 5,
+   "kind": "field",
+   "name": "Hidden Floor 5 Dusty Ruins",
+   "links": [
+    "f5-depths"
+   ],
+   "minLevel": 15,
+   "maxLevel": 17,
+   "aggressive": true,
+   "secret": true
+  },
+  "f5-depths": {
+   "floor": 5,
+   "kind": "field",
+   "name": "Floor 5 Dusty Ruins Depths",
+   "links": [
+    "f5-wilds",
+    "f5-secret"
+   ],
+   "minLevel": 8,
+   "maxLevel": 9
+  },
+  "f5-labyrinth": {
+   "floor": 5,
+   "kind": "labyrinth",
+   "name": "Floor 5 Laby-rinse",
+   "links": [
+    "f5-field",
+    "f5-bossroom"
+   ],
+   "minLevel": 9,
+   "maxLevel": 10,
+   "aggressive": true
+  },
+  "f5-bossroom": {
+   "floor": 5,
+   "kind": "bossroom",
+   "name": "Floor 5 Boss Room",
+   "links": [
+    "f5-labyrinth",
+    "f6-town"
+   ],
+   "maxLevel": 12
+  },
+  "f6-town": {
+   "floor": 6,
+   "kind": "town",
+   "name": "Stack-ion",
+   "links": [
+    "f5-bossroom",
+    "f6-field"
+   ],
+   "shop": [
+    "potion-1",
+    "potion-1b",
+    "instant-1",
+    "crystal-teleport",
+    "feet-t5",
+    "shield-t5"
+   ]
+  },
+  "f6-field": {
+   "floor": 6,
+   "kind": "field",
+   "name": "Floor 6 Cube Field",
+   "links": [
+    "f6-town",
+    "f6-wilds",
+    "f6-outskirts",
+    "f6-labyrinth"
+   ],
+   "minLevel": 7,
+   "maxLevel": 8
+  },
+  "f6-wilds": {
+   "floor": 6,
+   "kind": "field",
+   "name": "Floor 6 Clockwork Garden",
+   "links": [
+    "f6-field",
+    "f6-depths"
+   ],
+   "minLevel": 8,
+   "maxLevel": 11
+  },
+  "f6-outskirts": {
+   "floor": 6,
+   "kind": "field",
+   "name": "Floor 6 Cube Field Outskirts",
+   "links": [
+    "f6-field"
+   ],
+   "minLevel": 7,
+   "maxLevel": 8
+  },
+  "f6-secret": {
+   "floor": 6,
+   "kind": "field",
+   "name": "Hidden Floor 6 Clockwork Garden",
+   "links": [
+    "f6-depths"
+   ],
+   "minLevel": 16,
+   "maxLevel": 18,
+   "aggressive": true,
+   "secret": true
+  },
+  "f6-depths": {
+   "floor": 6,
+   "kind": "field",
+   "name": "Floor 6 Clockwork Garden Depths",
+   "links": [
+    "f6-wilds",
+    "f6-secret"
+   ],
+   "minLevel": 9,
+   "maxLevel": 10
+  },
+  "f6-labyrinth": {
+   "floor": 6,
+   "kind": "labyrinth",
+   "name": "Floor 6 Laby-rinse",
+   "links": [
+    "f6-field",
+    "f6-bossroom"
+   ],
+   "minLevel": 10,
+   "maxLevel": 11,
+   "aggressive": true
+  },
+  "f6-bossroom": {
+   "floor": 6,
+   "kind": "bossroom",
+   "name": "Floor 6 Boss Room",
+   "links": [
+    "f6-labyrinth",
+    "f7-town"
+   ],
+   "maxLevel": 13
+  },
+  "f7-town": {
+   "floor": 7,
+   "kind": "town",
+   "name": "Vol-up-ta",
+   "links": [
+    "f6-bossroom",
+    "f7-field"
+   ],
+   "shop": [
+    "potion-1",
+    "potion-1b",
+    "instant-1",
+    "crystal-teleport"
+   ]
+  },
+  "f7-field": {
+   "floor": 7,
+   "kind": "field",
+   "name": "Floor 7 Casino Outskirts",
+   "links": [
+    "f7-town",
+    "f7-wilds",
+    "f7-outskirts",
+    "f7-labyrinth"
+   ],
+   "minLevel": 9,
+   "maxLevel": 10
+  },
+  "f7-wilds": {
+   "floor": 7,
+   "kind": "field",
+   "name": "Floor 7 Arena Backstage",
+   "links": [
+    "f7-field",
+    "f7-depths"
+   ],
+   "minLevel": 10,
+   "maxLevel": 13
+  },
+  "f7-outskirts": {
+   "floor": 7,
+   "kind": "field",
+   "name": "Floor 7 Casino Outskirts Outskirts",
+   "links": [
+    "f7-field"
+   ],
+   "minLevel": 9,
+   "maxLevel": 10
+  },
+  "f7-secret": {
+   "floor": 7,
+   "kind": "field",
+   "name": "Hidden Floor 7 Arena Backstage",
+   "links": [
+    "f7-depths"
+   ],
+   "minLevel": 18,
+   "maxLevel": 20,
+   "aggressive": true,
+   "secret": true
+  },
+  "f7-depths": {
+   "floor": 7,
+   "kind": "field",
+   "name": "Floor 7 Arena Backstage Depths",
+   "links": [
+    "f7-wilds",
+    "f7-secret"
+   ],
+   "minLevel": 11,
+   "maxLevel": 12
+  },
+  "f7-labyrinth": {
+   "floor": 7,
+   "kind": "labyrinth",
+   "name": "Floor 7 Laby-rinse",
+   "links": [
+    "f7-field",
+    "f7-bossroom"
+   ],
+   "minLevel": 12,
+   "maxLevel": 13,
+   "aggressive": true
+  },
+  "f7-bossroom": {
+   "floor": 7,
+   "kind": "bossroom",
+   "name": "Floor 7 Boss Room",
+   "links": [
+    "f7-labyrinth",
+    "f8-town"
+   ],
+   "maxLevel": 15
+  },
+  "f8-town": {
+   "floor": 8,
+   "kind": "town",
+   "name": "Treehaus",
+   "links": [
+    "f7-bossroom",
+    "f8-field"
+   ],
+   "shop": [
+    "potion-1",
+    "potion-1b",
+    "instant-1",
+    "crystal-teleport",
+    "mid-t5"
+   ]
+  },
+  "f8-field": {
+   "floor": 8,
+   "kind": "field",
+   "name": "Floor 8 Jungle",
+   "links": [
+    "f8-town",
+    "f8-wilds",
+    "f8-outskirts",
+    "f8-labyrinth"
+   ],
+   "minLevel": 10,
+   "maxLevel": 11
+  },
+  "f8-wilds": {
+   "floor": 8,
+   "kind": "field",
+   "name": "Floor 8 Elf Front",
+   "links": [
+    "f8-field",
+    "f8-depths"
+   ],
+   "minLevel": 11,
+   "maxLevel": 14
+  },
+  "f8-outskirts": {
+   "floor": 8,
+   "kind": "field",
+   "name": "Floor 8 Jungle Outskirts",
+   "links": [
+    "f8-field"
+   ],
+   "minLevel": 10,
+   "maxLevel": 11
+  },
+  "f8-secret": {
+   "floor": 8,
+   "kind": "field",
+   "name": "Hidden Floor 8 Elf Front",
+   "links": [
+    "f8-depths"
+   ],
+   "minLevel": 19,
+   "maxLevel": 21,
+   "aggressive": true,
+   "secret": true
+  },
+  "f8-depths": {
+   "floor": 8,
+   "kind": "field",
+   "name": "Floor 8 Elf Front Depths",
+   "links": [
+    "f8-wilds",
+    "f8-secret"
+   ],
+   "minLevel": 12,
+   "maxLevel": 13
+  },
+  "f8-labyrinth": {
+   "floor": 8,
+   "kind": "labyrinth",
+   "name": "Floor 8 Laby-rinse",
+   "links": [
+    "f8-field",
+    "f8-bossroom"
+   ],
+   "minLevel": 13,
+   "maxLevel": 14,
+   "aggressive": true
+  },
+  "f8-bossroom": {
+   "floor": 8,
+   "kind": "bossroom",
+   "name": "Floor 8 Boss Room",
+   "links": [
+    "f8-labyrinth",
+    "f9-town"
+   ],
+   "maxLevel": 16
+  },
+  "f9-town": {
+   "floor": 9,
+   "kind": "town",
+   "name": "Dork Elf Fortress",
+   "links": [
+    "f8-bossroom",
+    "f9-field"
+   ],
+   "shop": [
+    "potion-1",
+    "potion-1b",
+    "instant-1",
+    "crystal-teleport"
+   ]
+  },
+  "f9-field": {
+   "floor": 9,
+   "kind": "field",
+   "name": "Floor 9 Fortress Outskirts",
+   "links": [
+    "f9-town",
+    "f9-wilds",
+    "f9-outskirts",
+    "f9-labyrinth"
+   ],
+   "minLevel": 11,
+   "maxLevel": 12
+  },
+  "f9-wilds": {
+   "floor": 9,
+   "kind": "field",
+   "name": "Floor 9 Elf Battlefield",
+   "links": [
+    "f9-field",
+    "f9-depths"
+   ],
+   "minLevel": 12,
+   "maxLevel": 15
+  },
+  "f9-outskirts": {
+   "floor": 9,
+   "kind": "field",
+   "name": "Floor 9 Fortress Outskirts Outskirts",
+   "links": [
+    "f9-field"
+   ],
+   "minLevel": 11,
+   "maxLevel": 12
+  },
+  "f9-secret": {
+   "floor": 9,
+   "kind": "field",
+   "name": "Hidden Floor 9 Elf Battlefield",
+   "links": [
+    "f9-depths"
+   ],
+   "minLevel": 20,
+   "maxLevel": 22,
+   "aggressive": true,
+   "secret": true
+  },
+  "f9-depths": {
+   "floor": 9,
+   "kind": "field",
+   "name": "Floor 9 Elf Battlefield Depths",
+   "links": [
+    "f9-wilds",
+    "f9-secret"
+   ],
+   "minLevel": 13,
+   "maxLevel": 14
+  },
+  "f9-labyrinth": {
+   "floor": 9,
+   "kind": "labyrinth",
+   "name": "Floor 9 Laby-rinse",
+   "links": [
+    "f9-field",
+    "f9-bossroom"
+   ],
+   "minLevel": 14,
+   "maxLevel": 15,
+   "aggressive": true
+  },
+  "f9-bossroom": {
+   "floor": 9,
+   "kind": "bossroom",
+   "name": "Floor 9 Boss Room",
+   "links": [
+    "f9-labyrinth",
+    "f10-town"
+   ],
+   "maxLevel": 17
+  },
+  "f10-town": {
+   "floor": 10,
+   "kind": "town",
+   "name": "Castle Town-ish",
+   "links": [
+    "f9-bossroom",
+    "f10-field"
+   ],
+   "shop": [
+    "potion-1b",
+    "potion-2",
+    "instant-2",
+    "crystal-teleport",
+    "weapon-t10",
+    "rapier-t10",
+    "katana-t10",
+    "axe-t10",
+    "mace-t10",
+    "armor-t10",
+    "mid-t10",
+    "feet-t10",
+    "shield-t10"
+   ]
+  },
+  "f10-field": {
+   "floor": 10,
+   "kind": "field",
+   "name": "Floor 10 Bamboo Grove",
+   "links": [
+    "f10-town",
+    "f10-wilds",
+    "f10-outskirts",
+    "f10-labyrinth"
+   ],
+   "minLevel": 12,
+   "maxLevel": 13
+  },
+  "f10-wilds": {
+   "floor": 10,
+   "kind": "field",
+   "name": "Floor 10 Oni Mountain",
+   "links": [
+    "f10-field",
+    "f10-depths"
+   ],
+   "minLevel": 13,
+   "maxLevel": 16
+  },
+  "f10-outskirts": {
+   "floor": 10,
+   "kind": "field",
+   "name": "Floor 10 Bamboo Grove Outskirts",
+   "links": [
+    "f10-field"
+   ],
+   "minLevel": 12,
+   "maxLevel": 13
+  },
+  "f10-secret": {
+   "floor": 10,
+   "kind": "field",
+   "name": "Hidden Floor 10 Oni Mountain",
+   "links": [
+    "f10-depths"
+   ],
+   "minLevel": 21,
+   "maxLevel": 23,
+   "aggressive": true,
+   "secret": true
+  },
+  "f10-depths": {
+   "floor": 10,
+   "kind": "field",
+   "name": "Floor 10 Oni Mountain Depths",
+   "links": [
+    "f10-wilds",
+    "f10-secret"
+   ],
+   "minLevel": 14,
+   "maxLevel": 15,
+   "aggressive": true
+  },
+  "f10-labyrinth": {
+   "floor": 10,
+   "kind": "labyrinth",
+   "name": "Floor 10 Laby-rinse",
+   "links": [
+    "f10-field",
+    "f10-bossroom"
+   ],
+   "minLevel": 15,
+   "maxLevel": 16,
+   "aggressive": true
+  },
+  "f10-bossroom": {
+   "floor": 10,
+   "kind": "bossroom",
+   "name": "Floor 10 Boss Room",
+   "links": [
+    "f10-labyrinth",
+    "f11-town"
+   ],
+   "maxLevel": 18
+  },
+  "f11-town": {
+   "floor": 11,
+   "kind": "town",
+   "name": "Daft",
+   "links": [
+    "f10-bossroom",
+    "f11-field"
+   ],
+   "shop": [
+    "potion-1b",
+    "potion-2",
+    "instant-2",
+    "crystal-teleport",
+    "light-t10"
+   ]
+  },
+  "f11-field": {
+   "floor": 11,
+   "kind": "field",
+   "name": "Floor 11 Moonlit Woods",
+   "links": [
+    "f11-town",
+    "f11-wilds",
+    "f11-outskirts",
+    "f11-labyrinth"
+   ],
+   "minLevel": 14,
+   "maxLevel": 15
+  },
+  "f11-wilds": {
+   "floor": 11,
+   "kind": "field",
+   "name": "Floor 11 Firefly Valley",
+   "links": [
+    "f11-field",
+    "f11-depths"
+   ],
+   "minLevel": 15,
+   "maxLevel": 18
+  },
+  "f11-outskirts": {
+   "floor": 11,
+   "kind": "field",
+   "name": "Floor 11 Moonlit Woods Outskirts",
+   "links": [
+    "f11-field"
+   ],
+   "minLevel": 14,
+   "maxLevel": 15
+  },
+  "f11-secret": {
+   "floor": 11,
+   "kind": "field",
+   "name": "Hidden Floor 11 Firefly Valley",
+   "links": [
+    "f11-depths"
+   ],
+   "minLevel": 23,
+   "maxLevel": 25,
+   "aggressive": true,
+   "secret": true
+  },
+  "f11-depths": {
+   "floor": 11,
+   "kind": "field",
+   "name": "Floor 11 Firefly Valley Depths",
+   "links": [
+    "f11-wilds",
+    "f11-secret"
+   ],
+   "minLevel": 16,
+   "maxLevel": 17,
+   "aggressive": true
+  },
+  "f11-labyrinth": {
+   "floor": 11,
+   "kind": "labyrinth",
+   "name": "Floor 11 Laby-rinse",
+   "links": [
+    "f11-field",
+    "f11-bossroom"
+   ],
+   "minLevel": 17,
+   "maxLevel": 18,
+   "aggressive": true
+  },
+  "f11-bossroom": {
+   "floor": 11,
+   "kind": "bossroom",
+   "name": "Floor 11 Boss Room",
+   "links": [
+    "f11-labyrinth",
+    "f12-town"
+   ],
+   "maxLevel": 20
+  },
+  "f12-town": {
+   "floor": 12,
+   "kind": "town",
+   "name": "Floor 12 Main Town",
+   "links": [
+    "f11-bossroom",
+    "f12-field"
+   ],
+   "shop": [
+    "potion-1b",
+    "potion-2",
+    "instant-2",
+    "crystal-teleport"
+   ]
+  },
+  "f12-field": {
+   "floor": 12,
+   "kind": "field",
+   "name": "Floor 12 Muddy Path",
+   "links": [
+    "f12-town",
+    "f12-wilds",
+    "f12-outskirts",
+    "f12-labyrinth"
+   ],
+   "minLevel": 15,
+   "maxLevel": 16
+  },
+  "f12-wilds": {
+   "floor": 12,
+   "kind": "field",
+   "name": "Floor 12 Deep Bog",
+   "links": [
+    "f12-field",
+    "f12-depths"
+   ],
+   "minLevel": 16,
+   "maxLevel": 19
+  },
+  "f12-outskirts": {
+   "floor": 12,
+   "kind": "field",
+   "name": "Floor 12 Muddy Path Outskirts",
+   "links": [
+    "f12-field"
+   ],
+   "minLevel": 15,
+   "maxLevel": 16
+  },
+  "f12-secret": {
+   "floor": 12,
+   "kind": "field",
+   "name": "Hidden Floor 12 Deep Bog",
+   "links": [
+    "f12-depths"
+   ],
+   "minLevel": 24,
+   "maxLevel": 26,
+   "aggressive": true,
+   "secret": true
+  },
+  "f12-depths": {
+   "floor": 12,
+   "kind": "field",
+   "name": "Floor 12 Deep Bog Depths",
+   "links": [
+    "f12-wilds",
+    "f12-secret"
+   ],
+   "minLevel": 17,
+   "maxLevel": 18,
+   "aggressive": true
+  },
+  "f12-labyrinth": {
+   "floor": 12,
+   "kind": "labyrinth",
+   "name": "Floor 12 Laby-rinse",
+   "links": [
+    "f12-field",
+    "f12-bossroom"
+   ],
+   "minLevel": 18,
+   "maxLevel": 19,
+   "aggressive": true
+  },
+  "f12-bossroom": {
+   "floor": 12,
+   "kind": "bossroom",
+   "name": "Floor 12 Boss Room",
+   "links": [
+    "f12-labyrinth",
+    "f13-town"
+   ],
+   "maxLevel": 21
+  },
+  "f13-town": {
+   "floor": 13,
+   "kind": "town",
+   "name": "Floor 13 Main Town",
+   "links": [
+    "f12-bossroom",
+    "f13-field"
+   ],
+   "shop": [
+    "potion-1b",
+    "potion-2",
+    "instant-2",
+    "crystal-teleport",
+    "head-t10"
+   ]
+  },
+  "f13-field": {
+   "floor": 13,
+   "kind": "field",
+   "name": "Floor 13 Muddy Path",
+   "links": [
+    "f13-town",
+    "f13-wilds",
+    "f13-outskirts",
+    "f13-labyrinth"
+   ],
+   "minLevel": 16,
+   "maxLevel": 17
+  },
+  "f13-wilds": {
+   "floor": 13,
+   "kind": "field",
+   "name": "Floor 13 Deep Bog",
+   "links": [
+    "f13-field",
+    "f13-depths"
+   ],
+   "minLevel": 17,
+   "maxLevel": 20
+  },
+  "f13-outskirts": {
+   "floor": 13,
+   "kind": "field",
+   "name": "Floor 13 Muddy Path Outskirts",
+   "links": [
+    "f13-field"
+   ],
+   "minLevel": 16,
+   "maxLevel": 17
+  },
+  "f13-secret": {
+   "floor": 13,
+   "kind": "field",
+   "name": "Hidden Floor 13 Deep Bog",
+   "links": [
+    "f13-depths"
+   ],
+   "minLevel": 25,
+   "maxLevel": 27,
+   "aggressive": true,
+   "secret": true
+  },
+  "f13-depths": {
+   "floor": 13,
+   "kind": "field",
+   "name": "Floor 13 Deep Bog Depths",
+   "links": [
+    "f13-wilds",
+    "f13-secret"
+   ],
+   "minLevel": 18,
+   "maxLevel": 19,
+   "aggressive": true
+  },
+  "f13-labyrinth": {
+   "floor": 13,
+   "kind": "labyrinth",
+   "name": "Floor 13 Laby-rinse",
+   "links": [
+    "f13-field",
+    "f13-bossroom"
+   ],
+   "minLevel": 19,
+   "maxLevel": 20,
+   "aggressive": true
+  },
+  "f13-bossroom": {
+   "floor": 13,
+   "kind": "bossroom",
+   "name": "Floor 13 Boss Room",
+   "links": [
+    "f13-labyrinth",
+    "f14-town"
+   ],
+   "maxLevel": 22
+  },
+  "f14-town": {
+   "floor": 14,
+   "kind": "town",
+   "name": "Floor 14 Main Town",
+   "links": [
+    "f13-bossroom",
+    "f14-field"
+   ],
+   "shop": [
+    "potion-1b",
+    "potion-2",
+    "instant-2",
+    "crystal-teleport"
+   ]
+  },
+  "f14-field": {
+   "floor": 14,
+   "kind": "field",
+   "name": "Floor 14 Mine Entrance",
+   "links": [
+    "f14-town",
+    "f14-wilds",
+    "f14-outskirts",
+    "f14-labyrinth"
+   ],
+   "minLevel": 17,
+   "maxLevel": 18
+  },
+  "f14-wilds": {
+   "floor": 14,
+   "kind": "field",
+   "name": "Floor 14 Deep Mine",
+   "links": [
+    "f14-field",
+    "f14-depths"
+   ],
+   "minLevel": 18,
+   "maxLevel": 21
+  },
+  "f14-outskirts": {
+   "floor": 14,
+   "kind": "field",
+   "name": "Floor 14 Mine Entrance Outskirts",
+   "links": [
+    "f14-field"
+   ],
+   "minLevel": 17,
+   "maxLevel": 18
+  },
+  "f14-secret": {
+   "floor": 14,
+   "kind": "field",
+   "name": "Hidden Floor 14 Deep Mine",
+   "links": [
+    "f14-depths"
+   ],
+   "minLevel": 26,
+   "maxLevel": 28,
+   "aggressive": true,
+   "secret": true
+  },
+  "f14-depths": {
+   "floor": 14,
+   "kind": "field",
+   "name": "Floor 14 Deep Mine Depths",
+   "links": [
+    "f14-wilds",
+    "f14-secret"
+   ],
+   "minLevel": 19,
+   "maxLevel": 20,
+   "aggressive": true
+  },
+  "f14-labyrinth": {
+   "floor": 14,
+   "kind": "labyrinth",
+   "name": "Floor 14 Laby-rinse",
+   "links": [
+    "f14-field",
+    "f14-bossroom"
+   ],
+   "minLevel": 20,
+   "maxLevel": 21,
+   "aggressive": true
+  },
+  "f14-bossroom": {
+   "floor": 14,
+   "kind": "bossroom",
+   "name": "Floor 14 Boss Room",
+   "links": [
+    "f14-labyrinth",
+    "f15-town"
+   ],
+   "maxLevel": 23
+  },
+  "f15-town": {
+   "floor": 15,
+   "kind": "town",
+   "name": "Floor 15 Main Town",
+   "links": [
+    "f14-bossroom",
+    "f15-field"
+   ],
+   "shop": [
+    "potion-2",
+    "potion-2c",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "weapon-t15",
+    "rapier-t15",
+    "katana-t15",
+    "axe-t15",
+    "mace-t15",
+    "armor-t15",
+    "light-t15",
+    "head-t15"
+   ]
+  },
+  "f15-field": {
+   "floor": 15,
+   "kind": "field",
+   "name": "Floor 15 Mine Entrance",
+   "links": [
+    "f15-town",
+    "f15-wilds",
+    "f15-outskirts",
+    "f15-labyrinth"
+   ],
+   "minLevel": 19,
+   "maxLevel": 20
+  },
+  "f15-wilds": {
+   "floor": 15,
+   "kind": "field",
+   "name": "Floor 15 Deep Mine",
+   "links": [
+    "f15-field",
+    "f15-depths"
+   ],
+   "minLevel": 20,
+   "maxLevel": 23
+  },
+  "f15-outskirts": {
+   "floor": 15,
+   "kind": "field",
+   "name": "Floor 15 Mine Entrance Outskirts",
+   "links": [
+    "f15-field"
+   ],
+   "minLevel": 19,
+   "maxLevel": 20
+  },
+  "f15-secret": {
+   "floor": 15,
+   "kind": "field",
+   "name": "Hidden Floor 15 Deep Mine",
+   "links": [
+    "f15-depths"
+   ],
+   "minLevel": 28,
+   "maxLevel": 30,
+   "aggressive": true,
+   "secret": true
+  },
+  "f15-depths": {
+   "floor": 15,
+   "kind": "field",
+   "name": "Floor 15 Deep Mine Depths",
+   "links": [
+    "f15-wilds",
+    "f15-secret"
+   ],
+   "minLevel": 21,
+   "maxLevel": 22,
+   "aggressive": true
+  },
+  "f15-labyrinth": {
+   "floor": 15,
+   "kind": "labyrinth",
+   "name": "Floor 15 Laby-rinse",
+   "links": [
+    "f15-field",
+    "f15-bossroom"
+   ],
+   "minLevel": 22,
+   "maxLevel": 23,
+   "aggressive": true
+  },
+  "f15-bossroom": {
+   "floor": 15,
+   "kind": "bossroom",
+   "name": "Floor 15 Boss Room",
+   "links": [
+    "f15-labyrinth",
+    "f16-town"
+   ],
+   "maxLevel": 25
+  },
+  "f16-town": {
+   "floor": 16,
+   "kind": "town",
+   "name": "Floor 16 Main Town",
+   "links": [
+    "f15-bossroom",
+    "f16-field"
+   ],
+   "shop": [
+    "potion-2",
+    "potion-2c",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "mid-t15",
+    "shield-t15"
+   ]
+  },
+  "f16-field": {
+   "floor": 16,
+   "kind": "field",
+   "name": "Floor 16 Dunes",
+   "links": [
+    "f16-town",
+    "f16-wilds",
+    "f16-outskirts",
+    "f16-labyrinth"
+   ],
+   "minLevel": 20,
+   "maxLevel": 21
+  },
+  "f16-wilds": {
+   "floor": 16,
+   "kind": "field",
+   "name": "Floor 16 Quicksand Flats",
+   "links": [
+    "f16-field",
+    "f16-depths"
+   ],
+   "minLevel": 21,
+   "maxLevel": 24
+  },
+  "f16-outskirts": {
+   "floor": 16,
+   "kind": "field",
+   "name": "Floor 16 Dunes Outskirts",
+   "links": [
+    "f16-field"
+   ],
+   "minLevel": 20,
+   "maxLevel": 21
+  },
+  "f16-secret": {
+   "floor": 16,
+   "kind": "field",
+   "name": "Hidden Floor 16 Quicksand Flats",
+   "links": [
+    "f16-depths"
+   ],
+   "minLevel": 29,
+   "maxLevel": 31,
+   "aggressive": true,
+   "secret": true
+  },
+  "f16-depths": {
+   "floor": 16,
+   "kind": "field",
+   "name": "Floor 16 Quicksand Flats Depths",
+   "links": [
+    "f16-wilds",
+    "f16-secret"
+   ],
+   "minLevel": 22,
+   "maxLevel": 23,
+   "aggressive": true
+  },
+  "f16-labyrinth": {
+   "floor": 16,
+   "kind": "labyrinth",
+   "name": "Floor 16 Laby-rinse",
+   "links": [
+    "f16-field",
+    "f16-bossroom"
+   ],
+   "minLevel": 23,
+   "maxLevel": 24,
+   "aggressive": true
+  },
+  "f16-bossroom": {
+   "floor": 16,
+   "kind": "bossroom",
+   "name": "Floor 16 Boss Room",
+   "links": [
+    "f16-labyrinth",
+    "f17-town"
+   ],
+   "maxLevel": 26
+  },
+  "f17-town": {
+   "floor": 17,
+   "kind": "town",
+   "name": "Floor 17 Main Town",
+   "links": [
+    "f16-bossroom",
+    "f17-field"
+   ],
+   "shop": [
+    "potion-2",
+    "potion-2c",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f17-field": {
+   "floor": 17,
+   "kind": "field",
+   "name": "Floor 17 Dunes",
+   "links": [
+    "f17-town",
+    "f17-wilds",
+    "f17-outskirts",
+    "f17-labyrinth"
+   ],
+   "minLevel": 21,
+   "maxLevel": 22
+  },
+  "f17-wilds": {
+   "floor": 17,
+   "kind": "field",
+   "name": "Floor 17 Quicksand Flats",
+   "links": [
+    "f17-field",
+    "f17-depths"
+   ],
+   "minLevel": 22,
+   "maxLevel": 25
+  },
+  "f17-outskirts": {
+   "floor": 17,
+   "kind": "field",
+   "name": "Floor 17 Dunes Outskirts",
+   "links": [
+    "f17-field"
+   ],
+   "minLevel": 21,
+   "maxLevel": 22
+  },
+  "f17-secret": {
+   "floor": 17,
+   "kind": "field",
+   "name": "Hidden Floor 17 Quicksand Flats",
+   "links": [
+    "f17-depths"
+   ],
+   "minLevel": 30,
+   "maxLevel": 32,
+   "aggressive": true,
+   "secret": true
+  },
+  "f17-depths": {
+   "floor": 17,
+   "kind": "field",
+   "name": "Floor 17 Quicksand Flats Depths",
+   "links": [
+    "f17-wilds",
+    "f17-secret"
+   ],
+   "minLevel": 23,
+   "maxLevel": 24,
+   "aggressive": true
+  },
+  "f17-labyrinth": {
+   "floor": 17,
+   "kind": "labyrinth",
+   "name": "Floor 17 Laby-rinse",
+   "links": [
+    "f17-field",
+    "f17-bossroom"
+   ],
+   "minLevel": 24,
+   "maxLevel": 25,
+   "aggressive": true
+  },
+  "f17-bossroom": {
+   "floor": 17,
+   "kind": "bossroom",
+   "name": "Floor 17 Boss Room",
+   "links": [
+    "f17-labyrinth",
+    "f18-town"
+   ],
+   "maxLevel": 27
+  },
+  "f18-town": {
+   "floor": 18,
+   "kind": "town",
+   "name": "Floor 18 Main Town",
+   "links": [
+    "f17-bossroom",
+    "f18-field"
+   ],
+   "shop": [
+    "potion-2",
+    "potion-2c",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "feet-t15"
+   ]
+  },
+  "f18-field": {
+   "floor": 18,
+   "kind": "field",
+   "name": "Floor 18 Snowfield",
+   "links": [
+    "f18-town",
+    "f18-wilds",
+    "f18-outskirts",
+    "f18-labyrinth"
+   ],
+   "minLevel": 22,
+   "maxLevel": 23
+  },
+  "f18-wilds": {
+   "floor": 18,
+   "kind": "field",
+   "name": "Floor 18 Glacier",
+   "links": [
+    "f18-field",
+    "f18-depths"
+   ],
+   "minLevel": 23,
+   "maxLevel": 26
+  },
+  "f18-outskirts": {
+   "floor": 18,
+   "kind": "field",
+   "name": "Floor 18 Snowfield Outskirts",
+   "links": [
+    "f18-field"
+   ],
+   "minLevel": 22,
+   "maxLevel": 23
+  },
+  "f18-secret": {
+   "floor": 18,
+   "kind": "field",
+   "name": "Hidden Floor 18 Glacier",
+   "links": [
+    "f18-depths"
+   ],
+   "minLevel": 31,
+   "maxLevel": 33,
+   "aggressive": true,
+   "secret": true
+  },
+  "f18-depths": {
+   "floor": 18,
+   "kind": "field",
+   "name": "Floor 18 Glacier Depths",
+   "links": [
+    "f18-wilds",
+    "f18-secret"
+   ],
+   "minLevel": 24,
+   "maxLevel": 25,
+   "aggressive": true
+  },
+  "f18-labyrinth": {
+   "floor": 18,
+   "kind": "labyrinth",
+   "name": "Floor 18 Laby-rinse",
+   "links": [
+    "f18-field",
+    "f18-bossroom"
+   ],
+   "minLevel": 25,
+   "maxLevel": 26,
+   "aggressive": true
+  },
+  "f18-bossroom": {
+   "floor": 18,
+   "kind": "bossroom",
+   "name": "Floor 18 Boss Room",
+   "links": [
+    "f18-labyrinth",
+    "f19-town"
+   ],
+   "maxLevel": 28
+  },
+  "f19-town": {
+   "floor": 19,
+   "kind": "town",
+   "name": "Floor 19 Main Town",
+   "links": [
+    "f18-bossroom",
+    "f19-field"
+   ],
+   "shop": [
+    "potion-2",
+    "potion-2c",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f19-field": {
+   "floor": 19,
+   "kind": "field",
+   "name": "Floor 19 Snowfield",
+   "links": [
+    "f19-town",
+    "f19-wilds",
+    "f19-outskirts",
+    "f19-labyrinth"
+   ],
+   "minLevel": 24,
+   "maxLevel": 25
+  },
+  "f19-wilds": {
+   "floor": 19,
+   "kind": "field",
+   "name": "Floor 19 Glacier",
+   "links": [
+    "f19-field",
+    "f19-depths"
+   ],
+   "minLevel": 25,
+   "maxLevel": 28
+  },
+  "f19-outskirts": {
+   "floor": 19,
+   "kind": "field",
+   "name": "Floor 19 Snowfield Outskirts",
+   "links": [
+    "f19-field"
+   ],
+   "minLevel": 24,
+   "maxLevel": 25
+  },
+  "f19-secret": {
+   "floor": 19,
+   "kind": "field",
+   "name": "Hidden Floor 19 Glacier",
+   "links": [
+    "f19-depths"
+   ],
+   "minLevel": 33,
+   "maxLevel": 35,
+   "aggressive": true,
+   "secret": true
+  },
+  "f19-depths": {
+   "floor": 19,
+   "kind": "field",
+   "name": "Floor 19 Glacier Depths",
+   "links": [
+    "f19-wilds",
+    "f19-secret"
+   ],
+   "minLevel": 26,
+   "maxLevel": 27,
+   "aggressive": true
+  },
+  "f19-labyrinth": {
+   "floor": 19,
+   "kind": "labyrinth",
+   "name": "Floor 19 Laby-rinse",
+   "links": [
+    "f19-field",
+    "f19-bossroom"
+   ],
+   "minLevel": 27,
+   "maxLevel": 28,
+   "aggressive": true
+  },
+  "f19-bossroom": {
+   "floor": 19,
+   "kind": "bossroom",
+   "name": "Floor 19 Boss Room",
+   "links": [
+    "f19-labyrinth",
+    "f20-town"
+   ],
+   "maxLevel": 30
+  },
+  "f20-town": {
+   "floor": 20,
+   "kind": "town",
+   "name": "Floor 20 Main Town",
+   "links": [
+    "f19-bossroom",
+    "f20-field"
+   ],
+   "shop": [
+    "potion-2c",
+    "potion-2b",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "weapon-t20",
+    "rapier-t20",
+    "katana-t20",
+    "axe-t20",
+    "mace-t20",
+    "mid-t20",
+    "light-t20",
+    "feet-t20",
+    "shield-t20"
+   ]
+  },
+  "f20-field": {
+   "floor": 20,
+   "kind": "field",
+   "name": "Floor 20 Lava Plain",
+   "links": [
+    "f20-town",
+    "f20-wilds",
+    "f20-outskirts",
+    "f20-labyrinth"
+   ],
+   "minLevel": 25,
+   "maxLevel": 26
+  },
+  "f20-wilds": {
+   "floor": 20,
+   "kind": "field",
+   "name": "Floor 20 Crater",
+   "links": [
+    "f20-field",
+    "f20-depths"
+   ],
+   "minLevel": 26,
+   "maxLevel": 29
+  },
+  "f20-outskirts": {
+   "floor": 20,
+   "kind": "field",
+   "name": "Floor 20 Lava Plain Outskirts",
+   "links": [
+    "f20-field"
+   ],
+   "minLevel": 25,
+   "maxLevel": 26
+  },
+  "f20-secret": {
+   "floor": 20,
+   "kind": "field",
+   "name": "Hidden Floor 20 Crater",
+   "links": [
+    "f20-depths"
+   ],
+   "minLevel": 34,
+   "maxLevel": 36,
+   "aggressive": true,
+   "secret": true
+  },
+  "f20-depths": {
+   "floor": 20,
+   "kind": "field",
+   "name": "Floor 20 Crater Depths",
+   "links": [
+    "f20-wilds",
+    "f20-secret"
+   ],
+   "minLevel": 27,
+   "maxLevel": 28,
+   "aggressive": true
+  },
+  "f20-labyrinth": {
+   "floor": 20,
+   "kind": "labyrinth",
+   "name": "Floor 20 Laby-rinse",
+   "links": [
+    "f20-field",
+    "f20-bossroom"
+   ],
+   "minLevel": 28,
+   "maxLevel": 29,
+   "aggressive": true
+  },
+  "f20-bossroom": {
+   "floor": 20,
+   "kind": "bossroom",
+   "name": "Floor 20 Boss Room",
+   "links": [
+    "f20-labyrinth",
+    "f21-town"
+   ],
+   "maxLevel": 31
+  },
+  "f21-town": {
+   "floor": 21,
+   "kind": "town",
+   "name": "Floor 21 Main Town",
+   "links": [
+    "f20-bossroom",
+    "f21-field"
+   ],
+   "shop": [
+    "potion-2c",
+    "potion-2b",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f21-field": {
+   "floor": 21,
+   "kind": "field",
+   "name": "Floor 21 Lava Plain",
+   "links": [
+    "f21-town",
+    "f21-wilds",
+    "f21-outskirts",
+    "f21-labyrinth"
+   ],
+   "minLevel": 26,
+   "maxLevel": 27
+  },
+  "f21-wilds": {
+   "floor": 21,
+   "kind": "field",
+   "name": "Floor 21 Crater",
+   "links": [
+    "f21-field",
+    "f21-depths"
+   ],
+   "minLevel": 27,
+   "maxLevel": 30
+  },
+  "f21-outskirts": {
+   "floor": 21,
+   "kind": "field",
+   "name": "Floor 21 Lava Plain Outskirts",
+   "links": [
+    "f21-field"
+   ],
+   "minLevel": 26,
+   "maxLevel": 27
+  },
+  "f21-secret": {
+   "floor": 21,
+   "kind": "field",
+   "name": "Hidden Floor 21 Crater",
+   "links": [
+    "f21-depths"
+   ],
+   "minLevel": 35,
+   "maxLevel": 37,
+   "aggressive": true,
+   "secret": true
+  },
+  "f21-depths": {
+   "floor": 21,
+   "kind": "field",
+   "name": "Floor 21 Crater Depths",
+   "links": [
+    "f21-wilds",
+    "f21-secret"
+   ],
+   "minLevel": 28,
+   "maxLevel": 29,
+   "aggressive": true
+  },
+  "f21-labyrinth": {
+   "floor": 21,
+   "kind": "labyrinth",
+   "name": "Floor 21 Laby-rinse",
+   "links": [
+    "f21-field",
+    "f21-bossroom"
+   ],
+   "minLevel": 29,
+   "maxLevel": 30,
+   "aggressive": true
+  },
+  "f21-bossroom": {
+   "floor": 21,
+   "kind": "bossroom",
+   "name": "Floor 21 Boss Room",
+   "links": [
+    "f21-labyrinth",
+    "f22-town"
+   ],
+   "maxLevel": 32
+  },
+  "f22-town": {
+   "floor": 22,
+   "kind": "town",
+   "name": "Cola Village",
+   "links": [
+    "f21-bossroom",
+    "f22-lake"
+   ],
+   "shop": [
+    "potion-2c",
+    "potion-2b",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "armor-t20",
+    "head-t20"
+   ]
+  },
+  "f22-lake": {
+   "floor": 22,
+   "kind": "field",
+   "name": "Leakside Forest",
+   "links": [
+    "f22-town",
+    "f22-outskirts",
+    "f22-depths",
+    "f22-labyrinth"
+   ],
+   "minLevel": 27,
+   "maxLevel": 30
+  },
+  "f22-outskirts": {
+   "floor": 22,
+   "kind": "field",
+   "name": "Leakside Forest Outskirts",
+   "links": [
+    "f22-lake"
+   ],
+   "minLevel": 27,
+   "maxLevel": 28
+  },
+  "f22-secret": {
+   "floor": 22,
+   "kind": "field",
+   "name": "Hidden Leakside Forest",
+   "links": [
+    "f22-depths"
+   ],
+   "minLevel": 36,
+   "maxLevel": 38,
+   "aggressive": true,
+   "secret": true
+  },
+  "f22-depths": {
+   "floor": 22,
+   "kind": "field",
+   "name": "Leakside Forest Depths",
+   "links": [
+    "f22-lake",
+    "f22-secret"
+   ],
+   "minLevel": 29,
+   "maxLevel": 30,
+   "aggressive": true
+  },
+  "f22-labyrinth": {
+   "floor": 22,
+   "kind": "labyrinth",
+   "name": "Floor 22 Laby-rinse",
+   "links": [
+    "f22-lake",
+    "f22-bossroom"
+   ],
+   "minLevel": 30,
+   "maxLevel": 30,
+   "aggressive": true
+  },
+  "f22-bossroom": {
+   "floor": 22,
+   "kind": "bossroom",
+   "name": "Floor 22 Boss Room",
+   "links": [
+    "f22-labyrinth",
+    "f23-town"
+   ],
+   "maxLevel": 33
+  },
+  "f23-town": {
+   "floor": 23,
+   "kind": "town",
+   "name": "Floor 23 Main Town",
+   "links": [
+    "f22-bossroom",
+    "f23-field"
+   ],
+   "shop": [
+    "potion-2c",
+    "potion-2b",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f23-field": {
+   "floor": 23,
+   "kind": "field",
+   "name": "Floor 23 Old Battlefield",
+   "links": [
+    "f23-town",
+    "f23-wilds",
+    "f23-outskirts",
+    "f23-labyrinth"
+   ],
+   "minLevel": 29,
+   "maxLevel": 30
+  },
+  "f23-wilds": {
+   "floor": 23,
+   "kind": "field",
+   "name": "Floor 23 Graveyard",
+   "links": [
+    "f23-field",
+    "f23-depths"
+   ],
+   "minLevel": 30,
+   "maxLevel": 33
+  },
+  "f23-outskirts": {
+   "floor": 23,
+   "kind": "field",
+   "name": "Floor 23 Old Battlefield Outskirts",
+   "links": [
+    "f23-field"
+   ],
+   "minLevel": 29,
+   "maxLevel": 30
+  },
+  "f23-secret": {
+   "floor": 23,
+   "kind": "field",
+   "name": "Hidden Floor 23 Graveyard",
+   "links": [
+    "f23-depths"
+   ],
+   "minLevel": 38,
+   "maxLevel": 40,
+   "aggressive": true,
+   "secret": true
+  },
+  "f23-depths": {
+   "floor": 23,
+   "kind": "field",
+   "name": "Floor 23 Graveyard Depths",
+   "links": [
+    "f23-wilds",
+    "f23-secret"
+   ],
+   "minLevel": 31,
+   "maxLevel": 32,
+   "aggressive": true
+  },
+  "f23-labyrinth": {
+   "floor": 23,
+   "kind": "labyrinth",
+   "name": "Floor 23 Laby-rinse",
+   "links": [
+    "f23-field",
+    "f23-bossroom"
+   ],
+   "minLevel": 32,
+   "maxLevel": 33,
+   "aggressive": true
+  },
+  "f23-bossroom": {
+   "floor": 23,
+   "kind": "bossroom",
+   "name": "Floor 23 Boss Room",
+   "links": [
+    "f23-labyrinth",
+    "f24-town"
+   ],
+   "maxLevel": 35
+  },
+  "f24-town": {
+   "floor": 24,
+   "kind": "town",
+   "name": "Floor 24 Main Town",
+   "links": [
+    "f23-bossroom",
+    "f24-field"
+   ],
+   "shop": [
+    "potion-2c",
+    "potion-2b",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f24-field": {
+   "floor": 24,
+   "kind": "field",
+   "name": "Floor 24 Old Battlefield",
+   "links": [
+    "f24-town",
+    "f24-wilds",
+    "f24-outskirts",
+    "f24-labyrinth"
+   ],
+   "minLevel": 30,
+   "maxLevel": 31
+  },
+  "f24-wilds": {
+   "floor": 24,
+   "kind": "field",
+   "name": "Floor 24 Graveyard",
+   "links": [
+    "f24-field",
+    "f24-depths"
+   ],
+   "minLevel": 31,
+   "maxLevel": 34
+  },
+  "f24-outskirts": {
+   "floor": 24,
+   "kind": "field",
+   "name": "Floor 24 Old Battlefield Outskirts",
+   "links": [
+    "f24-field"
+   ],
+   "minLevel": 30,
+   "maxLevel": 31
+  },
+  "f24-secret": {
+   "floor": 24,
+   "kind": "field",
+   "name": "Hidden Floor 24 Graveyard",
+   "links": [
+    "f24-depths"
+   ],
+   "minLevel": 39,
+   "maxLevel": 41,
+   "aggressive": true,
+   "secret": true
+  },
+  "f24-depths": {
+   "floor": 24,
+   "kind": "field",
+   "name": "Floor 24 Graveyard Depths",
+   "links": [
+    "f24-wilds",
+    "f24-secret"
+   ],
+   "minLevel": 32,
+   "maxLevel": 33,
+   "aggressive": true
+  },
+  "f24-labyrinth": {
+   "floor": 24,
+   "kind": "labyrinth",
+   "name": "Floor 24 Laby-rinse",
+   "links": [
+    "f24-field",
+    "f24-bossroom"
+   ],
+   "minLevel": 33,
+   "maxLevel": 34,
+   "aggressive": true
+  },
+  "f24-bossroom": {
+   "floor": 24,
+   "kind": "bossroom",
+   "name": "Floor 24 Boss Room",
+   "links": [
+    "f24-labyrinth",
+    "f25-town"
+   ],
+   "maxLevel": 36
+  },
+  "f25-town": {
+   "floor": 25,
+   "kind": "town",
+   "name": "Floor 25 Main Town",
+   "links": [
+    "f24-bossroom",
+    "f25-field"
+   ],
+   "shop": [
+    "potion-2b",
+    "potion-2d",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "weapon-t25",
+    "rapier-t25",
+    "katana-t25",
+    "axe-t25",
+    "mace-t25",
+    "armor-t25",
+    "mid-t25",
+    "light-t25",
+    "head-t25",
+    "feet-t25",
+    "shield-t25"
+   ]
+  },
+  "f25-field": {
+   "floor": 25,
+   "kind": "field",
+   "name": "Floor 25 Gi-ant's Footprints",
+   "links": [
+    "f25-town",
+    "f25-wilds",
+    "f25-outskirts",
+    "f25-labyrinth"
+   ],
+   "minLevel": 31,
+   "maxLevel": 32
+  },
+  "f25-wilds": {
+   "floor": 25,
+   "kind": "field",
+   "name": "Floor 25 Giant Timber",
+   "links": [
+    "f25-field",
+    "f25-depths"
+   ],
+   "minLevel": 32,
+   "maxLevel": 35
+  },
+  "f25-outskirts": {
+   "floor": 25,
+   "kind": "field",
+   "name": "Floor 25 Gi-ant's Footprints Outskirts",
+   "links": [
+    "f25-field"
+   ],
+   "minLevel": 31,
+   "maxLevel": 32
+  },
+  "f25-secret": {
+   "floor": 25,
+   "kind": "field",
+   "name": "Hidden Floor 25 Giant Timber",
+   "links": [
+    "f25-depths"
+   ],
+   "minLevel": 40,
+   "maxLevel": 42,
+   "aggressive": true,
+   "secret": true
+  },
+  "f25-depths": {
+   "floor": 25,
+   "kind": "field",
+   "name": "Floor 25 Giant Timber Depths",
+   "links": [
+    "f25-wilds",
+    "f25-secret"
+   ],
+   "minLevel": 33,
+   "maxLevel": 34,
+   "aggressive": true
+  },
+  "f25-labyrinth": {
+   "floor": 25,
+   "kind": "labyrinth",
+   "name": "Floor 25 Laby-rinse",
+   "links": [
+    "f25-field",
+    "f25-bossroom"
+   ],
+   "minLevel": 34,
+   "maxLevel": 35,
+   "aggressive": true
+  },
+  "f25-bossroom": {
+   "floor": 25,
+   "kind": "bossroom",
+   "name": "Floor 25 Boss Room",
+   "links": [
+    "f25-labyrinth",
+    "f26-town"
+   ],
+   "maxLevel": 37
+  },
+  "f26-town": {
+   "floor": 26,
+   "kind": "town",
+   "name": "Floor 26 Main Town",
+   "links": [
+    "f25-bossroom",
+    "f26-field"
+   ],
+   "shop": [
+    "potion-2b",
+    "potion-2d",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f26-field": {
+   "floor": 26,
+   "kind": "field",
+   "name": "Floor 26 Sea of Clouds",
+   "links": [
+    "f26-town",
+    "f26-wilds",
+    "f26-outskirts",
+    "f26-labyrinth"
+   ],
+   "minLevel": 32,
+   "maxLevel": 33
+  },
+  "f26-wilds": {
+   "floor": 26,
+   "kind": "field",
+   "name": "Floor 26 Thunderhead",
+   "links": [
+    "f26-field",
+    "f26-depths"
+   ],
+   "minLevel": 33,
+   "maxLevel": 36
+  },
+  "f26-outskirts": {
+   "floor": 26,
+   "kind": "field",
+   "name": "Floor 26 Sea of Clouds Outskirts",
+   "links": [
+    "f26-field"
+   ],
+   "minLevel": 32,
+   "maxLevel": 33
+  },
+  "f26-secret": {
+   "floor": 26,
+   "kind": "field",
+   "name": "Hidden Floor 26 Thunderhead",
+   "links": [
+    "f26-depths"
+   ],
+   "minLevel": 41,
+   "maxLevel": 43,
+   "aggressive": true,
+   "secret": true
+  },
+  "f26-depths": {
+   "floor": 26,
+   "kind": "field",
+   "name": "Floor 26 Thunderhead Depths",
+   "links": [
+    "f26-wilds",
+    "f26-secret"
+   ],
+   "minLevel": 34,
+   "maxLevel": 35,
+   "aggressive": true
+  },
+  "f26-labyrinth": {
+   "floor": 26,
+   "kind": "labyrinth",
+   "name": "Floor 26 Laby-rinse",
+   "links": [
+    "f26-field",
+    "f26-bossroom"
+   ],
+   "minLevel": 35,
+   "maxLevel": 36,
+   "aggressive": true
+  },
+  "f26-bossroom": {
+   "floor": 26,
+   "kind": "bossroom",
+   "name": "Floor 26 Boss Room",
+   "links": [
+    "f26-labyrinth",
+    "f27-town"
+   ],
+   "maxLevel": 38
+  },
+  "f27-town": {
+   "floor": 27,
+   "kind": "town",
+   "name": "Floor 27 Main Town",
+   "links": [
+    "f26-bossroom",
+    "f27-field"
+   ],
+   "shop": [
+    "potion-2b",
+    "potion-2d",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f27-field": {
+   "floor": 27,
+   "kind": "field",
+   "name": "Floor 27 Ruins",
+   "links": [
+    "f27-town",
+    "f27-wilds",
+    "f27-outskirts",
+    "f27-labyrinth"
+   ],
+   "minLevel": 34,
+   "maxLevel": 35
+  },
+  "f27-wilds": {
+   "floor": 27,
+   "kind": "field",
+   "name": "Floor 27 Trap Corridor",
+   "links": [
+    "f27-field",
+    "f27-depths"
+   ],
+   "minLevel": 35,
+   "maxLevel": 38
+  },
+  "f27-outskirts": {
+   "floor": 27,
+   "kind": "field",
+   "name": "Floor 27 Ruins Outskirts",
+   "links": [
+    "f27-field"
+   ],
+   "minLevel": 34,
+   "maxLevel": 35
+  },
+  "f27-secret": {
+   "floor": 27,
+   "kind": "field",
+   "name": "Hidden Floor 27 Trap Corridor",
+   "links": [
+    "f27-depths"
+   ],
+   "minLevel": 43,
+   "maxLevel": 45,
+   "aggressive": true,
+   "secret": true
+  },
+  "f27-depths": {
+   "floor": 27,
+   "kind": "field",
+   "name": "Floor 27 Trap Corridor Depths",
+   "links": [
+    "f27-wilds",
+    "f27-secret"
+   ],
+   "minLevel": 36,
+   "maxLevel": 37,
+   "aggressive": true
+  },
+  "f27-labyrinth": {
+   "floor": 27,
+   "kind": "labyrinth",
+   "name": "Floor 27 Laby-rinse",
+   "links": [
+    "f27-field",
+    "f27-bossroom"
+   ],
+   "minLevel": 37,
+   "maxLevel": 38,
+   "aggressive": true
+  },
+  "f27-bossroom": {
+   "floor": 27,
+   "kind": "bossroom",
+   "name": "Floor 27 Boss Room",
+   "links": [
+    "f27-labyrinth",
+    "f28-town"
+   ],
+   "maxLevel": 40
+  },
+  "f28-town": {
+   "floor": 28,
+   "kind": "town",
+   "name": "Floor 28 Main Town",
+   "links": [
+    "f27-bossroom",
+    "f28-field"
+   ],
+   "shop": [
+    "potion-2b",
+    "potion-2d",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal",
+    "feet-t25"
+   ]
+  },
+  "f28-field": {
+   "floor": 28,
+   "kind": "field",
+   "name": "Floor 28 Miasma Woods",
+   "links": [
+    "f28-town",
+    "f28-wilds",
+    "f28-outskirts",
+    "f28-labyrinth"
+   ],
+   "minLevel": 35,
+   "maxLevel": 36
+  },
+  "f28-wilds": {
+   "floor": 28,
+   "kind": "field",
+   "name": "Floor 28 Poison Mire",
+   "links": [
+    "f28-field",
+    "f28-depths"
+   ],
+   "minLevel": 36,
+   "maxLevel": 39
+  },
+  "f28-outskirts": {
+   "floor": 28,
+   "kind": "field",
+   "name": "Floor 28 Miasma Woods Outskirts",
+   "links": [
+    "f28-field"
+   ],
+   "minLevel": 35,
+   "maxLevel": 36
+  },
+  "f28-secret": {
+   "floor": 28,
+   "kind": "field",
+   "name": "Hidden Floor 28 Poison Mire",
+   "links": [
+    "f28-depths"
+   ],
+   "minLevel": 44,
+   "maxLevel": 46,
+   "aggressive": true,
+   "secret": true
+  },
+  "f28-depths": {
+   "floor": 28,
+   "kind": "field",
+   "name": "Floor 28 Poison Mire Depths",
+   "links": [
+    "f28-wilds",
+    "f28-secret"
+   ],
+   "minLevel": 37,
+   "maxLevel": 38,
+   "aggressive": true
+  },
+  "f28-labyrinth": {
+   "floor": 28,
+   "kind": "labyrinth",
+   "name": "Floor 28 Laby-rinse",
+   "links": [
+    "f28-field",
+    "f28-bossroom"
+   ],
+   "minLevel": 38,
+   "maxLevel": 39,
+   "aggressive": true
+  },
+  "f28-bossroom": {
+   "floor": 28,
+   "kind": "bossroom",
+   "name": "Floor 28 Boss Room",
+   "links": [
+    "f28-labyrinth",
+    "f29-town"
+   ],
+   "maxLevel": 41
+  },
+  "f29-town": {
+   "floor": 29,
+   "kind": "town",
+   "name": "Floor 29 Main Town",
+   "links": [
+    "f28-bossroom",
+    "f29-field"
+   ],
+   "shop": [
+    "potion-2b",
+    "potion-2d",
+    "instant-2",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f29-field": {
+   "floor": 29,
+   "kind": "field",
+   "name": "Floor 29 Miasma Woods",
+   "links": [
+    "f29-town",
+    "f29-wilds",
+    "f29-outskirts",
+    "f29-labyrinth"
+   ],
+   "minLevel": 36,
+   "maxLevel": 37
+  },
+  "f29-wilds": {
+   "floor": 29,
+   "kind": "field",
+   "name": "Floor 29 Poison Mire",
+   "links": [
+    "f29-field",
+    "f29-depths"
+   ],
+   "minLevel": 37,
+   "maxLevel": 40
+  },
+  "f29-outskirts": {
+   "floor": 29,
+   "kind": "field",
+   "name": "Floor 29 Miasma Woods Outskirts",
+   "links": [
+    "f29-field"
+   ],
+   "minLevel": 36,
+   "maxLevel": 37
+  },
+  "f29-secret": {
+   "floor": 29,
+   "kind": "field",
+   "name": "Hidden Floor 29 Poison Mire",
+   "links": [
+    "f29-depths"
+   ],
+   "minLevel": 45,
+   "maxLevel": 47,
+   "aggressive": true,
+   "secret": true
+  },
+  "f29-depths": {
+   "floor": 29,
+   "kind": "field",
+   "name": "Floor 29 Poison Mire Depths",
+   "links": [
+    "f29-wilds",
+    "f29-secret"
+   ],
+   "minLevel": 38,
+   "maxLevel": 39,
+   "aggressive": true
+  },
+  "f29-labyrinth": {
+   "floor": 29,
+   "kind": "labyrinth",
+   "name": "Floor 29 Laby-rinse",
+   "links": [
+    "f29-field",
+    "f29-bossroom"
+   ],
+   "minLevel": 39,
+   "maxLevel": 40,
+   "aggressive": true
+  },
+  "f29-bossroom": {
+   "floor": 29,
+   "kind": "bossroom",
+   "name": "Floor 29 Boss Room",
+   "links": [
+    "f29-labyrinth",
+    "f30-town"
+   ],
+   "maxLevel": 42
+  },
+  "f30-town": {
+   "floor": 30,
+   "kind": "town",
+   "name": "Floor 30 Main Town",
+   "links": [
+    "f29-bossroom",
+    "f30-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal",
+    "weapon-t30",
+    "rapier-t30",
+    "katana-t30",
+    "axe-t30",
+    "mace-t30",
+    "armor-t30",
+    "mid-t30",
+    "head-t30",
+    "shield-t30"
+   ]
+  },
+  "f30-field": {
+   "floor": 30,
+   "kind": "field",
+   "name": "Floor 30 Draggin' Valley",
+   "links": [
+    "f30-town",
+    "f30-wilds",
+    "f30-outskirts",
+    "f30-labyrinth"
+   ],
+   "minLevel": 37,
+   "maxLevel": 38
+  },
+  "f30-wilds": {
+   "floor": 30,
+   "kind": "field",
+   "name": "Floor 30 Draggin' Nest",
+   "links": [
+    "f30-field",
+    "f30-depths"
+   ],
+   "minLevel": 38,
+   "maxLevel": 41,
+   "aggressive": true
+  },
+  "f30-outskirts": {
+   "floor": 30,
+   "kind": "field",
+   "name": "Floor 30 Draggin' Valley Outskirts",
+   "links": [
+    "f30-field"
+   ],
+   "minLevel": 37,
+   "maxLevel": 38
+  },
+  "f30-secret": {
+   "floor": 30,
+   "kind": "field",
+   "name": "Hidden Floor 30 Draggin' Nest",
+   "links": [
+    "f30-depths"
+   ],
+   "minLevel": 46,
+   "maxLevel": 48,
+   "aggressive": true,
+   "secret": true
+  },
+  "f30-depths": {
+   "floor": 30,
+   "kind": "field",
+   "name": "Floor 30 Draggin' Nest Depths",
+   "links": [
+    "f30-wilds",
+    "f30-secret"
+   ],
+   "minLevel": 39,
+   "maxLevel": 40,
+   "aggressive": true
+  },
+  "f30-labyrinth": {
+   "floor": 30,
+   "kind": "labyrinth",
+   "name": "Floor 30 Laby-rinse",
+   "links": [
+    "f30-field",
+    "f30-bossroom"
+   ],
+   "minLevel": 40,
+   "maxLevel": 41,
+   "aggressive": true
+  },
+  "f30-bossroom": {
+   "floor": 30,
+   "kind": "bossroom",
+   "name": "Floor 30 Boss Room",
+   "links": [
+    "f30-labyrinth",
+    "f31-town"
+   ],
+   "maxLevel": 43
+  },
+  "f31-town": {
+   "floor": 31,
+   "kind": "town",
+   "name": "Mist-o",
+   "links": [
+    "f30-bossroom",
+    "f31-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal",
+    "light-t30",
+    "feet-t30"
+   ]
+  },
+  "f31-field": {
+   "floor": 31,
+   "kind": "field",
+   "name": "Floor 31 Foggy Highlands",
+   "links": [
+    "f31-town",
+    "f31-wilds",
+    "f31-outskirts",
+    "f31-labyrinth"
+   ],
+   "minLevel": 39,
+   "maxLevel": 40
+  },
+  "f31-wilds": {
+   "floor": 31,
+   "kind": "field",
+   "name": "Floor 31 Misty Gorge",
+   "links": [
+    "f31-field",
+    "f31-depths"
+   ],
+   "minLevel": 40,
+   "maxLevel": 43,
+   "aggressive": true
+  },
+  "f31-outskirts": {
+   "floor": 31,
+   "kind": "field",
+   "name": "Floor 31 Foggy Highlands Outskirts",
+   "links": [
+    "f31-field"
+   ],
+   "minLevel": 39,
+   "maxLevel": 40
+  },
+  "f31-secret": {
+   "floor": 31,
+   "kind": "field",
+   "name": "Hidden Floor 31 Misty Gorge",
+   "links": [
+    "f31-depths"
+   ],
+   "minLevel": 48,
+   "maxLevel": 50,
+   "aggressive": true,
+   "secret": true
+  },
+  "f31-depths": {
+   "floor": 31,
+   "kind": "field",
+   "name": "Floor 31 Misty Gorge Depths",
+   "links": [
+    "f31-wilds",
+    "f31-secret"
+   ],
+   "minLevel": 41,
+   "maxLevel": 42,
+   "aggressive": true
+  },
+  "f31-labyrinth": {
+   "floor": 31,
+   "kind": "labyrinth",
+   "name": "Floor 31 Laby-rinse",
+   "links": [
+    "f31-field",
+    "f31-bossroom"
+   ],
+   "minLevel": 42,
+   "maxLevel": 43,
+   "aggressive": true
+  },
+  "f31-bossroom": {
+   "floor": 31,
+   "kind": "bossroom",
+   "name": "Floor 31 Boss Room",
+   "links": [
+    "f31-labyrinth",
+    "f32-town"
+   ],
+   "maxLevel": 45
+  },
+  "f32-town": {
+   "floor": 32,
+   "kind": "town",
+   "name": "Twinkle-town",
+   "links": [
+    "f31-bossroom",
+    "f32-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f32-field": {
+   "floor": 32,
+   "kind": "field",
+   "name": "Floor 32 Crystal Caves",
+   "links": [
+    "f32-town",
+    "f32-wilds",
+    "f32-outskirts",
+    "f32-labyrinth"
+   ],
+   "minLevel": 40,
+   "maxLevel": 41
+  },
+  "f32-wilds": {
+   "floor": 32,
+   "kind": "field",
+   "name": "Floor 32 Deep Vein",
+   "links": [
+    "f32-field",
+    "f32-depths"
+   ],
+   "minLevel": 41,
+   "maxLevel": 44,
+   "aggressive": true
+  },
+  "f32-outskirts": {
+   "floor": 32,
+   "kind": "field",
+   "name": "Floor 32 Crystal Caves Outskirts",
+   "links": [
+    "f32-field"
+   ],
+   "minLevel": 40,
+   "maxLevel": 41
+  },
+  "f32-secret": {
+   "floor": 32,
+   "kind": "field",
+   "name": "Hidden Floor 32 Deep Vein",
+   "links": [
+    "f32-depths"
+   ],
+   "minLevel": 49,
+   "maxLevel": 51,
+   "aggressive": true,
+   "secret": true
+  },
+  "f32-depths": {
+   "floor": 32,
+   "kind": "field",
+   "name": "Floor 32 Deep Vein Depths",
+   "links": [
+    "f32-wilds",
+    "f32-secret"
+   ],
+   "minLevel": 42,
+   "maxLevel": 43,
+   "aggressive": true
+  },
+  "f32-labyrinth": {
+   "floor": 32,
+   "kind": "labyrinth",
+   "name": "Floor 32 Laby-rinse",
+   "links": [
+    "f32-field",
+    "f32-bossroom"
+   ],
+   "minLevel": 43,
+   "maxLevel": 44,
+   "aggressive": true
+  },
+  "f32-bossroom": {
+   "floor": 32,
+   "kind": "bossroom",
+   "name": "Floor 32 Boss Room",
+   "links": [
+    "f32-labyrinth",
+    "f33-town"
+   ],
+   "maxLevel": 46
+  },
+  "f33-town": {
+   "floor": 33,
+   "kind": "town",
+   "name": "Cloud-y",
+   "links": [
+    "f32-bossroom",
+    "f33-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f33-field": {
+   "floor": 33,
+   "kind": "field",
+   "name": "Floor 33 Sky Isles",
+   "links": [
+    "f33-town",
+    "f33-wilds",
+    "f33-outskirts",
+    "f33-labyrinth"
+   ],
+   "minLevel": 41,
+   "maxLevel": 42
+  },
+  "f33-wilds": {
+   "floor": 33,
+   "kind": "field",
+   "name": "Floor 33 Gale Cliffs",
+   "links": [
+    "f33-field",
+    "f33-depths"
+   ],
+   "minLevel": 42,
+   "maxLevel": 45,
+   "aggressive": true
+  },
+  "f33-outskirts": {
+   "floor": 33,
+   "kind": "field",
+   "name": "Floor 33 Sky Isles Outskirts",
+   "links": [
+    "f33-field"
+   ],
+   "minLevel": 41,
+   "maxLevel": 42
+  },
+  "f33-secret": {
+   "floor": 33,
+   "kind": "field",
+   "name": "Hidden Floor 33 Gale Cliffs",
+   "links": [
+    "f33-depths"
+   ],
+   "minLevel": 50,
+   "maxLevel": 52,
+   "aggressive": true,
+   "secret": true
+  },
+  "f33-depths": {
+   "floor": 33,
+   "kind": "field",
+   "name": "Floor 33 Gale Cliffs Depths",
+   "links": [
+    "f33-wilds",
+    "f33-secret"
+   ],
+   "minLevel": 43,
+   "maxLevel": 44,
+   "aggressive": true
+  },
+  "f33-labyrinth": {
+   "floor": 33,
+   "kind": "labyrinth",
+   "name": "Floor 33 Laby-rinse",
+   "links": [
+    "f33-field",
+    "f33-bossroom"
+   ],
+   "minLevel": 44,
+   "maxLevel": 45,
+   "aggressive": true
+  },
+  "f33-bossroom": {
+   "floor": 33,
+   "kind": "bossroom",
+   "name": "Floor 33 Boss Room",
+   "links": [
+    "f33-labyrinth",
+    "f34-town"
+   ],
+   "maxLevel": 47
+  },
+  "f34-town": {
+   "floor": 34,
+   "kind": "town",
+   "name": "Gear-y",
+   "links": [
+    "f33-bossroom",
+    "f34-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f34-field": {
+   "floor": 34,
+   "kind": "field",
+   "name": "Floor 34 Clockwork Streets",
+   "links": [
+    "f34-town",
+    "f34-wilds",
+    "f34-outskirts",
+    "f34-labyrinth"
+   ],
+   "minLevel": 42,
+   "maxLevel": 43
+  },
+  "f34-wilds": {
+   "floor": 34,
+   "kind": "field",
+   "name": "Floor 34 Steam Factory",
+   "links": [
+    "f34-field",
+    "f34-depths"
+   ],
+   "minLevel": 43,
+   "maxLevel": 46,
+   "aggressive": true
+  },
+  "f34-outskirts": {
+   "floor": 34,
+   "kind": "field",
+   "name": "Floor 34 Clockwork Streets Outskirts",
+   "links": [
+    "f34-field"
+   ],
+   "minLevel": 42,
+   "maxLevel": 43
+  },
+  "f34-secret": {
+   "floor": 34,
+   "kind": "field",
+   "name": "Hidden Floor 34 Steam Factory",
+   "links": [
+    "f34-depths"
+   ],
+   "minLevel": 51,
+   "maxLevel": 53,
+   "aggressive": true,
+   "secret": true
+  },
+  "f34-depths": {
+   "floor": 34,
+   "kind": "field",
+   "name": "Floor 34 Steam Factory Depths",
+   "links": [
+    "f34-wilds",
+    "f34-secret"
+   ],
+   "minLevel": 44,
+   "maxLevel": 45,
+   "aggressive": true
+  },
+  "f34-labyrinth": {
+   "floor": 34,
+   "kind": "labyrinth",
+   "name": "Floor 34 Laby-rinse",
+   "links": [
+    "f34-field",
+    "f34-bossroom"
+   ],
+   "minLevel": 45,
+   "maxLevel": 46,
+   "aggressive": true
+  },
+  "f34-bossroom": {
+   "floor": 34,
+   "kind": "bossroom",
+   "name": "Floor 34 Boss Room",
+   "links": [
+    "f34-labyrinth",
+    "f35-town"
+   ],
+   "maxLevel": 48
+  },
+  "f35-town": {
+   "floor": 35,
+   "kind": "town",
+   "name": "Mishy",
+   "links": [
+    "f34-bossroom",
+    "f35-wandering"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal",
+    "weapon-t35",
+    "rapier-t35",
+    "katana-t35",
+    "axe-t35",
+    "mace-t35",
+    "armor-t35",
+    "mid-t35",
+    "light-t35",
+    "head-t35"
+   ]
+  },
+  "f35-wandering": {
+   "floor": 35,
+   "kind": "field",
+   "name": "Forest of Wondering",
+   "links": [
+    "f35-town",
+    "f35-outskirts",
+    "f35-depths",
+    "f35-labyrinth"
+   ],
+   "minLevel": 44,
+   "maxLevel": 46
+  },
+  "f35-outskirts": {
+   "floor": 35,
+   "kind": "field",
+   "name": "Forest of Wondering Outskirts",
+   "links": [
+    "f35-wandering"
+   ],
+   "minLevel": 44,
+   "maxLevel": 45
+  },
+  "f35-secret": {
+   "floor": 35,
+   "kind": "field",
+   "name": "Hidden Forest of Wondering",
+   "links": [
+    "f35-depths"
+   ],
+   "minLevel": 53,
+   "maxLevel": 55,
+   "aggressive": true,
+   "secret": true
+  },
+  "f35-depths": {
+   "floor": 35,
+   "kind": "field",
+   "name": "Forest of Wondering Depths",
+   "links": [
+    "f35-wandering",
+    "f35-secret"
+   ],
+   "minLevel": 46,
+   "maxLevel": 47,
+   "aggressive": true
+  },
+  "f35-labyrinth": {
+   "floor": 35,
+   "kind": "labyrinth",
+   "name": "Floor 35 Laby-rinse",
+   "links": [
+    "f35-wandering",
+    "f35-bossroom"
+   ],
+   "minLevel": 47,
+   "maxLevel": 48,
+   "aggressive": true
+  },
+  "f35-bossroom": {
+   "floor": 35,
+   "kind": "bossroom",
+   "name": "Floor 35 Boss Room",
+   "links": [
+    "f35-labyrinth",
+    "f36-town"
+   ],
+   "maxLevel": 50
+  },
+  "f36-town": {
+   "floor": 36,
+   "kind": "town",
+   "name": "Temple Run",
+   "links": [
+    "f35-bossroom",
+    "f36-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal",
+    "feet-t35",
+    "shield-t35"
+   ]
+  },
+  "f36-field": {
+   "floor": 36,
+   "kind": "field",
+   "name": "Floor 36 Valley of Kings-ize",
+   "links": [
+    "f36-town",
+    "f36-wilds",
+    "f36-outskirts",
+    "f36-labyrinth"
+   ],
+   "minLevel": 45,
+   "maxLevel": 46
+  },
+  "f36-wilds": {
+   "floor": 36,
+   "kind": "field",
+   "name": "Floor 36 Tomb Chambers",
+   "links": [
+    "f36-field",
+    "f36-depths"
+   ],
+   "minLevel": 46,
+   "maxLevel": 49,
+   "aggressive": true
+  },
+  "f36-outskirts": {
+   "floor": 36,
+   "kind": "field",
+   "name": "Floor 36 Valley of Kings-ize Outskirts",
+   "links": [
+    "f36-field"
+   ],
+   "minLevel": 45,
+   "maxLevel": 46
+  },
+  "f36-secret": {
+   "floor": 36,
+   "kind": "field",
+   "name": "Hidden Floor 36 Tomb Chambers",
+   "links": [
+    "f36-depths"
+   ],
+   "minLevel": 54,
+   "maxLevel": 56,
+   "aggressive": true,
+   "secret": true
+  },
+  "f36-depths": {
+   "floor": 36,
+   "kind": "field",
+   "name": "Floor 36 Tomb Chambers Depths",
+   "links": [
+    "f36-wilds",
+    "f36-secret"
+   ],
+   "minLevel": 47,
+   "maxLevel": 48,
+   "aggressive": true
+  },
+  "f36-labyrinth": {
+   "floor": 36,
+   "kind": "labyrinth",
+   "name": "Floor 36 Laby-rinse",
+   "links": [
+    "f36-field",
+    "f36-bossroom"
+   ],
+   "minLevel": 48,
+   "maxLevel": 49,
+   "aggressive": true
+  },
+  "f36-bossroom": {
+   "floor": 36,
+   "kind": "bossroom",
+   "name": "Floor 36 Boss Room",
+   "links": [
+    "f36-labyrinth",
+    "f37-town"
+   ],
+   "maxLevel": 51
+  },
+  "f37-town": {
+   "floor": 37,
+   "kind": "town",
+   "name": "Coral-ina",
+   "links": [
+    "f36-bossroom",
+    "f37-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f37-field": {
+   "floor": 37,
+   "kind": "field",
+   "name": "Floor 37 Coral Shallows",
+   "links": [
+    "f37-town",
+    "f37-wilds",
+    "f37-outskirts",
+    "f37-labyrinth"
+   ],
+   "minLevel": 46,
+   "maxLevel": 47
+  },
+  "f37-wilds": {
+   "floor": 37,
+   "kind": "field",
+   "name": "Floor 37 Shipwreck Waters",
+   "links": [
+    "f37-field",
+    "f37-depths"
+   ],
+   "minLevel": 47,
+   "maxLevel": 50,
+   "aggressive": true
+  },
+  "f37-outskirts": {
+   "floor": 37,
+   "kind": "field",
+   "name": "Floor 37 Coral Shallows Outskirts",
+   "links": [
+    "f37-field"
+   ],
+   "minLevel": 46,
+   "maxLevel": 47
+  },
+  "f37-secret": {
+   "floor": 37,
+   "kind": "field",
+   "name": "Hidden Floor 37 Shipwreck Waters",
+   "links": [
+    "f37-depths"
+   ],
+   "minLevel": 55,
+   "maxLevel": 57,
+   "aggressive": true,
+   "secret": true
+  },
+  "f37-depths": {
+   "floor": 37,
+   "kind": "field",
+   "name": "Floor 37 Shipwreck Waters Depths",
+   "links": [
+    "f37-wilds",
+    "f37-secret"
+   ],
+   "minLevel": 48,
+   "maxLevel": 49,
+   "aggressive": true
+  },
+  "f37-labyrinth": {
+   "floor": 37,
+   "kind": "labyrinth",
+   "name": "Floor 37 Laby-rinse",
+   "links": [
+    "f37-field",
+    "f37-bossroom"
+   ],
+   "minLevel": 49,
+   "maxLevel": 50,
+   "aggressive": true
+  },
+  "f37-bossroom": {
+   "floor": 37,
+   "kind": "bossroom",
+   "name": "Floor 37 Boss Room",
+   "links": [
+    "f37-labyrinth",
+    "f38-town"
+   ],
+   "maxLevel": 52
+  },
+  "f38-town": {
+   "floor": 38,
+   "kind": "town",
+   "name": "Lantern-ville",
+   "links": [
+    "f37-bossroom",
+    "f38-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal",
+    "mid-t35"
+   ]
+  },
+  "f38-field": {
+   "floor": 38,
+   "kind": "field",
+   "name": "Floor 38 Black Forest-cake",
+   "links": [
+    "f38-town",
+    "f38-wilds",
+    "f38-outskirts",
+    "f38-labyrinth"
+   ],
+   "minLevel": 47,
+   "maxLevel": 48
+  },
+  "f38-wilds": {
+   "floor": 38,
+   "kind": "field",
+   "name": "Floor 38 Abandoned Castle",
+   "links": [
+    "f38-field",
+    "f38-depths"
+   ],
+   "minLevel": 48,
+   "maxLevel": 51,
+   "aggressive": true
+  },
+  "f38-outskirts": {
+   "floor": 38,
+   "kind": "field",
+   "name": "Floor 38 Black Forest-cake Outskirts",
+   "links": [
+    "f38-field"
+   ],
+   "minLevel": 47,
+   "maxLevel": 48
+  },
+  "f38-secret": {
+   "floor": 38,
+   "kind": "field",
+   "name": "Hidden Floor 38 Abandoned Castle",
+   "links": [
+    "f38-depths"
+   ],
+   "minLevel": 56,
+   "maxLevel": 58,
+   "aggressive": true,
+   "secret": true
+  },
+  "f38-depths": {
+   "floor": 38,
+   "kind": "field",
+   "name": "Floor 38 Abandoned Castle Depths",
+   "links": [
+    "f38-wilds",
+    "f38-secret"
+   ],
+   "minLevel": 49,
+   "maxLevel": 50,
+   "aggressive": true
+  },
+  "f38-labyrinth": {
+   "floor": 38,
+   "kind": "labyrinth",
+   "name": "Floor 38 Laby-rinse",
+   "links": [
+    "f38-field",
+    "f38-bossroom"
+   ],
+   "minLevel": 50,
+   "maxLevel": 51,
+   "aggressive": true
+  },
+  "f38-bossroom": {
+   "floor": 38,
+   "kind": "bossroom",
+   "name": "Floor 38 Boss Room",
+   "links": [
+    "f38-labyrinth",
+    "f39-town"
+   ],
+   "maxLevel": 53
+  },
+  "f39-town": {
+   "floor": 39,
+   "kind": "town",
+   "name": "Thorn-ton",
+   "links": [
+    "f38-bossroom",
+    "f39-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal"
+   ]
+  },
+  "f39-field": {
+   "floor": 39,
+   "kind": "field",
+   "name": "Floor 39 Thorn Forest",
+   "links": [
+    "f39-town",
+    "f39-wilds",
+    "f39-outskirts",
+    "f39-labyrinth"
+   ],
+   "minLevel": 49,
+   "maxLevel": 50
+  },
+  "f39-wilds": {
+   "floor": 39,
+   "kind": "field",
+   "name": "Floor 39 Hornet Nest-le",
+   "links": [
+    "f39-field",
+    "f39-depths"
+   ],
+   "minLevel": 50,
+   "maxLevel": 53,
+   "aggressive": true
+  },
+  "f39-outskirts": {
+   "floor": 39,
+   "kind": "field",
+   "name": "Floor 39 Thorn Forest Outskirts",
+   "links": [
+    "f39-field"
+   ],
+   "minLevel": 49,
+   "maxLevel": 50
+  },
+  "f39-secret": {
+   "floor": 39,
+   "kind": "field",
+   "name": "Hidden Floor 39 Hornet Nest-le",
+   "links": [
+    "f39-depths"
+   ],
+   "minLevel": 58,
+   "maxLevel": 60,
+   "aggressive": true,
+   "secret": true
+  },
+  "f39-depths": {
+   "floor": 39,
+   "kind": "field",
+   "name": "Floor 39 Hornet Nest-le Depths",
+   "links": [
+    "f39-wilds",
+    "f39-secret"
+   ],
+   "minLevel": 51,
+   "maxLevel": 52,
+   "aggressive": true
+  },
+  "f39-labyrinth": {
+   "floor": 39,
+   "kind": "labyrinth",
+   "name": "Floor 39 Laby-rinse",
+   "links": [
+    "f39-field",
+    "f39-bossroom"
+   ],
+   "minLevel": 52,
+   "maxLevel": 53,
+   "aggressive": true
+  },
+  "f39-bossroom": {
+   "floor": 39,
+   "kind": "bossroom",
+   "name": "Floor 39 Boss Room",
+   "links": [
+    "f39-labyrinth",
+    "f40-town"
+   ],
+   "maxLevel": 55
+  },
+  "f40-town": {
+   "floor": 40,
+   "kind": "town",
+   "name": "Obsidi-town",
+   "links": [
+    "f39-bossroom",
+    "f40-field"
+   ],
+   "shop": [
+    "potion-2d",
+    "potion-3",
+    "instant-3",
+    "crystal-teleport",
+    "crystal-heal",
+    "weapon-t40",
+    "rapier-t40",
+    "katana-t40",
+    "axe-t40",
+    "mace-t40",
+    "armor-t40",
+    "light-t40",
+    "head-t40",
+    "feet-t40",
+    "shield-t40"
+   ]
+  },
+  "f40-field": {
+   "floor": 40,
+   "kind": "field",
+   "name": "Floor 40 Scorched Plains",
+   "links": [
+    "f40-town",
+    "f40-wilds",
+    "f40-outskirts",
+    "f40-labyrinth"
+   ],
+   "minLevel": 50,
+   "maxLevel": 51
+  },
+  "f40-wilds": {
+   "floor": 40,
+   "kind": "field",
+   "name": "Floor 40 Demon Castle Walls",
+   "links": [
+    "f40-field",
+    "f40-depths"
+   ],
+   "minLevel": 51,
+   "maxLevel": 54,
+   "aggressive": true
+  },
+  "f40-outskirts": {
+   "floor": 40,
+   "kind": "field",
+   "name": "Floor 40 Scorched Plains Outskirts",
+   "links": [
+    "f40-field"
+   ],
+   "minLevel": 50,
+   "maxLevel": 51
+  },
+  "f40-secret": {
+   "floor": 40,
+   "kind": "field",
+   "name": "Hidden Floor 40 Demon Castle Walls",
+   "links": [
+    "f40-depths"
+   ],
+   "minLevel": 59,
+   "maxLevel": 61,
+   "aggressive": true,
+   "secret": true
+  },
+  "f40-depths": {
+   "floor": 40,
+   "kind": "field",
+   "name": "Floor 40 Demon Castle Walls Depths",
+   "links": [
+    "f40-wilds",
+    "f40-secret"
+   ],
+   "minLevel": 52,
+   "maxLevel": 53,
+   "aggressive": true
+  },
+  "f40-labyrinth": {
+   "floor": 40,
+   "kind": "labyrinth",
+   "name": "Floor 40 Laby-rinse",
+   "links": [
+    "f40-field",
+    "f40-bossroom"
+   ],
+   "minLevel": 53,
+   "maxLevel": 54,
+   "aggressive": true
+  },
+  "f40-bossroom": {
+   "floor": 40,
+   "kind": "bossroom",
+   "name": "Floor 40 Boss Room",
+   "links": [
+    "f40-labyrinth",
+    "f41-town"
+   ],
+   "maxLevel": 56
+  },
+  "f41-town": {
+   "floor": 41,
+   "kind": "town",
+   "name": "Floor 41",
+   "links": [
+    "f40-bossroom"
+   ]
+  }
+ }
+}

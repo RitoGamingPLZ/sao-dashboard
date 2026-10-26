@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // One compact card per character; shared by the Characters list and party member lists.
+import { ITEMS, shopStock } from '#shared/game-rules'
 import type { AccountSummary } from '#shared/types'
 
 const props = withDefaults(defineProps<{ account: AccountSummary, showActions?: boolean }>(), { showActions: true })
@@ -25,9 +26,28 @@ const hpText = computed(() => {
 })
 const expText = computed(() => (player.value?.expPct != null ? `${player.value.expPct}%` : formatNumber(player.value?.exp)))
 
-const toggleFarm = () => accountAction(props.account.id, mode.value === 'farm' ? 'stopHunt' : 'startHunt')
+// Farm = keep-farming mode (moves to better areas, restarts after interruptions).
+const toggleFarm = () => accountAction(props.account.id, props.account.autoFarm ? 'stopHunt' : 'farm')
+const farmLabel = computed(() => (props.account.autoFarm?.untilLevel ? `${t('farm')} → Lv${props.account.autoFarm.untilLevel}` : t('farm')))
 const toggleBoss = () => accountAction(props.account.id, mode.value === 'boss' ? 'stopBoss' : 'startBoss')
 const doMission = () => accountAction(props.account.id, 'completeMission')
+const reconnect = () => accountAction(props.account.id, 'reconnect')
+
+// Default potion: what the game auto-drinks. Choices are the potions sold on unlocked floors.
+const potion = computed(() => player.value?.consumables.autoDrink)
+const potionChoices = computed(() => {
+  const unlockedFloors = Array.from({ length: player.value?.frontierFloor ?? 1 }, (_, i) => i + 1)
+  const itemIds = new Set([...unlockedFloors.flatMap(shopStock), potion.value?.itemId ?? ''])
+  return [...itemIds].filter((itemId) => ITEMS[itemId]?.kind === 'potion')
+})
+const setPotion = (itemId: string) =>
+  accountAction(props.account.id, 'raw', { command: { type: 'updateSettings', settings: { potionItem: itemId } } })
+// "Keep N": restock back up to N when below half of it.
+async function setKeepCount(event: Event) {
+  const keepCount = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value)))
+  await runAndReport(() => callApi('PUT', `/api/accounts/${props.account.id}/safety`,
+    { safety: { restock: { autoDrinkTarget: keepCount, autoDrinkMin: Math.ceil(keepCount / 2) } } }), `Keeping ${keepCount} potions`)
+}
 </script>
 
 <template>
@@ -40,6 +60,7 @@ const doMission = () => accountAction(props.account.id, 'completeMission')
       <span class="row-rule" />
       <span class="row-status">{{ doingLabel }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></span>
       <span class="row-location" :title="player?.areaId || ''">{{ player?.areaId || '—' }}</span>
+      <button class="icon-button" :class="{ urgent: !account.isConnected }" :title="t('reconnect')" :aria-label="`${t('reconnect')} ${account.name}`" @click="reconnect">⟳</button>
     </div>
     <div class="row-bars">
       <div class="row-bar">
@@ -56,13 +77,21 @@ const doMission = () => accountAction(props.account.id, 'completeMission')
       <span class="field"><b>摳</b> {{ formatCompact(player?.gold) }}</span>
       <span class="field"><b>EXP/m</b> {{ formatNumber(account.rates?.expPerMin) }}</span>
     </div>
+    <div v-if="player" class="row-potion">
+      <b>{{ t('potion') }}</b>
+      <select :value="potion?.itemId" :aria-label="`${t('potion')} ${account.name}`" @change="setPotion(($event.target as HTMLSelectElement).value)">
+        <option v-for="itemId in potionChoices" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
+      </select>
+      <span :class="{ alert: (potion?.quantity ?? 0) < account.safety.restock.autoDrinkMin }">×{{ potion?.quantity ?? 0 }}</span>
+      <label>{{ t('keep') }} <input type="number" min="0" :value="account.safety.restock.autoDrinkTarget" @change="setKeepCount"></label>
+    </div>
     <div class="row-bottom">
       <div class="row-alerts">
         <p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p>
       </div>
       <div class="row-actions">
         <template v-if="showActions">
-          <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!player" @click="toggleFarm">{{ t('farm') }}</button>
+          <button class="button small" :class="{ primary: account.autoFarm }" :aria-pressed="Boolean(account.autoFarm)" :disabled="!player" @click="toggleFarm">{{ farmLabel }}</button>
           <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!player" @click="toggleBoss">{{ t('boss') }}</button>
           <button class="button small" :disabled="!player" @click="doMission">{{ t('mission') }}</button>
         </template>

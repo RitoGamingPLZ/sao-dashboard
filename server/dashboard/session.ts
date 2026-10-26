@@ -3,10 +3,10 @@
 // never touches another.
 
 import { EventEmitter } from 'node:events'
-import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS } from '#shared/game-rules'
-import type { AccountSummary, LogEvent, PartyRole, Safety } from '#shared/types'
+import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS } from '#shared/game-rules'
+import type { AccountSummary, AutoFarm, LogChoice, LogEvent, PartyRole, Safety } from '#shared/types'
 import type { SaoProtocol, CommandKey } from '../sao/protocol'
-import type { CommandResult, GameCommand, GameSocket, SaoConnector } from '../sao/connector'
+import type { CommandResult, GameCommand, GameLogEntry, GameSocket, SaoConnector } from '../sao/connector'
 import { decideSafety, planRestock, DEFAULT_SAFETY } from './safety'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
@@ -17,13 +17,24 @@ const STALE_AFTER_MS = 10000
 const MIASMA_STAGE_MS = 20 * 60 * 1000
 const METRICS_WINDOW_MS = 15 * 60 * 1000
 const MAX_BUY_PER_CALL = 500
+const QUEST_VISIT_MS = 10 * 60 * 1000
+
+// Game log params look like {a:{a:'f1-west'}} (area), {m:{m:'f1-boar'}} (monster), {st:'prologue'}.
+function describeGameValue(value: unknown): string {
+  if (value && typeof value === 'object') {
+    const inner = Object.values(value as Record<string, unknown>)[0]
+    if (typeof inner === 'string') return WORLD_AREAS[inner]?.name ?? inner
+    return JSON.stringify(value)
+  }
+  return String(value)
+}
 
 const isFightingActivity = (activityType: string) => activityType === 'hunting' || activityType === 'boss'
 
 export interface SessionTiming { safetyMs: number, mainMs: number, sampleMs: number }
-export interface SessionSettings { safety?: Partial<Safety>, preferredWeapon?: string | null }
+export interface SessionSettings { safety?: Partial<Safety>, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean }
 
-interface SessionEvents { event: [event: LogEvent], halted: [reason: string] }
+interface SessionEvents { event: [event: LogEvent], halted: [reason: string], settingsChanged: [] }
 
 export class Session extends EventEmitter<SessionEvents> {
   readonly id: string
@@ -34,6 +45,9 @@ export class Session extends EventEmitter<SessionEvents> {
   haltReason: string | null = null // why the safety engine stopped this bot
   partyRole: PartyRole | null = null
   preferredWeapon: string | null
+  autoFarm: AutoFarm | null
+  // Logged in somewhere else (e.g. the player's browser): stay offline, even across restarts, until Reconnect.
+  isOnHold: boolean
   lastNudge: { commandKey: CommandKey, sentAt: number } | null = null
   events: LogEvent[] = []
   readonly client: GameSocket
@@ -43,6 +57,7 @@ export class Session extends EventEmitter<SessionEvents> {
   private criticalTimes: number[] = []
   private lastSafetyActionAt = 0
   private isRunningSafety = false
+  private lastQuestVisitAt = 0
   private samples: Array<{ takenAt: number, gold: number, exp: number, level: number }> = []
   private timers: Array<ReturnType<typeof setInterval>> = []
 
@@ -65,6 +80,8 @@ export class Session extends EventEmitter<SessionEvents> {
     this.protocol = options.protocol
     this.safety = structuredClone({ ...DEFAULT_SAFETY, ...options.settings?.safety })
     this.preferredWeapon = options.settings?.preferredWeapon || null
+    this.autoFarm = options.settings?.autoFarm ?? null
+    this.isOnHold = options.settings?.isOnHold ?? false
     this.timing = { safetyMs: 500, mainMs: 10000, sampleMs: 10000, ...options.timing }
     this.client = options.connector.openSocket(options.token)
     this.wireClientEvents(options.relink)
@@ -96,20 +113,64 @@ export class Session extends EventEmitter<SessionEvents> {
         replaced: 'Logged in somewhere else — press Reconnect to take over',
         kicked: 'Kicked by the server',
         banned: 'Banned by the server',
+        idleKick: 'Disconnected for idling in town',
+        dead: 'Character died',
       }[reason] ?? `Server ended the session (${reason})`
-      this.log('error', text)
+      const canReconnect = reason === 'replaced' || reason === 'idleKick' || reason === 'kicked'
+      if (reason === 'replaced') { this.isOnHold = true; this.emit('settingsChanged') }
+      this.log('error', text, canReconnect ? { choices: [{ label: 'Reconnect', request: { action: 'reconnect' } }] } : undefined)
       this.raiseAlert('ended', text)
     })
     let previousLevel: number | null = null
+    let wasFallen = false
+    let wasInScene = false
     client.on('patch', () => {
-      const currentLevel = client.player?.level ?? null
+      const player = client.player
+      const currentLevel = player?.level ?? null
       if (previousLevel != null && currentLevel != null && currentLevel > previousLevel) this.log('levelUp', `Level ${currentLevel}`)
       previousLevel = currentLevel
+      // Knocked down in battle / a story scene waiting: the game waits for the player.
+      const isFallen = Boolean(player?.fallen)
+      if (isFallen && !wasFallen) this.log('prompt', 'Fell in battle — the game is waiting', { choices: [{ label: 'Get up', request: { action: 'raw', command: { type: 'rise' } } }] })
+      wasFallen = isFallen
+      const scene = player?.scene as { ok?: boolean } | null | undefined
+      const isInScene = Boolean(scene && !scene.ok)
+      if (isInScene && !wasInScene) this.log('prompt', 'A story scene is waiting', { choices: [{ label: 'Continue', request: { action: 'raw', command: { type: 'sceneOk' } } }] })
+      wasInScene = isInScene
     })
+    client.on('gameLog', (entries) => { for (const entry of entries) this.logGameEntry(entry) })
+    client.on('serverEvent', (message) => this.logServerEvent(message))
+  }
+
+  // The game's own log, minus the per-hit combat/loot chatter (and level-ups, logged above).
+  private logGameEntry(entry: GameLogEntry) {
+    if (['combat', 'loot', 'info', 'level'].includes(entry.kind)) return
+    const params = Object.entries(entry.p || {}).map(([key, value]) => `${key}=${describeGameValue(value)}`).join(' ')
+    this.log(entry.kind === 'danger' ? 'alert' : 'game', params ? `${entry.key} ${params}` : entry.key)
+  }
+
+  private logServerEvent(message: Record<string, any>) {
+    const farmChoice: LogChoice = { label: 'Keep farming', request: { action: 'farm', untilLevel: null } }
+    switch (message.t) {
+      case 'idleWarn':
+        return this.log('prompt', `Idle in town — the game disconnects you in ${Math.round((message.ms ?? 0) / 1000)} s`,
+          { choices: [{ label: 'Stay online', request: { action: 'awake' } }, farmChoice] })
+      case 'partyInvite':
+        return this.log('prompt', `${message.from}${message.level ? ` (Lv${message.level})` : ''} invites you to a party`,
+          { choices: [{ label: 'Join', request: { action: 'partyAccept', name: String(message.from) } }] })
+      case 'reborn': return this.log('alert', `The game gave this login a new character: ${message.name}`)
+      case 'followInvite': return this.log('game', `${message.from} asks you to follow them`)
+      case 'friendRequest': return this.log('game', `${message.from} sent a friend request`)
+      case 'retreat': return this.log('alert', `${message.from} calls a retreat`)
+      case 'rally': return this.log('game', `Rally on floor ${message.floor} (${message.areaId})`)
+      case 'frozen': return this.log('alert', message.on ? 'The game froze this character' : 'Character unfrozen')
+      case 'maintenance': return this.log('alert', `Server maintenance at ${new Date(message.at).toLocaleTimeString()}`)
+    }
   }
 
   start() {
-    this.client.connect()
+    if (this.isOnHold) this.raiseAlert('ended', 'Logged in somewhere else — press Reconnect to take over')
+    else this.client.connect()
     const logErrors = (error: Error) => this.log('error', error.message)
     this.timers = [
       setInterval(() => this.runSafetyTick().catch(logErrors), this.timing.safetyMs),
@@ -125,6 +186,8 @@ export class Session extends EventEmitter<SessionEvents> {
 
   // Take the session back after "logged in somewhere else".
   reconnect() {
+    if (this.isOnHold) { this.isOnHold = false; this.emit('settingsChanged') }
+    this.clearAlert('ended')
     this.client.close()
     this.client.connect()
     this.log('mode', 'Reconnecting')
@@ -132,7 +195,7 @@ export class Session extends EventEmitter<SessionEvents> {
 
   // ---- events & alerts ---------------------------------------------------
 
-  log(kind: string, detail: string, extra?: { source?: string }) {
+  log(kind: string, detail: string, extra?: { source?: string, choices?: LogChoice[] }) {
     const event: LogEvent = { ts: Date.now(), account: this.name, accountId: this.id, kind, detail, ...extra }
     this.events.push(event)
     if (this.events.length > EVENT_LIMIT) this.events.shift()
@@ -252,7 +315,7 @@ export class Session extends EventEmitter<SessionEvents> {
     if (this.criticalTimes.length < this.safety.haltAfterCriticalCount || this.haltReason) return
     this.haltReason = `${this.criticalTimes.length} close calls in 5 min (last: ${reason})`
     this.raiseAlert('halted', `Bot stopped itself: ${this.haltReason}`)
-    this.log('alert', `Halted: ${this.haltReason}`)
+    this.log('alert', `Halted: ${this.haltReason}`, { choices: [{ label: 'Resume', request: { action: 'resume' } }] })
     this.emit('halted', this.haltReason)
     if (this.isHunting) this.command('stopHunt', {}, 'safety')
   }
@@ -278,12 +341,70 @@ export class Session extends EventEmitter<SessionEvents> {
 
   async runMainTick() {
     if (!this.isConnected || !this.player) return
+    await this.checkRestock()
+    await this.keepFarming()
+  }
+
+  private async checkRestock() {
     const plan = this.restockPlan()
     if ('blockedReason' in plan) { this.raiseAlert('stock', plan.blockedReason); return }
     if (!plan.length) { this.clearAlert('stock'); return }
     this.raiseAlert('stock', `Low: ${plan.map((purchase) => purchase.itemId).join(', ')}`)
+    // Don't walk to town for one potion at a time: wait for a batch, unless we're out.
+    const plannedCount = plan.reduce((sum, purchase) => sum + purchase.quantity, 0)
+    const isWorthTheTrip = plannedCount >= 5 || totalPotions(this.player?.inventory) === 0
     const canRestockNow = this.safety.isAutoRestockOn && !this.haltReason && !this.busyLabel && !this.isInBossFight
-    if (canRestockNow) await this.restock()
+    if (canRestockNow && isWorthTheTrip) await this.restock()
+  }
+
+  setAutoFarm(autoFarm: AutoFarm | null) {
+    this.autoFarm = autoFarm
+    this.log('mode', autoFarm ? `Keep farming${autoFarm.untilLevel ? ` until Lv${autoFarm.untilLevel}` : ''}` : 'Keep farming off')
+    this.emit('settingsChanged')
+  }
+
+  // Quests are taken and turned in only in town. Big EXP: a bounty pays the monster's EXP × count × 6.
+  async handleQuests() {
+    this.lastQuestVisitAt = Date.now()
+    await this.command('completeMission') // turn in whatever is finished first, then take new ones
+    await this.sendCommand({ type: 'acceptAllQuests' })
+  }
+
+  // Keep-farming mode: hunt in the best safe area, move up as levels come in,
+  // and start again when the game stops the hunt (story warps, restocks…).
+  async keepFarming() {
+    const player = this.player
+    if (!this.autoFarm || !player || this.haltReason || this.busyLabel || this.partyRole?.isActive || this.isInBossFight) return
+    if (this.autoFarm.untilLevel && player.level >= this.autoFarm.untilLevel) {
+      this.setAutoFarm(null)
+      this.log('prompt', `Reached Lv${player.level} — farming done, going back to town`, { choices: [
+        { label: 'Keep farming', request: { action: 'farm', untilLevel: null } },
+        { label: `Farm to Lv${player.level + 5}`, request: { action: 'farm', untilLevel: player.level + 5 } },
+      ] })
+      await this.withLock('farm: back to town', async () => {
+        if (this.isHunting) await this.command('stopHunt')
+        return this.goTo(townOf(parseArea(player.areaId)?.floor ?? 1))
+      })
+      return
+    }
+    const bestAreaId = safeAreaFor(player.level, 'field', frontierFloor(player.clearedFloors))
+    if (!bestAreaId) { this.raiseAlert('farm', 'No safe area to farm at this level'); return }
+    this.clearAlert('farm')
+    const isInGoodArea = parseArea(player.areaId)?.kind === 'field' && isAreaSafeFor(player.areaId, player.level)
+      && (areaLevel(player.areaId) ?? 0) >= (areaLevel(bestAreaId) ?? 0)
+    // Pop into town every 10 min to turn in and pick up quests (a few seconds' walk).
+    const isQuestVisitDue = Date.now() - this.lastQuestVisitAt > QUEST_VISIT_MS
+    if (this.isHunting && isInGoodArea && !isQuestVisitDue) return
+    const targetAreaId = isInGoodArea ? player.areaId : bestAreaId
+    await this.withLock(`farm: ${targetAreaId}`, async (): Promise<CommandResult> => {
+      if (isQuestVisitDue) await this.goTo(townOf(parseArea(player.areaId)?.floor ?? 1))
+      if (parseArea(this.player?.areaId)?.kind === 'town') await this.handleQuests()
+      if (this.player?.areaId !== targetAreaId) {
+        const travelResult = await this.goTo(targetAreaId)
+        if (travelResult.error) { this.log('error', `Farm: couldn't reach ${targetAreaId} (${travelResult.error})`); return travelResult }
+      }
+      return this.isHunting ? { ok: true } : this.command('startHunt')
+    })
   }
 
   async restock() {
@@ -297,6 +418,7 @@ export class Session extends EventEmitter<SessionEvents> {
       for (const shopFloor of new Set(plan.map((purchase) => purchase.floor))) {
         const travelResult = await this.goTo(townOf(shopFloor))
         if (!travelResult.ok) { this.log('error', `Restock: couldn't reach floor ${shopFloor} town (${travelResult.error})`); break }
+        if (this.autoFarm) await this.handleQuests()
         for (const purchase of plan.filter((candidate) => candidate.floor === shopFloor)) {
           let remaining = purchase.quantity
           while (remaining > 0) {
@@ -366,6 +488,7 @@ export class Session extends EventEmitter<SessionEvents> {
       haltReason: this.haltReason,
       partyRole: this.partyRole,
       preferredWeapon: this.preferredWeapon,
+      autoFarm: this.autoFarm,
       alerts: [...this.alertsByKey.values()].map((alert) => alert.text),
       safety: this.safety,
       player: player && {

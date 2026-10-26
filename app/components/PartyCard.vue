@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { AREA_KINDS, TOP_FLOOR, parseArea } from '#shared/game-rules'
+import { TOP_FLOOR, WORLD_AREAS, areasOnFloor, parseArea } from '#shared/game-rules'
 import type { Party, PartySummary } from '#shared/types'
 
 const props = defineProps<{ party: PartySummary }>()
@@ -9,7 +9,13 @@ const { accounts, takenAccountIds, accountById, patchParty } = useDashboard()
 
 const currentGoal = parseArea(props.party.goal?.areaId)
 const goalFloor = ref(currentGoal?.floor ?? 1)
-const goalKind = ref(currentGoal?.kind ?? 'field')
+const goalAreaId = ref(props.party.goal?.areaId ?? 'f1-town')
+const goalAreaOptions = computed(() => areasOnFloor(goalFloor.value).filter((areaId) => !WORLD_AREAS[areaId]!.secret))
+watch(goalFloor, () => { if (!goalAreaOptions.value.includes(goalAreaId.value)) goalAreaId.value = goalAreaOptions.value[0]! })
+const areaLabel = (areaId: string) => {
+  const area = WORLD_AREAS[areaId]!
+  return area.maxLevel == null ? area.name : `${area.name} (Lv${area.minLevel ?? area.maxLevel}–${area.maxLevel}${area.aggressive ? ', aggressive' : ''})`
+}
 const addMemberQuery = ref('')
 const isAddMemberOpen = ref(false)
 const settingsDialog = ref<HTMLDialogElement>()
@@ -36,7 +42,7 @@ function selectMember(id: string) {
 const removeMember = (id: string) => update({ memberIds: props.party.memberIds.filter((memberId) => memberId !== id) })
 
 function startParty(shouldHunt: boolean) {
-  const areaId = `f${goalFloor.value}-${goalKind.value}`
+  const areaId = goalAreaId.value
   const message = shouldHunt ? 'Party heading out' : 'Party holding'
   if (props.party.isActive) partyCall('POST', `/api/parties/${props.party.id}/goal`, { areaId, shouldHunt }, message)
   else partyCall('POST', `/api/parties/${props.party.id}/start`, { goal: { areaId, shouldHunt } }, message)
@@ -69,8 +75,8 @@ function deleteParty() {
       <select v-model.number="goalFloor" :aria-label="t('goalFloor')">
         <option v-for="floor in floorOptions" :key="floor" :value="floor">F{{ floor }}</option>
       </select>
-      <select v-model="goalKind" :aria-label="t('goalAreaKind')">
-        <option v-for="kind in AREA_KINDS" :key="kind" :value="kind">{{ t(`areaKind_${kind}`) }}</option>
+      <select v-model="goalAreaId" :aria-label="t('goalAreaKind')">
+        <option v-for="areaId in goalAreaOptions" :key="areaId" :value="areaId">{{ areaLabel(areaId) }}</option>
       </select>
       <button class="button small" @click="settingsDialog?.showModal()">{{ t('settings') }}</button>
       <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>

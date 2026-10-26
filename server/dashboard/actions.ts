@@ -1,11 +1,11 @@
 // What each per-account button on the dashboard does.
 
-import { areaLevel, parseArea, safeAreaFor } from '#shared/game-rules'
-import type { AccountAction } from '#shared/types'
-import type { CommandResult, GameCommand } from '../sao/connector'
+import { areaLevel, frontierFloor, isAreaSafeFor, parseArea, safeAreaFor } from '#shared/game-rules'
+import type { ActionRequest } from '#shared/types'
+import type { CommandResult } from '../sao/connector'
 import type { Session } from './session'
 
-export interface ActionRequest { action: AccountAction, areaId?: string, command?: GameCommand }
+export type { ActionRequest }
 
 export async function runAccountAction(session: Session, body: ActionRequest): Promise<CommandResult> {
   const player = session.player
@@ -17,7 +17,7 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
       if (!player) return { error: 'disconnected' }
       // There's no manual "go to" for Farm/Boss: auto-travel to a safe area first if in town.
       if (parseArea(player.areaId)?.kind === 'town') {
-        const targetAreaId = safeAreaFor(player.level, body.action === 'startBoss' ? 'bossroom' : 'field')
+        const targetAreaId = safeAreaFor(player.level, body.action === 'startBoss' ? 'bossroom' : 'field', frontierFloor(player.clearedFloors))
         if (!targetAreaId) return { error: 'noSafeArea' }
         session.withLock(`go to ${targetAreaId}`, () => session.goTo(targetAreaId))
           .then(async (result) => {
@@ -28,8 +28,16 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
       }
       return session.command(body.action, {}, 'dashboard')
     }
+    case 'farm': {
+      const untilLevel = body.untilLevel == null ? null : Math.floor(Number(body.untilLevel))
+      if (untilLevel != null && !(untilLevel > (player?.level ?? 0) && untilLevel <= 999)) return { error: 'untilLevel must be above the current level' }
+      session.setAutoFarm({ untilLevel })
+      session.keepFarming().catch((error: Error) => session.log('error', error.message))
+      return { ok: true, isStarted: true }
+    }
     case 'stopHunt':
     case 'stopBoss':
+      if (session.autoFarm) session.setAutoFarm(null)
       if (session.busyLabel) return busyError
       return session.command(body.action, {}, 'dashboard')
     case 'completeMission': {
@@ -38,13 +46,14 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
       return session.command('completeMission', weapon ? { questType: 'uniqueWeapon', weapon } : {}, 'dashboard')
     }
     case 'town': // emergency teleport crystal; skips the lock on purpose
+      if (session.autoFarm) session.setAutoFarm(null)
       if (!((player?.inventory?.['crystal-teleport'] ?? 0) > 0)) return { error: 'No teleport crystals' }
       return session.command('use', { itemId: 'crystal-teleport' }, 'dashboard')
     case 'goto': {
       const areaId = body.areaId
-      if (!areaId || !parseArea(areaId)) return { error: 'Unknown area id (expected like f40-field)' }
-      const monsterLevel = areaLevel(areaId) ?? 0
-      if (parseArea(areaId)!.kind !== 'town' && player && monsterLevel >= player.level) {
+      if (!areaId || areaLevel(areaId) == null) return { error: 'Unknown area id (expected like f1-west)' }
+      if (player && !isAreaSafeFor(areaId, player.level)) {
+        const monsterLevel = areaLevel(areaId)
         return { error: `${areaId} is monster level ${monsterLevel} — too dangerous for Lv${player.level}` }
       }
       if (session.busyLabel) return busyError
@@ -59,6 +68,13 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
     case 'resume':
       session.resume()
       return { ok: true }
+    case 'awake':
+      session.client.awake()
+      session.log('mode', 'Told the game we are still here')
+      return { ok: true }
+    case 'partyAccept':
+      if (!body.name) return { error: 'name is required' }
+      return session.client.sendPartyOp('accept', body.name)
     case 'reconnect':
       session.reconnect()
       return { ok: true }

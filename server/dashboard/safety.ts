@@ -133,16 +133,18 @@ export function planRestock(player: GamePlayer | null, safety: Safety, frontier:
 
   const budget = Math.floor(((player.col ?? 0) * Math.min(limits.maxSpendPct, 100)) / 100)
   const purchases: Purchase[] = []
+  const unaffordable: string[] = []
   let totalCost = 0
+  // Most important first (potions); an item we can't afford doesn't block the rest.
   for (const shortage of shortages) {
     const price = ITEMS[shortage.itemId]?.price
     const shopFloor = shopFloorFor(shortage.itemId, frontier, currentFloor)
     if (!shopFloor || price == null) continue // unknown price, or not sold on a reachable floor
-    const budgetLeft = budget - totalCost
-    const quantity = Math.min(shortage.quantity, Math.floor(budgetLeft / price))
-    if (quantity <= 0) return { blockedReason: `Not enough gold for ${shortage.itemId} (budget left ${budgetLeft})` }
+    const quantity = Math.min(shortage.quantity, Math.floor((budget - totalCost) / price))
+    if (quantity <= 0) { unaffordable.push(shortage.itemId); continue }
     purchases.push({ itemId: shortage.itemId, quantity, floor: shopFloor, cost: quantity * price })
     totalCost += quantity * price
   }
+  if (!purchases.length && unaffordable.length) return { blockedReason: `Not enough gold for ${unaffordable.join(', ')} (budget ${budget})` }
   return purchases
 }

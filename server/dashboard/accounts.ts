@@ -6,7 +6,7 @@ import { randomUUID } from 'node:crypto'
 import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
 import { WEAPON_TYPES } from '#shared/game-rules'
-import type { Party, Safety, Snapshot } from '#shared/types'
+import type { AutoFarm, Party, Safety, Snapshot } from '#shared/types'
 import type { SaoProtocol } from '../sao/protocol'
 import { SaoConnector, SaoApiError } from '../sao/connector'
 import { Session, type SessionTiming } from './session'
@@ -14,7 +14,7 @@ import { Vault, generatePassword } from './vault'
 import { PartyManager } from './party'
 import { validateSafety, type SafetyUpdate } from './safety'
 
-interface SavedAccount { id: string, account?: string, name: string, safety?: Safety, preferredWeapon?: string | null }
+interface SavedAccount { id: string, account?: string, name: string, safety?: Safety, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean }
 interface Settings { accounts: SavedAccount[], parties: Party[] }
 
 // Game error codes → something a person can act on.
@@ -73,7 +73,7 @@ export class AccountManager {
   saveSettings() {
     const settings: Settings = {
       accounts: this.sessions.map((session) => ({
-        id: session.id, account: session.account, name: session.name, safety: session.safety, preferredWeapon: session.preferredWeapon,
+        id: session.id, account: session.account, name: session.name, safety: session.safety, preferredWeapon: session.preferredWeapon, autoFarm: session.autoFarm, isOnHold: session.isOnHold,
       })),
       parties: this.partyManager?.parties ?? [],
     }
@@ -92,6 +92,7 @@ export class AccountManager {
       relink: () => this.relink(accountId, account),
     })
     session.on('event', (event) => { for (const listener of this.eventListeners) listener(event) })
+    session.on('settingsChanged', () => this.saveSettings())
     this.sessionsById.set(accountId, session)
     session.start()
     return session

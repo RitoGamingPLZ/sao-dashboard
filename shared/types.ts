@@ -83,11 +83,15 @@ export interface AccountSummary {
   haltReason: string | null
   partyRole: PartyRole | null
   preferredWeapon: string | null
+  autoFarm: AutoFarm | null
   alerts: string[]
   safety: Safety
   player: PlayerSummary | null
   rates: { goldPerHour: number | null, expPerMin: number | null }
 }
+
+// Keep farming the best safe area until untilLevel (null = no limit).
+export interface AutoFarm { untilLevel: number | null }
 
 export interface Snapshot { accounts: AccountSummary[], parties: PartySummary[] }
 
@@ -98,11 +102,18 @@ export interface LogEvent {
   kind: string
   detail: string
   source?: string
+  // A question from the game or the bot; each choice is an action to send back.
+  choices?: LogChoice[]
 }
+
+export interface LogChoice { label: string, request: ActionRequest }
+
+// Body of POST /api/accounts/:id/action.
+export interface ActionRequest { action: AccountAction, areaId?: string, command?: { type: string, [key: string]: unknown }, untilLevel?: number | null, name?: string }
 
 export type AccountAction =
   | 'startHunt' | 'stopHunt' | 'startBoss' | 'stopBoss' | 'completeMission'
-  | 'town' | 'goto' | 'restock' | 'resume' | 'reconnect' | 'raw'
+  | 'town' | 'goto' | 'restock' | 'resume' | 'reconnect' | 'raw' | 'farm' | 'awake' | 'partyAccept'
 
 // Every dashboard API call answers with either a payload or { error }.
 export type Result<T = object> = (T & { error?: undefined }) | { error: string, needsConfirm?: boolean }

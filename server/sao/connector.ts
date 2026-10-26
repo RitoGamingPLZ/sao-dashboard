@@ -4,6 +4,7 @@
 // own web client; see protocol.ts.
 
 import { EventEmitter } from 'node:events'
+import { appendFileSync } from 'node:fs'
 import { getPath, type SaoProtocol, type CommandKey, type PartyOpKey } from './protocol'
 
 // ---- HTTP -----------------------------------------------------------------
@@ -111,7 +112,15 @@ interface GameSocketEvents {
   connectError: [error: Error]
   ended: [reason: EndReason]
   queued: [info: { pos?: number, n?: number }]
+  gameLog: [entries: GameLogEntry[]]
+  serverEvent: [message: Record<string, any>]
 }
+
+// One line of the game's own log (sent inside each patch).
+export interface GameLogEntry { t: number, key: string, p?: Record<string, unknown>, kind: string }
+
+// Frames the bots don't act on but the dashboard should show (or ask about).
+const SHOWN_FRAMES = new Set(['idleWarn', 'partyInvite', 'followInvite', 'friendRequest', 'retreat', 'rally', 'frozen', 'maintenance'])
 
 const MAX_BACKOFF_MS = 30000
 const INITIAL_BACKOFF_MS = 1000
@@ -161,6 +170,9 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
 
   setToken(token: string) { this.token = token }
 
+  // Answer the game's "are you still there?" (idleWarn).
+  awake() { this.sendFrame({ t: 'awake' }) }
+
   connect() {
     this.isClosedByUser = false
     this.endReason = null
@@ -187,10 +199,24 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
   }
 
   private sendFrame(frame: object) {
-    if (this.socket?.readyState === WebSocket.OPEN) this.socket.send(JSON.stringify(frame))
+    if (this.socket?.readyState === WebSocket.OPEN) this.sendRaw(JSON.stringify(frame))
+  }
+
+  private sendRaw(rawFrame: string) {
+    this.socket!.send(rawFrame)
+    this.capture('out', rawFrame)
+  }
+
+  // SAO_WS_LOG=file appends every frame as a JSON line, to study the protocol. Tokens are masked.
+  private capture(direction: 'in' | 'out', rawFrame: string) {
+    const logFile = process.env.SAO_WS_LOG
+    if (!logFile) return
+    const frame = rawFrame.replace(/"token":"[^"]*"/g, '"token":"***"')
+    appendFileSync(logFile, `{"at":${this.now()},"who":${JSON.stringify(this.state?.player?.name ?? null)},"dir":"${direction}","frame":${frame}}\n`)
   }
 
   private handleMessage(rawFrame: string) {
+    this.capture('in', rawFrame)
     let message: Record<string, any>
     try { message = JSON.parse(rawFrame) } catch { return }
     switch (message.t) {
@@ -209,6 +235,7 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
         this.lastPatchAt = this.now()
         this.trackHp()
         this.emit('patch', message.ops || [])
+        if (message.log?.length) this.emit('gameLog', message.log)
         break
       case 'result': {
         const resolveReply = this.pendingReplies.get(message.id)
@@ -225,7 +252,16 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
         break
       case 'replaced': this.end('replaced'); break
       case 'kicked': this.end(message.reason === 'banned' ? 'banned' : 'kicked'); break
-      // Everything else (chat, mail, notices, nearby players…) isn't needed by the bots.
+      case 'idleKick': this.end('idleKick'); break
+      case 'dead': this.end('dead'); break
+      case 'reborn': // the game made a new character for this login: carry on with its token
+        this.token = message.token
+        this.emit('serverEvent', { t: 'reborn', name: message.name })
+        this.socket?.close()
+        break
+      default:
+        if (SHOWN_FRAMES.has(message.t)) this.emit('serverEvent', message)
+      // The rest (chat, mail, notices, nearby players…) isn't needed by the bots.
     }
   }
 
@@ -312,7 +348,7 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
       const timeoutTimer = setTimeout(() => { this.pendingReplies.delete(commandId); resolve({ timeout: true }) }, timeoutMs)
       this.pendingReplies.set(commandId, (result) => { clearTimeout(timeoutTimer); resolve(result) })
       try {
-        this.socket!.send(JSON.stringify({ t: 'cmd', id: commandId, cmd: command }))
+        this.sendRaw(JSON.stringify({ t: 'cmd', id: commandId, cmd: command }))
       } catch {
         clearTimeout(timeoutTimer)
         this.pendingReplies.delete(commandId)

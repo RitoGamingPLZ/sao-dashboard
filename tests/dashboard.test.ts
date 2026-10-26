@@ -11,7 +11,7 @@ import { runAccountAction } from '../server/dashboard/actions'
 import { decideSafety, validateSafety, planRestock, DEFAULT_SAFETY } from '../server/dashboard/safety'
 import { validateParty } from '../server/dashboard/party'
 import { generatePassword } from '../server/dashboard/vault'
-import { areaLevel, shopStock, isAreaSafeFor } from '#shared/game-rules'
+import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor } from '#shared/game-rules'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 async function waitUntil(isDone: () => boolean | undefined, timeoutMs = 8000) {
@@ -22,12 +22,19 @@ async function waitUntil(isDone: () => boolean | undefined, timeoutMs = 8000) {
 
 describe('pure rules', () => {
   test('area levels, shops, safety gate', () => {
-    expect(areaLevel('f40-secret')).toBe(59)
+    expect(areaLevel('f40-secret')).toBe(61)
     expect(areaLevel('f40-town')).toBe(0)
+    expect(areaLevel('f1-field')).toBeNull() // not a real area
     expect(shopStock(16)).toEqual(['potion-2', 'potion-2c', 'instant-2', 'crystal-teleport', 'crystal-heal'])
     expect(shopStock(37)).toEqual(['potion-2d', 'potion-3', 'instant-3', 'crystal-teleport', 'crystal-heal'])
-    expect(isAreaSafeFor('f40-secret', 59)).toBe(false)
-    expect(isAreaSafeFor('f40-secret', 60)).toBe(true)
+    expect(isAreaSafeFor('f40-secret', 99)).toBe(false) // hidden areas never
+    expect(isAreaSafeFor('f1-west', 1)).toBe(true) // monsters Lv1-2, passive
+    expect(isAreaSafeFor('f1-labyrinth', 6)).toBe(false) // Lv5-6 and aggressive
+    expect(isAreaSafeFor('f1-labyrinth', 7)).toBe(true)
+    expect(safeAreaFor(1, 'field', 1)).toMatch(/^f1-(west|outskirts)$/)
+    expect(safeAreaFor(10, 'field', 1)).toMatch(/^f1-(horunka|depths)$/) // floor 2 still locked
+    expect(safeAreaFor(7, 'bossroom', 1)).toBeNull() // boss is Lv7
+    expect(safeAreaFor(8, 'bossroom', 1)).toBe('f1-bossroom')
   })
 
   test('patch apply handles set and delete', () => {
@@ -52,9 +59,14 @@ describe('pure rules', () => {
 
   test('restock plan respects gold budget', () => {
     const player = { name: 'p', level: 40, exp: 0, hp: 1, areaId: 'f37-town', col: 1000, inventory: {}, settings: { potionItem: 'potion-3' } }
-    expect(planRestock(player, DEFAULT_SAFETY, 38)).toHaveProperty('blockedReason')
+    const cheapPlan = planRestock(player, DEFAULT_SAFETY, 38) // 500 budget: potion-3 (1050) no, a 400 crystal yes
+    expect(Array.isArray(cheapPlan) && cheapPlan.map((purchase) => purchase.itemId)).toEqual(['crystal-teleport'])
+    expect(planRestock({ ...player, col: 100 }, DEFAULT_SAFETY, 38)).toHaveProperty('blockedReason')
     const plan = planRestock({ ...player, col: 10_000_000 }, DEFAULT_SAFETY, 38)
     expect(Array.isArray(plan) && plan.map((purchase) => purchase.itemId)).toEqual(['potion-3', 'crystal-teleport', 'crystal-heal'])
+    // Can afford potions but not the 400-gold crystal: still buy the potions.
+    const poorPlan = planRestock({ ...player, level: 3, areaId: 'f1-town', col: 320, settings: { potionItem: 'potion-1' } }, DEFAULT_SAFETY, 1)
+    expect(Array.isArray(poorPlan) && poorPlan.map((purchase) => [purchase.itemId, purchase.quantity])).toEqual([['potion-1', 3]])
   })
 
   test('party validation', () => {
@@ -134,7 +146,7 @@ describe('against the practice server', () => {
 
   test('bot heals itself when HP drops', async () => {
     const tank = mock.accountsByName.get('tank_one').player
-    tank.areaId = 'f20-field'
+    tank.areaId = 'f20-wilds'
     tank.activity = { type: 'hunting' }
     tank.hp = 1000 // 20% of 5000 → emergency heal
     expect(await waitUntil(() => tank.hp > 1000 && tank.instantCdMs > 0)).toBe(true)
@@ -159,7 +171,7 @@ describe('against the practice server', () => {
     const party = partyManager.create('Raid')
     expect((await partyManager.update(party.id, { memberIds: [dps.id, tank.id], leaderId: dps.id, tankId: tank.id, shouldSyncInGame: true })).error).toBeUndefined()
     expect((await partyManager.activate(party.id, { areaId: 'f40-secret' })).error).toMatch(/monster level/)
-    expect((await partyManager.activate(party.id, { areaId: 'f22-field' })).error).toBeUndefined()
+    expect((await partyManager.activate(party.id, { areaId: 'f22-lake' })).error).toBeUndefined()
     await waitUntil(() => mock.partyLog.length >= 2)
     expect(mock.partyLog).toEqual(expect.arrayContaining([
       { from: 'fresh_alt', op: 'invite', name: 'TankChar' },
@@ -167,10 +179,25 @@ describe('against the practice server', () => {
     ]))
     const tankPlayer = mock.accountsByName.get('tank_one').player
     const dpsPlayer = mock.accountsByName.get('fresh_alt').player
-    expect(await waitUntil(() => tankPlayer.areaId === 'f22-field' && dpsPlayer.areaId === 'f22-field', 15000)).toBe(true)
+    expect(await waitUntil(() => tankPlayer.areaId === 'f22-lake' && dpsPlayer.areaId === 'f22-lake', 15000)).toBe(true)
     expect(await waitUntil(() => tankPlayer.activity.type === 'hunting' && dpsPlayer.activity.type === 'hunting')).toBe(true)
     tankPlayer.hp = 1500 // 30% < 40% retreat → others stop and wait
     expect(await waitUntil(() => dpsPlayer.activity.type === 'idle')).toBe(true)
     await partyManager.deactivate(party.id)
+  })
+
+  test('keep farming: goes out to hunt, then stops at the target level and asks what next', async () => {
+    const session = sessionNamed('fresh_alt')
+    const player = mock.accountsByName.get('fresh_alt').player
+    await waitUntil(() => session.busyLabel == null)
+    expect(await runAccountAction(session, { action: 'farm', untilLevel: player.level + 1 })).toMatchObject({ ok: true })
+    expect(await waitUntil(() => session.isHunting && session.player?.areaId?.endsWith('-town') === false, 15000)).toBe(true)
+    player.level += 1
+    await waitUntil(() => session.player?.level === player.level)
+    await session.keepFarming() // the main loop runs this every 10 s
+    expect(session.autoFarm).toBeNull()
+    const question = session.events.findLast((event) => event.choices?.length)
+    expect(question?.detail).toMatch(/farming done/)
+    expect(question?.choices?.map((choice) => choice.label)).toContain('Keep farming')
   })
 })
