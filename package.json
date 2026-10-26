@@ -1,19 +1,31 @@
 {
   "name": "sao-dashboard",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Multi-account dashboard for Snored Art Online: accounts, live stats, parties, per-bot potion/health safety.",
   "type": "module",
-  "engines": { "node": ">=22" },
+  "engines": {
+    "node": ">=22.6"
+  },
   "scripts": {
-    "start": "node src/server.js",
-    "mock": "node mock/mock-server.js",
-    "dev": "node mock/mock-server.js & SAO_PROTOCOL=protocol.mock.json node src/server.js",
-    "dev:mock": "npm run dev",
-    "test": "node --test test/*.test.js",
-    "build:ui": "node build/compile-templates.mjs"
+    "dev": "nuxt dev --host 127.0.0.1 --port 4400",
+    "dev:mock": "node --experimental-strip-types mock/mock-server.ts & SAO_PROTOCOL=protocol.mock.json nuxt dev --host 127.0.0.1 --port 4400",
+    "mock": "node --experimental-strip-types mock/mock-server.ts",
+    "build": "nuxt build",
+    "start": "PORT=${PORT:-4400} HOST=${HOST:-127.0.0.1} node .output/server/index.mjs",
+    "typecheck": "nuxt typecheck",
+    "test": "vitest run",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^4.4.8",
+    "vue": "^3.5.44",
+    "vue-router": "^5.4.0"
   },
   "devDependencies": {
-    "@vue/compiler-dom": "3.4.38"
+    "@types/node": "^22.20.5",
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.3.13"
   }
 }

@@ -1,3 +1,9 @@
 data/
 protocol.local.json
 node_modules/
+.nuxt/
+.output/
+.data/
+.omc/
+.claude/worktrees/
+data.bak-*/
