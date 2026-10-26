@@ -9,7 +9,7 @@
   },
   "scripts": {
     "dev": "nuxt dev --host 127.0.0.1 --port 4400",
-    "dev:mock": "node --experimental-strip-types mock/mock-server.ts & SAO_PROTOCOL=protocol.mock.json nuxt dev --host 127.0.0.1 --port 4400",
+    "dev:mock": "node --experimental-strip-types mock/mock-server.ts & SAO_PROTOCOL=protocol.mock.json SAO_DATA_DIR=data-mock nuxt dev --host 127.0.0.1 --port 4400",
     "mock": "node --experimental-strip-types mock/mock-server.ts",
     "build": "nuxt build",
     "start": "PORT=${PORT:-4400} HOST=${HOST:-127.0.0.1} node .output/server/index.mjs",
