@@ -249,7 +249,7 @@ label.checkbox input[type="checkbox"]:checked::after { transform: scale(1); }
 .char-row.dead { color: var(--danger); border-color: var(--danger); }
 .char-row .alert { font-size: 11px; margin: 0; }
 
-.row-head { display: flex; align-items: baseline; gap: .4rem; min-width: 0; }
+.row-head { display: flex; flex-wrap: wrap; align-items: center; gap: .3rem .4rem; min-width: 0; }
 .row-lv { color: var(--dim); font-size: 11px; flex: none; }
 .row-rule { flex: 1 1 auto; min-width: .75rem; border-bottom: 1px dashed var(--dim); align-self: center; margin-bottom: .2em; }
 .row-location { color: var(--dim); font-size: 11px; white-space: nowrap; flex: none; }
@@ -267,10 +267,8 @@ label.checkbox input[type="checkbox"]:checked::after { transform: scale(1); }
 .row-stats .field { display: inline-flex; align-items: center; gap: .25rem; white-space: nowrap; }
 .row-stats .field b { color: var(--dim); font-weight: 700; font-size: 11px; }
 
-.row-actions { display: flex; flex-wrap: wrap; gap: .15rem; align-items: center; }
-.row-actions .button { padding: 0 .35rem; font-size: 11px; }
-.row-party-controls { display: flex; gap: .15rem; margin-left: auto; white-space: nowrap; }
-.row-party-controls .button { padding: 0 .3rem; font-size: 11px; }
+.row-actions { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; margin-left: auto; }
+.row-party-controls { display: flex; gap: .25rem; margin-left: auto; white-space: nowrap; }
 .link-name { background: none; border: none; padding: 0; margin: 0; font: inherit; font-weight: 700; color: inherit; text-decoration: underline dotted; cursor: pointer; white-space: nowrap; }
 .link-name:hover { color: var(--mate-blue); }
 

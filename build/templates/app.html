@@ -6,8 +6,8 @@
       </div>
       <div class="top-actions">
         <button class="button small" @click="toggleLang">{{ i18nState.lang === 'en' ? '中文' : 'EN' }}</button>
-        <button class="button primary" @click="openAddAccountDialog">{{ t('addAccount') }}</button>
-        <button class="button danger" title="Stop every party and every hunt" @click="pauseAll">{{ t('pauseAll') }}</button>
+        <button class="button small primary" @click="openAddAccountDialog">{{ t('addAccount') }}</button>
+        <button class="button small danger" title="Stop every party and every hunt" @click="pauseAll">{{ t('pauseAll') }}</button>
       </div>
     </header>
 
@@ -23,12 +23,12 @@
         <section class="widget" aria-labelledby="parties-heading">
           <div class="widget-head">
             <h2 id="parties-heading">{{ t('parties') }} <span class="muted">({{ activePartiesCount }} {{ t('active') }})</span></h2>
+            <form v-if="isAddingParty" class="inline-form" @submit.prevent="createParty">
+              <input v-model="newPartyName" :placeholder="t('partyNamePlaceholder')" maxlength="32" :aria-label="t('partyNamePlaceholder')" autofocus>
+              <button class="button small">{{ t('create') }}</button>
+            </form>
             <button class="button small" @click="isAddingParty = !isAddingParty">{{ t('newParty') }}</button>
           </div>
-          <form v-if="isAddingParty" class="inline-form" @submit.prevent="createParty">
-            <input v-model="newPartyName" :placeholder="t('partyNamePlaceholder')" maxlength="32" :aria-label="t('partyNamePlaceholder')" autofocus>
-            <button class="button">{{ t('create') }}</button>
-          </form>
           <p v-if="!snapshot.parties.length" class="empty">{{ t('noParties') }}</p>
           <party-card v-for="party in snapshot.parties" :key="party.id" :party="party" :accounts="snapshot.accounts" :taken-ids="takenAccountIds" @open-profile="openProfile"></party-card>
         </section>
@@ -47,22 +47,20 @@
         <section class="widget" aria-labelledby="log-heading">
           <div class="widget-head">
             <h2 id="log-heading">{{ t('eventLog') }}</h2>
-            <button class="button small" @click="isLogOpen = !isLogOpen">{{ isLogOpen ? t('hide') : t('show') }}</button>
-          </div>
-          <p v-if="!isLogOpen" class="muted hint">{{ logEvents.length }} {{ t('events') }}<template v-if="latestAlert"> · {{ latestAlert }}</template></p>
-          <template v-else>
-            <select v-model="logFilter" :aria-label="t('filterByAccount')">
+            <select v-if="isLogOpen" v-model="logFilter" :aria-label="t('filterByAccount')">
               <option value="">{{ t('allAccounts') }}</option>
               <option v-for="account in snapshot.accounts" :key="account.id" :value="account.id">{{ account.name }}</option>
             </select>
-            <ol class="event-log">
-              <li v-for="(event, i) in visibleLogEvents" :key="i" class="log-row" :class="'kind-' + event.kind">
-                <time>{{ formatTime(event.ts) }}</time>
-                <span class="log-account">{{ event.account }}</span>
-                <span class="log-detail">{{ event.source ? event.detail + ' (' + event.source + ')' : event.detail }}</span>
-              </li>
-            </ol>
-          </template>
+            <button class="button small" @click="isLogOpen = !isLogOpen">{{ isLogOpen ? t('hide') : t('show') }}</button>
+          </div>
+          <p v-if="!isLogOpen" class="muted hint">{{ logEvents.length }} {{ t('events') }}<template v-if="latestAlert"> · {{ latestAlert }}</template></p>
+          <ol v-else class="event-log">
+            <li v-for="(event, i) in visibleLogEvents" :key="i" class="log-row" :class="'kind-' + event.kind">
+              <time>{{ formatTime(event.ts) }}</time>
+              <span class="log-account">{{ event.account }}</span>
+              <span class="log-detail">{{ event.source ? event.detail + ' (' + event.source + ')' : event.detail }}</span>
+            </li>
+          </ol>
         </section>
       </div>
     </main>

@@ -26,12 +26,12 @@ const _hoisted_14 = {
 const _hoisted_15 = { class: "widget-head" }
 const _hoisted_16 = { id: "parties-heading" }
 const _hoisted_17 = { class: "muted" }
-const _hoisted_18 = ["onClick"]
-const _hoisted_19 = ["onSubmit"]
-const _hoisted_20 = ["onUpdate:modelValue", "placeholder", "aria-label"]
-const _hoisted_21 = { class: "button" }
+const _hoisted_18 = ["onSubmit"]
+const _hoisted_19 = ["onUpdate:modelValue", "placeholder", "aria-label"]
+const _hoisted_20 = { class: "button small" }
+const _hoisted_21 = ["onClick"]
 const _hoisted_22 = {
-  key: 1,
+  key: 0,
   class: "empty"
 }
 const _hoisted_23 = {
@@ -55,15 +55,18 @@ const _hoisted_29 = {
 }
 const _hoisted_30 = { class: "widget-head" }
 const _hoisted_31 = { id: "log-heading" }
-const _hoisted_32 = ["onClick"]
-const _hoisted_33 = {
+const _hoisted_32 = ["onUpdate:modelValue", "aria-label"]
+const _hoisted_33 = { value: "" }
+const _hoisted_34 = ["value"]
+const _hoisted_35 = ["onClick"]
+const _hoisted_36 = {
   key: 0,
   class: "muted hint"
 }
-const _hoisted_34 = ["onUpdate:modelValue", "aria-label"]
-const _hoisted_35 = { value: "" }
-const _hoisted_36 = ["value"]
-const _hoisted_37 = { class: "event-log" }
+const _hoisted_37 = {
+  key: 1,
+  class: "event-log"
+}
 const _hoisted_38 = { class: "log-account" }
 const _hoisted_39 = { class: "log-detail" }
 const _hoisted_40 = {
@@ -130,11 +133,11 @@ export function render(_ctx, _cache) {
           onClick: _ctx.toggleLang
         }, _toDisplayString(_ctx.i18nState.lang === 'en' ? '中文' : 'EN'), 9 /* TEXT, PROPS */, _hoisted_7),
         _createElementVNode("button", {
-          class: "button primary",
+          class: "button small primary",
           onClick: _ctx.openAddAccountDialog
         }, _toDisplayString(_ctx.t('addAccount')), 9 /* TEXT, PROPS */, _hoisted_8),
         _createElementVNode("button", {
-          class: "button danger",
+          class: "button small danger",
           title: "Stop every party and every hunt",
           onClick: _ctx.pauseAll
         }, _toDisplayString(_ctx.t('pauseAll')), 9 /* TEXT, PROPS */, _hoisted_9)
@@ -159,29 +162,29 @@ export function render(_ctx, _cache) {
               _createTextVNode(_toDisplayString(_ctx.t('parties')) + " ", 1 /* TEXT */),
               _createElementVNode("span", _hoisted_17, "(" + _toDisplayString(_ctx.activePartiesCount) + " " + _toDisplayString(_ctx.t('active')) + ")", 1 /* TEXT */)
             ]),
+            (_ctx.isAddingParty)
+              ? (_openBlock(), _createElementBlock("form", {
+                  key: 0,
+                  class: "inline-form",
+                  onSubmit: _withModifiers(_ctx.createParty, ["prevent"])
+                }, [
+                  _withDirectives(_createElementVNode("input", {
+                    "onUpdate:modelValue": $event => ((_ctx.newPartyName) = $event),
+                    placeholder: _ctx.t('partyNamePlaceholder'),
+                    maxlength: "32",
+                    "aria-label": _ctx.t('partyNamePlaceholder'),
+                    autofocus: ""
+                  }, null, 8 /* PROPS */, _hoisted_19), [
+                    [_vModelText, _ctx.newPartyName]
+                  ]),
+                  _createElementVNode("button", _hoisted_20, _toDisplayString(_ctx.t('create')), 1 /* TEXT */)
+                ], 40 /* PROPS, NEED_HYDRATION */, _hoisted_18))
+              : _createCommentVNode("v-if", true),
             _createElementVNode("button", {
               class: "button small",
               onClick: $event => (_ctx.isAddingParty = !_ctx.isAddingParty)
-            }, _toDisplayString(_ctx.t('newParty')), 9 /* TEXT, PROPS */, _hoisted_18)
+            }, _toDisplayString(_ctx.t('newParty')), 9 /* TEXT, PROPS */, _hoisted_21)
           ]),
-          (_ctx.isAddingParty)
-            ? (_openBlock(), _createElementBlock("form", {
-                key: 0,
-                class: "inline-form",
-                onSubmit: _withModifiers(_ctx.createParty, ["prevent"])
-              }, [
-                _withDirectives(_createElementVNode("input", {
-                  "onUpdate:modelValue": $event => ((_ctx.newPartyName) = $event),
-                  placeholder: _ctx.t('partyNamePlaceholder'),
-                  maxlength: "32",
-                  "aria-label": _ctx.t('partyNamePlaceholder'),
-                  autofocus: ""
-                }, null, 8 /* PROPS */, _hoisted_20), [
-                  [_vModelText, _ctx.newPartyName]
-                ]),
-                _createElementVNode("button", _hoisted_21, _toDisplayString(_ctx.t('create')), 1 /* TEXT */)
-              ], 40 /* PROPS, NEED_HYDRATION */, _hoisted_19))
-            : _createCommentVNode("v-if", true),
           (!_ctx.snapshot.parties.length)
             ? (_openBlock(), _createElementBlock("p", _hoisted_22, _toDisplayString(_ctx.t('noParties')), 1 /* TEXT */))
             : _createCommentVNode("v-if", true),
@@ -218,13 +221,30 @@ export function render(_ctx, _cache) {
         _createElementVNode("section", _hoisted_29, [
           _createElementVNode("div", _hoisted_30, [
             _createElementVNode("h2", _hoisted_31, _toDisplayString(_ctx.t('eventLog')), 1 /* TEXT */),
+            (_ctx.isLogOpen)
+              ? _withDirectives((_openBlock(), _createElementBlock("select", {
+                  key: 0,
+                  "onUpdate:modelValue": $event => ((_ctx.logFilter) = $event),
+                  "aria-label": _ctx.t('filterByAccount')
+                }, [
+                  _createElementVNode("option", _hoisted_33, _toDisplayString(_ctx.t('allAccounts')), 1 /* TEXT */),
+                  (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.snapshot.accounts, (account) => {
+                    return (_openBlock(), _createElementBlock("option", {
+                      key: account.id,
+                      value: account.id
+                    }, _toDisplayString(account.name), 9 /* TEXT, PROPS */, _hoisted_34))
+                  }), 128 /* KEYED_FRAGMENT */))
+                ], 8 /* PROPS */, _hoisted_32)), [
+                  [_vModelSelect, _ctx.logFilter]
+                ])
+              : _createCommentVNode("v-if", true),
             _createElementVNode("button", {
               class: "button small",
               onClick: $event => (_ctx.isLogOpen = !_ctx.isLogOpen)
-            }, _toDisplayString(_ctx.isLogOpen ? _ctx.t('hide') : _ctx.t('show')), 9 /* TEXT, PROPS */, _hoisted_32)
+            }, _toDisplayString(_ctx.isLogOpen ? _ctx.t('hide') : _ctx.t('show')), 9 /* TEXT, PROPS */, _hoisted_35)
           ]),
           (!_ctx.isLogOpen)
-            ? (_openBlock(), _createElementBlock("p", _hoisted_33, [
+            ? (_openBlock(), _createElementBlock("p", _hoisted_36, [
                 _createTextVNode(_toDisplayString(_ctx.logEvents.length) + " " + _toDisplayString(_ctx.t('events')), 1 /* TEXT */),
                 (_ctx.latestAlert)
                   ? (_openBlock(), _createElementBlock(_Fragment, { key: 0 }, [
@@ -232,34 +252,18 @@ export function render(_ctx, _cache) {
                     ], 64 /* STABLE_FRAGMENT */))
                   : _createCommentVNode("v-if", true)
               ]))
-            : (_openBlock(), _createElementBlock(_Fragment, { key: 1 }, [
-                _withDirectives(_createElementVNode("select", {
-                  "onUpdate:modelValue": $event => ((_ctx.logFilter) = $event),
-                  "aria-label": _ctx.t('filterByAccount')
-                }, [
-                  _createElementVNode("option", _hoisted_35, _toDisplayString(_ctx.t('allAccounts')), 1 /* TEXT */),
-                  (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.snapshot.accounts, (account) => {
-                    return (_openBlock(), _createElementBlock("option", {
-                      key: account.id,
-                      value: account.id
-                    }, _toDisplayString(account.name), 9 /* TEXT, PROPS */, _hoisted_36))
-                  }), 128 /* KEYED_FRAGMENT */))
-                ], 8 /* PROPS */, _hoisted_34), [
-                  [_vModelSelect, _ctx.logFilter]
-                ]),
-                _createElementVNode("ol", _hoisted_37, [
-                  (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.visibleLogEvents, (event, i) => {
-                    return (_openBlock(), _createElementBlock("li", {
-                      key: i,
-                      class: _normalizeClass(["log-row", 'kind-' + event.kind])
-                    }, [
-                      _createElementVNode("time", null, _toDisplayString(_ctx.formatTime(event.ts)), 1 /* TEXT */),
-                      _createElementVNode("span", _hoisted_38, _toDisplayString(event.account), 1 /* TEXT */),
-                      _createElementVNode("span", _hoisted_39, _toDisplayString(event.source ? event.detail + ' (' + event.source + ')' : event.detail), 1 /* TEXT */)
-                    ], 2 /* CLASS */))
-                  }), 128 /* KEYED_FRAGMENT */))
-                ])
-              ], 64 /* STABLE_FRAGMENT */))
+            : (_openBlock(), _createElementBlock("ol", _hoisted_37, [
+                (_openBlock(true), _createElementBlock(_Fragment, null, _renderList(_ctx.visibleLogEvents, (event, i) => {
+                  return (_openBlock(), _createElementBlock("li", {
+                    key: i,
+                    class: _normalizeClass(["log-row", 'kind-' + event.kind])
+                  }, [
+                    _createElementVNode("time", null, _toDisplayString(_ctx.formatTime(event.ts)), 1 /* TEXT */),
+                    _createElementVNode("span", _hoisted_38, _toDisplayString(event.account), 1 /* TEXT */),
+                    _createElementVNode("span", _hoisted_39, _toDisplayString(event.source ? event.detail + ' (' + event.source + ')' : event.detail), 1 /* TEXT */)
+                  ], 2 /* CLASS */))
+                }), 128 /* KEYED_FRAGMENT */))
+              ]))
         ])
       ])
     ]),

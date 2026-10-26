@@ -67,17 +67,17 @@ export function render(_ctx, _cache) {
         [_vModelText, _ctx.goalAreaId]
       ]),
       _createElementVNode("button", {
-        class: "button primary",
+        class: "button small primary",
         onClick: $event => (_ctx.startParty(true))
       }, _toDisplayString(_ctx.party.isActive ? _ctx.t('huntHere') : _ctx.t('startParty')), 9 /* TEXT, PROPS */, _hoisted_7),
       _createElementVNode("button", {
-        class: "button",
+        class: "button small",
         onClick: $event => (_ctx.startParty(false))
       }, _toDisplayString(_ctx.t('hold')), 9 /* TEXT, PROPS */, _hoisted_8),
       (_ctx.party.isActive)
         ? (_openBlock(), _createElementBlock("button", {
             key: 0,
-            class: "button danger",
+            class: "button small danger",
             onClick: _ctx.stopParty
           }, _toDisplayString(_ctx.t('stopParty')), 9 /* TEXT, PROPS */, _hoisted_9))
         : _createCommentVNode("v-if", true),
