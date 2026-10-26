@@ -140,7 +140,16 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
         send({ t: 'result', id: message.id, result });
         sendPlayer(connection.account);
       }
-      if (message.t === 'party' && connection.account) partyLog.push({ from: connection.account.account, op: message.op, name: message.name });
+      if (message.t === 'party' && connection.account) {
+        partyLog.push({ from: connection.account.account, op: message.op, name: message.name });
+        // Like the real game: the invited character gets a partyInvite to accept.
+        if (message.op === 'invite') {
+          const inviter = connection.account.player;
+          for (const other of liveSockets) {
+            if (other.account?.player.name === message.name) other.send({ t: 'partyInvite', from: inviter.name, level: inviter.level });
+          }
+        }
+      }
     }, close));
     socket.on('close', () => liveSockets.delete(connection));
     socket.on('error', () => liveSockets.delete(connection));

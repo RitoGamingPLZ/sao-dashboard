@@ -9,9 +9,9 @@ import { applyPatch, SaoConnector, SaoApiError } from '../server/sao/connector'
 import { AccountManager } from '../server/dashboard/accounts'
 import { runAccountAction } from '../server/dashboard/actions'
 import { decideSafety, validateSafety, planRestock, DEFAULT_SAFETY } from '../server/dashboard/safety'
-import { validateParty } from '../server/dashboard/party'
+import { validateParty, resolveGoal, lowPotionMember } from '../server/dashboard/party'
 import { generatePassword } from '../server/dashboard/vault'
-import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor } from '#shared/game-rules'
+import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor, expToNextLevel } from '#shared/game-rules'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 async function waitUntil(isDone: () => boolean | undefined, timeoutMs = 8000) {
@@ -25,6 +25,7 @@ describe('pure rules', () => {
     expect(areaLevel('f40-secret')).toBe(61)
     expect(areaLevel('f40-town')).toBe(0)
     expect(areaLevel('f1-field')).toBeNull() // not a real area
+    expect([expToNextLevel(1), expToNextLevel(7)]).toEqual([51, 3117]) // the game client's formula
     expect(shopStock(16)).toEqual(['potion-2', 'potion-2c', 'instant-2', 'crystal-teleport', 'crystal-heal'])
     expect(shopStock(37)).toEqual(['potion-2d', 'potion-3', 'instant-3', 'crystal-teleport', 'crystal-heal'])
     expect(isAreaSafeFor('f40-secret', 99)).toBe(false) // hidden areas never
@@ -63,16 +64,31 @@ describe('pure rules', () => {
     expect(Array.isArray(cheapPlan) && cheapPlan.map((purchase) => purchase.itemId)).toEqual(['crystal-teleport'])
     expect(planRestock({ ...player, col: 100 }, DEFAULT_SAFETY, 38)).toHaveProperty('blockedReason')
     const plan = planRestock({ ...player, col: 10_000_000 }, DEFAULT_SAFETY, 38)
-    expect(Array.isArray(plan) && plan.map((purchase) => purchase.itemId)).toEqual(['potion-3', 'crystal-teleport', 'crystal-heal'])
+    expect(Array.isArray(plan) && plan.map((purchase) => purchase.itemId)).toEqual(['potion-3', 'instant-3', 'crystal-teleport', 'crystal-heal'])
     // Can afford potions but not the 400-gold crystal: still buy the potions.
     const poorPlan = planRestock({ ...player, level: 3, areaId: 'f1-town', col: 320, settings: { potionItem: 'potion-1' } }, DEFAULT_SAFETY, 1)
     expect(Array.isArray(poorPlan) && poorPlan.map((purchase) => [purchase.itemId, purchase.quantity])).toEqual([['potion-1', 3]])
   })
 
   test('party validation', () => {
-    const party = { id: 'a', name: 'A', memberIds: ['x', 'y'], leaderId: 'x', tankId: 'z', tankRetreatPct: 40, isActive: false, goal: null, shouldSyncInGame: false }
+    const party = { id: 'a', name: 'A', memberIds: ['x', 'y'], leaderId: 'x', tankId: 'z', tankRetreatPct: 40, isActive: false, goal: null }
     expect(validateParty(party, [])).toMatch(/tank must be a party member/)
     expect(validateParty({ ...party, tankId: 'y' }, [{ id: 'b', name: 'B', memberIds: ['y'] }])).toMatch(/already in party/)
+  })
+
+  test('party states: rest is in town, no fighting in town, Go from rest arrives in standby', () => {
+    expect(resolveGoal({ areaId: 'f1-town' }, { areaId: 'f1-west', mode: 'fight' })).toEqual({ areaId: 'f1-town', mode: 'rest' })
+    expect(resolveGoal({ mode: 'rest' }, { areaId: 'f1-horunka', mode: 'fight' })).toEqual({ areaId: 'f1-town', mode: 'rest' })
+    expect(resolveGoal({ areaId: 'f1-west' }, { areaId: 'f1-town', mode: 'rest' })).toEqual({ areaId: 'f1-west', mode: 'standby' })
+    expect(resolveGoal({ areaId: 'f1-horunka' }, { areaId: 'f1-west', mode: 'fight' })).toEqual({ areaId: 'f1-horunka', mode: 'fight' })
+    expect(resolveGoal({ mode: 'fight' }, { areaId: 'f1-town', mode: 'rest' })).toMatch(/field/)
+    expect(resolveGoal({ mode: 'standby' }, null, 'f1-west')).toEqual({ areaId: 'f1-west', mode: 'standby' })
+  })
+
+  test('boss fights need every member stocked with potions', () => {
+    const member = (name: string, potions: number) => ({ name, player: { settings: { potionItem: 'potion-1' }, inventory: { 'potion-1': potions } }, safety: { restock: { autoDrinkMin: 5 } } })
+    expect(lowPotionMember([member('a', 9), member('b', 5)] as never)).toBeNull()
+    expect(lowPotionMember([member('a', 9), member('b', 4)] as never)).toEqual({ name: 'b', count: 4, needed: 5 })
   })
 
   test('generated passwords are strong', () => {
@@ -169,9 +185,9 @@ describe('against the practice server', () => {
     await waitUntil(() => dps.player?.level === 31)
     const { partyManager } = accounts
     const party = partyManager.create('Raid')
-    expect((await partyManager.update(party.id, { memberIds: [dps.id, tank.id], leaderId: dps.id, tankId: tank.id, shouldSyncInGame: true })).error).toBeUndefined()
+    expect((await partyManager.update(party.id, { memberIds: [dps.id, tank.id], leaderId: dps.id, tankId: tank.id })).error).toBeUndefined()
     expect((await partyManager.activate(party.id, { areaId: 'f40-secret' })).error).toMatch(/monster level/)
-    expect((await partyManager.activate(party.id, { areaId: 'f22-lake' })).error).toBeUndefined()
+    expect((await partyManager.activate(party.id, { areaId: 'f22-lake', mode: 'fight' })).error).toBeUndefined()
     await waitUntil(() => mock.partyLog.length >= 2)
     expect(mock.partyLog).toEqual(expect.arrayContaining([
       { from: 'fresh_alt', op: 'invite', name: 'TankChar' },
@@ -184,6 +200,34 @@ describe('against the practice server', () => {
     tankPlayer.hp = 1500 // 30% < 40% retreat → others stop and wait
     expect(await waitUntil(() => dpsPlayer.activity.type === 'idle')).toBe(true)
     await partyManager.deactivate(party.id)
+    await partyManager.remove(party.id)
+    expect(tank.partyRole).toBeNull() // deleting the party frees its members
+    expect(dps.partyRole).toBeNull()
+  })
+
+  test('removed accounts are remembered: one-click back with a saved password, forget deletes it', async () => {
+    accounts.removeAccount(sessionNamed('dps_two').id) // logged in without saving the password
+    const tankId = sessionNamed('tank_one').id // saved its password
+    accounts.removeAccount(tankId)
+    expect(accounts.listPrevious()).toEqual(expect.arrayContaining([
+      { account: 'tank_one', name: 'TankChar', hasPassword: true },
+      { account: 'dps_two', name: expect.any(String), hasPassword: false },
+    ]))
+    expect(await accounts.restorePrevious('tank_one')).toMatchObject({ id: tankId })
+    expect(accounts.findByAccount('tank_one')).toBeTruthy()
+    expect((await accounts.restorePrevious('dps_two')).error).toMatch(/password/)
+    accounts.forgetPrevious('dps_two')
+    expect(accounts.listPrevious()).toEqual([])
+    expect(await waitUntil(() => sessionNamed('tank_one').isConnected)).toBe(true)
+  })
+
+  test('a log question takes one answer only', () => {
+    const session = sessionNamed('tank_one')
+    session.log('prompt', 'Test question', { choices: [{ label: 'Yes', request: { action: 'resume' } }] })
+    const question = session.events.at(-1)!
+    expect(session.markAnswered(question.ts, 'Yes')).toBe(true)
+    expect(session.markAnswered(question.ts, 'Yes')).toBe(false)
+    expect(question.answer).toBe('Yes')
   })
 
   test('keep farming: goes out to hunt, then stops at the target level and asks what next', async () => {

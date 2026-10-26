@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // The whole dashboard is one page: totals, parties, characters, and the event log docked at the bottom.
+import { MAX_ACCOUNTS } from '#shared/game-rules'
 import AddAccountDialog from '~/components/AddAccountDialog.vue'
 import CreatePartyDialog from '~/components/CreatePartyDialog.vue'
 import ProfileDialog from '~/components/ProfileDialog.vue'
@@ -19,7 +20,7 @@ onMounted(connect)
 
 <template>
   <div>
-    <AppHeader @add-account="addAccountDialog?.open()" />
+    <AppHeader :is-full="accounts.length >= MAX_ACCOUNTS" @add-account="addAccountDialog?.open()" />
     <main>
       <OverviewTiles />
       <div class="widgets-grid">
@@ -34,8 +35,8 @@ onMounted(connect)
 
         <section class="widget" aria-labelledby="accounts-heading">
           <div class="widget-head">
-            <h2 id="accounts-heading">{{ t('characters') }} ({{ accounts.length }})</h2>
-            <button class="button small" @click="addAccountDialog?.open()">{{ t('addAccount') }}</button>
+            <h2 id="accounts-heading">{{ t('characters') }} ({{ accounts.length }}/{{ MAX_ACCOUNTS }})</h2>
+            <button class="button small" :disabled="accounts.length >= MAX_ACCOUNTS" @click="addAccountDialog?.open()">{{ t('addAccount') }}</button>
           </div>
           <p v-if="!accounts.length" class="empty">{{ t('noAccounts') }}</p>
           <div v-else class="char-list">

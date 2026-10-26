@@ -3,7 +3,7 @@
 
 import type { AccountSummary, LogEvent, Party, PartySummary, Snapshot } from '#shared/types'
 
-const MAX_LOG_ROWS = 300
+const MAX_ROWS_PER_ACCOUNT = 150 // the all-characters view shows the latest 300 of these
 
 const snapshot = ref<Snapshot>({ accounts: [], parties: [] })
 const logEvents = ref<LogEvent[]>([])
@@ -18,8 +18,16 @@ async function connect() {
   stream.addEventListener('error', () => { linkState.value = 'down' })
   stream.addEventListener('snapshot', (message) => { snapshot.value = JSON.parse(message.data) })
   stream.addEventListener('log', (message) => {
-    logEvents.value.push(JSON.parse(message.data))
-    if (logEvents.value.length > MAX_LOG_ROWS) logEvents.value.shift()
+    const event: LogEvent = JSON.parse(message.data)
+    logEvents.value.push(event)
+    const ownRows = logEvents.value.filter((row) => row.accountId === event.accountId)
+    if (ownRows.length > MAX_ROWS_PER_ACCOUNT) logEvents.value.splice(logEvents.value.indexOf(ownRows[0]!), 1)
+  })
+  // A question was answered (here or in another tab): it takes no more answers.
+  stream.addEventListener('answered', (message) => {
+    const { accountId, ts, answer } = JSON.parse(message.data)
+    const event = logEvents.value.find((row) => row.accountId === accountId && row.ts === ts)
+    if (event) event.answer = answer
   })
 }
 
@@ -29,7 +37,7 @@ async function connect() {
 function patchParty(party: Party) {
   const parties = snapshot.value.parties
   const index = parties.findIndex((candidate) => candidate.id === party.id)
-  const status = parties[index]?.status ?? 'Off'
+  const status = parties[index]?.status ?? { code: 'off', text: 'Off' }
   if (index === -1) parties.push({ ...party, status })
   else parties.splice(index, 1, { ...party, status })
 }

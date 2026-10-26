@@ -2,22 +2,41 @@
 // The event log as a conversation docked at the bottom: the bots and the game
 // talk, questions carry answer buttons, and the box below sends the next step.
 import { WORLD_AREAS } from '#shared/game-rules'
-import type { ActionRequest, LogEvent } from '#shared/types'
+import type { ActionRequest, LogChoice, LogEvent } from '#shared/types'
 
-const { t } = useI18n()
-const { accounts, logEvents } = useDashboard()
+const { t, areaLabel } = useI18n()
+const { accounts, accountById, logEvents } = useDashboard()
 const targetAccountId = ref('') // '' = every character
 const commandText = ref('')
 const isOpen = ref(true)
-const answeredKeys = ref(new Set<string>())
+const sendingKeys = ref(new Set<string>()) // answers on their way, so a double click sends once
+// Ticks every 5 s so questions close when they expire.
+const now = ref(Date.now())
+let clockTimer: ReturnType<typeof setInterval> | undefined
+onMounted(() => { clockTimer = setInterval(() => { now.value = Date.now() }, 5000) })
+onUnmounted(() => clearInterval(clockTimer))
 const scroller = ref<HTMLOListElement>()
 const CHOICES_EXPIRE_MS = 10 * 60 * 1000
 
 const eventKey = (event: LogEvent) => `${event.accountId}-${event.ts}-${event.detail}`
 const visibleEvents = computed(() =>
-  logEvents.value.filter((event) => !targetAccountId.value || event.accountId === targetAccountId.value).slice(-200))
-const hasOpenChoices = (event: LogEvent) =>
-  Boolean(event.choices?.length) && !answeredKeys.value.has(eventKey(event)) && Date.now() - event.ts < CHOICES_EXPIRE_MS
+  logEvents.value.filter((event) => !targetAccountId.value || event.accountId === targetAccountId.value).slice(-300))
+
+// A choice is moot once its `until` holds for the character, e.g. Reconnect when it's back online.
+function isMoot(choice: LogChoice, event: LogEvent) {
+  const account = accountById(event.accountId)
+  if (!account) return true
+  if (choice.until === 'online') return account.isConnected
+  if (choice.until === 'resumed') return !account.haltReason
+  if (choice.until === 'farming') return account.autoFarm != null
+  return false
+}
+const openChoices = (event: LogEvent) => {
+  if (!event.choices?.length || event.answer || sendingKeys.value.has(eventKey(event))) return []
+  if (now.value > (event.expiresAt ?? event.ts + CHOICES_EXPIRE_MS)) return []
+  return event.choices.filter((choice) => !isMoot(choice, event))
+}
+const hasOpenChoices = (event: LogEvent) => openChoices(event).length > 0
 
 // Stay pinned to the newest line unless the user scrolled up to read.
 watch(() => visibleEvents.value.length, async () => {
@@ -31,9 +50,10 @@ async function send(accountId: string, request: ActionRequest) {
   return runAndReport(() => callApi('POST', `/api/accounts/${accountId}/action`, request))
 }
 
-async function answer(event: LogEvent, request: ActionRequest) {
-  answeredKeys.value.add(eventKey(event))
-  if (!await send(event.accountId, request)) answeredKeys.value.delete(eventKey(event))
+async function answer(event: LogEvent, choice: LogChoice) {
+  sendingKeys.value.add(eventKey(event))
+  await send(event.accountId, { ...choice.request, answering: event.ts, answerLabel: choice.label })
+  sendingKeys.value.delete(eventKey(event)) // the server's 'answered' message closes it for every tab
 }
 
 // Typed-command suggestions, shown above the input as you type.
@@ -61,9 +81,9 @@ const suggestions = computed(() => {
   if (gotoMatch) {
     const query = gotoMatch[1]!.trim()
     return Object.entries(WORLD_AREAS)
-      .filter(([areaId, area]) => !area.secret && (areaId.includes(query) || area.name.toLowerCase().includes(query)))
+      .filter(([areaId, area]) => !area.secret && [areaId, area.name.toLowerCase(), area.nameZh ?? ''].some((text) => text.includes(query)))
       .slice(0, 8)
-      .map(([areaId, area]) => ({ text: `goto ${areaId}`, hint: area.maxLevel == null ? area.name : `${area.name} · Lv${area.minLevel ?? area.maxLevel}–${area.maxLevel}${area.aggressive ? ' · aggressive' : ''}` }))
+      .map(([areaId]) => ({ text: `goto ${areaId}`, hint: areaLabel(areaId) }))
   }
   return COMMANDS.filter((command) => command.text.trim().startsWith(text.split(/\s/)[0]!) && command.text.trim() !== text.trim())
 })
@@ -139,8 +159,9 @@ async function submit() {
           <span class="log-detail">
             {{ event.source ? `${event.detail} (${event.source})` : event.detail }}
             <span v-if="hasOpenChoices(event)" class="chat-choices">
-              <button v-for="choice in event.choices" :key="choice.label" class="button small primary" @click="answer(event, choice.request)">{{ choice.label }}</button>
+              <button v-for="choice in openChoices(event)" :key="choice.label" class="button small primary" @click="answer(event, choice)">{{ choice.label }}</button>
             </span>
+            <span v-else-if="event.answer" class="muted"> ✓ {{ event.answer }}</span>
           </span>
         </li>
       </ol>

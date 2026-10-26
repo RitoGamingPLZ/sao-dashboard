@@ -20,8 +20,10 @@ export const DEFAULT_SAFETY: Safety = {
   normal: { ...HARD_MIN_THRESHOLDS.normal },
   boss: { ...HARD_MIN_THRESHOLDS.boss },
   isAutoRestockOn: true,
+  instantItem: null,
   restock: {
     autoDrinkMin: 100, autoDrinkTarget: 300,
+    instantMin: 3, instantTarget: 10,
     crystalHealMin: 10, crystalHealTarget: 30,
     teleportMin: 20, teleportTarget: 60,
     maxSpendPct: 50, // never spend more than this share of current gold on one restock
@@ -48,6 +50,10 @@ export function validateSafety(currentSafety: Safety, update: SafetyUpdate, { is
   }
   if (update.isEnabled != null) nextSafety.isEnabled = !!update.isEnabled
   if (update.isAutoRestockOn != null) nextSafety.isAutoRestockOn = !!update.isAutoRestockOn
+  if (update.instantItem !== undefined) {
+    if (update.instantItem !== null && ITEMS[update.instantItem]?.kind !== 'instant') return { error: 'instantItem must be an instant potion' }
+    nextSafety.instantItem = update.instantItem
+  }
   for (const fightContext of FIGHT_CONTEXTS) {
     for (const thresholdKey of THRESHOLD_KEYS) {
       const requested = update[fightContext]?.[thresholdKey]
@@ -126,6 +132,8 @@ export function planRestock(player: GamePlayer | null, safety: Safety, frontier:
   }
 
   addShortage(autoDrinkItem, inventory[autoDrinkItem] ?? 0, limits.autoDrinkMin, limits.autoDrinkTarget)
+  const instantItem = safety.instantItem || kit.backup
+  addShortage(instantItem, inventory[instantItem] ?? 0, limits.instantMin, limits.instantTarget)
   const isAutoDrinkAPotion = /^potion-/.test(autoDrinkItem)
   if (safety.healMode === 'bot' && !isAutoDrinkAPotion) addShortage(kit.autoDrink, totalPotions(inventory), 100, 300) // spec §6.2 rule 4
   addShortage('crystal-teleport', inventory['crystal-teleport'] ?? 0, limits.teleportMin, limits.teleportTarget)

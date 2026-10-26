@@ -5,7 +5,7 @@
 import { randomUUID } from 'node:crypto'
 import { readFileSync, writeFileSync, existsSync, mkdirSync, renameSync } from 'node:fs'
 import { join } from 'node:path'
-import { WEAPON_TYPES } from '#shared/game-rules'
+import { MAX_ACCOUNTS, WEAPON_TYPES } from '#shared/game-rules'
 import type { AutoFarm, Party, Safety, Snapshot } from '#shared/types'
 import type { SaoProtocol } from '../sao/protocol'
 import { SaoConnector, SaoApiError } from '../sao/connector'
@@ -15,7 +15,9 @@ import { PartyManager } from './party'
 import { validateSafety, type SafetyUpdate } from './safety'
 
 interface SavedAccount { id: string, account?: string, name: string, safety?: Safety, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean }
-interface Settings { accounts: SavedAccount[], parties: Party[] }
+// Accounts removed from the dashboard, kept so they can be added back in one click.
+export interface PreviousAccount { id: string, account: string, name: string }
+interface Settings { accounts: SavedAccount[], parties: Party[], previousAccounts?: PreviousAccount[] }
 
 // Game error codes → something a person can act on.
 const GAME_ERRORS: Record<string, string> = {
@@ -33,6 +35,7 @@ export class AccountManager {
   readonly partyManager: PartyManager
   readonly sessionsById = new Map<string, Session>()
   readonly eventListeners = new Set<(event: Session['events'][number]) => void>()
+  readonly answerListeners = new Set<(event: Session['events'][number]) => void>()
   private settingsFile: string
   private sessionTiming?: Partial<SessionTiming>
 
@@ -56,6 +59,8 @@ export class AccountManager {
     this.loadSettings()
   }
 
+  previousAccounts: PreviousAccount[] = []
+
   get sessions() { return [...this.sessionsById.values()] }
 
   private loadSettings() {
@@ -68,6 +73,7 @@ export class AccountManager {
       if (secret?.token) this.startSession(saved.id, saved.account ?? saved.name, saved.name, secret.token, saved)
     }
     this.partyManager.load(settings.parties || [])
+    this.previousAccounts = settings.previousAccounts || []
   }
 
   saveSettings() {
@@ -76,6 +82,7 @@ export class AccountManager {
         id: session.id, account: session.account, name: session.name, safety: session.safety, preferredWeapon: session.preferredWeapon, autoFarm: session.autoFarm, isOnHold: session.isOnHold,
       })),
       parties: this.partyManager?.parties ?? [],
+      previousAccounts: this.previousAccounts,
     }
     const temporaryFile = `${this.settingsFile}.tmp`
     writeFileSync(temporaryFile, JSON.stringify(settings, null, 2))
@@ -92,7 +99,9 @@ export class AccountManager {
       relink: () => this.relink(accountId, account),
     })
     session.on('event', (event) => { for (const listener of this.eventListeners) listener(event) })
+    session.on('answered', (event) => { for (const listener of this.answerListeners) listener(event) })
     session.on('settingsChanged', () => this.saveSettings())
+    session.acceptsInviteFrom = (inviterName) => this.partyManager.acceptsInviteFrom(accountId, inviterName)
     this.sessionsById.set(accountId, session)
     session.start()
     return session
@@ -118,11 +127,13 @@ export class AccountManager {
     const accountId = String(account || '').trim()
     if (!accountId || !password) return { error: 'Account and password are required' }
     if (this.findByAccount(accountId)) return { error: `${accountId} is already on the dashboard` }
+    if (this.sessions.length >= MAX_ACCOUNTS) return { error: `The dashboard runs at most ${MAX_ACCOUNTS} characters` }
     try {
       const { token } = await this.connector.link({ account: accountId, password: String(password) })
       const id = randomUUID()
       this.vault.set(id, shouldRememberPassword ? { token, password: String(password) } : { token })
       const session = this.startSession(id, accountId, accountId, token)
+      this.forgetPrevious(accountId)
       this.saveSettings()
       session.log('state', 'Added by login')
       return { id, account: accountId }
@@ -139,6 +150,7 @@ export class AccountManager {
     const characterName = String(name || '').trim()
     if (!accountId || !characterName) return { error: 'Account and character name are required' }
     if (this.findByAccount(accountId)) return { error: `${accountId} is already on the dashboard` }
+    if (this.sessions.length >= MAX_ACCOUNTS) return { error: `The dashboard runs at most ${MAX_ACCOUNTS} characters` }
     const password = generatePassword()
     try {
       const { token } = await this.connector.link({ account: accountId, password, name: characterName })
@@ -166,8 +178,43 @@ export class AccountManager {
     if (!session) return { error: 'No such account' }
     session.stop()
     this.sessionsById.delete(accountId)
-    this.vault.delete(accountId)
+    // Remember it (and its saved password, if any) for the "previous accounts" list.
+    this.previousAccounts = [{ id: accountId, account: session.account, name: session.name }, ...this.previousAccounts.filter((previous) => previous.account !== session.account)]
     this.partyManager.dropAccount(accountId)
+    this.saveSettings()
+    return { ok: true }
+  }
+
+  listPrevious() {
+    return this.previousAccounts
+      .filter((previous) => !this.findByAccount(previous.account))
+      .map((previous) => ({ account: previous.account, name: previous.name, hasPassword: Boolean(this.vault.get(previous.id)?.password) }))
+  }
+
+  // Add a removed account back using its saved password.
+  async restorePrevious(account: unknown) {
+    const previous = this.previousAccounts.find((candidate) => candidate.account === String(account))
+    if (!previous) return { error: 'Not in the previous accounts list' }
+    const password = this.vault.get(previous.id)?.password
+    if (!password) return { error: 'No saved password — type it in to log in' }
+    if (this.sessions.length >= MAX_ACCOUNTS) return { error: `The dashboard runs at most ${MAX_ACCOUNTS} characters` }
+    try {
+      const { token } = await this.connector.link({ account: previous.account, password })
+      this.vault.set(previous.id, { token })
+      const session = this.startSession(previous.id, previous.account, previous.name, token)
+      this.previousAccounts = this.previousAccounts.filter((candidate) => candidate !== previous)
+      this.saveSettings()
+      session.log('state', 'Added back from previous accounts')
+      return { id: previous.id, account: previous.account }
+    } catch (error) {
+      return { error: describeGameError(error) }
+    }
+  }
+
+  // Drop an account from the previous list, and its saved secrets with it.
+  forgetPrevious(account: unknown) {
+    for (const previous of this.previousAccounts.filter((candidate) => candidate.account === String(account))) this.vault.delete(previous.id)
+    this.previousAccounts = this.previousAccounts.filter((candidate) => candidate.account !== String(account))
     this.saveSettings()
     return { ok: true }
   }
@@ -196,7 +243,7 @@ export class AccountManager {
     return { accounts: this.sessions.map((session) => session.summary()), parties: this.partyManager.summary() }
   }
 
-  recentEvents(limit = 200) {
+  recentEvents(limit = 300) {
     return this.sessions.flatMap((session) => session.events).sort((first, second) => first.ts - second.ts).slice(-limit)
   }
 

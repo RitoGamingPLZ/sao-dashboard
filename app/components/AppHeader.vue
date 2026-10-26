@@ -1,4 +1,5 @@
 <script setup lang="ts">
+defineProps<{ isFull?: boolean }>()
 defineEmits<{ 'add-account': [] }>()
 const { lang, t, toggleLang } = useI18n()
 const { linkState } = useDashboard()
@@ -18,7 +19,7 @@ function pauseAll() {
     </div>
     <div class="top-actions">
       <button class="button small" @click="toggleLang">{{ lang === 'en' ? '中文' : 'EN' }}</button>
-      <button class="button small primary" @click="$emit('add-account')">{{ t('addAccount') }}</button>
+      <button class="button small primary" :disabled="isFull" @click="$emit('add-account')">{{ t('addAccount') }}</button>
       <button class="button small danger" title="Stop every party and every hunt" @click="pauseAll">{{ t('pauseAll') }}</button>
     </div>
   </header>

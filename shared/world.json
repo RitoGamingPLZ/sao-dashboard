@@ -23,7 +23,8 @@
     "head-t1",
     "feet-t1",
     "shield-t1"
-   ]
+   ],
+   "nameZh": "起司之鎮"
   },
   "f1-west": {
    "floor": 1,
@@ -36,7 +37,8 @@
     "f1-labyrinth"
    ],
    "minLevel": 1,
-   "maxLevel": 2
+   "maxLevel": 2,
+   "nameZh": "稀飯原野"
   },
   "f1-horunka": {
    "floor": 1,
@@ -47,7 +49,8 @@
     "f1-depths"
    ],
    "minLevel": 3,
-   "maxLevel": 4
+   "maxLevel": 4,
+   "nameZh": "火爐咖村森林"
   },
   "f1-outskirts": {
    "floor": 1,
@@ -57,7 +60,8 @@
     "f1-west"
    ],
    "minLevel": 1,
-   "maxLevel": 2
+   "maxLevel": 2,
+   "nameZh": "稀飯原野外圍"
   },
   "f1-secret": {
    "floor": 1,
@@ -69,7 +73,8 @@
    "minLevel": 10,
    "maxLevel": 12,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "火爐咖村森林秘境"
   },
   "f1-depths": {
    "floor": 1,
@@ -80,7 +85,8 @@
     "f1-secret"
    ],
    "minLevel": 3,
-   "maxLevel": 4
+   "maxLevel": 4,
+   "nameZh": "火爐咖村森林深處"
   },
   "f1-labyrinth": {
    "floor": 1,
@@ -92,7 +98,8 @@
    ],
    "minLevel": 5,
    "maxLevel": 6,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第1層 謎宮區"
   },
   "f1-bossroom": {
    "floor": 1,
@@ -102,7 +109,8 @@
     "f1-labyrinth",
     "f2-town"
    ],
-   "maxLevel": 7
+   "maxLevel": 7,
+   "nameZh": "第1層 頭目房間"
   },
   "f2-town": {
    "floor": 2,
@@ -116,7 +124,8 @@
     "potion-1",
     "instant-1",
     "crystal-teleport"
-   ]
+   ],
+   "nameZh": "污兒巴士"
   },
   "f2-plateau": {
    "floor": 2,
@@ -129,7 +138,8 @@
     "f2-labyrinth"
    ],
    "minLevel": 2,
-   "maxLevel": 3
+   "maxLevel": 3,
+   "nameZh": "污兒巴士台地"
   },
   "f2-outskirts": {
    "floor": 2,
@@ -139,7 +149,8 @@
     "f2-plateau"
    ],
    "minLevel": 2,
-   "maxLevel": 3
+   "maxLevel": 3,
+   "nameZh": "污兒巴士台地外圍"
   },
   "f2-secret": {
    "floor": 2,
@@ -151,7 +162,8 @@
    "minLevel": 11,
    "maxLevel": 13,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "污兒巴士台地秘境"
   },
   "f2-depths": {
    "floor": 2,
@@ -162,7 +174,8 @@
     "f2-secret"
    ],
    "minLevel": 4,
-   "maxLevel": 5
+   "maxLevel": 5,
+   "nameZh": "污兒巴士台地深處"
   },
   "f2-labyrinth": {
    "floor": 2,
@@ -174,7 +187,8 @@
    ],
    "minLevel": 5,
    "maxLevel": 6,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第2層 謎宮區"
   },
   "f2-bossroom": {
    "floor": 2,
@@ -184,7 +198,8 @@
     "f2-labyrinth",
     "f3-town"
    ],
-   "maxLevel": 8
+   "maxLevel": 8,
+   "nameZh": "第2層 頭目房間"
   },
   "f3-town": {
    "floor": 3,
@@ -200,7 +215,8 @@
     "crystal-teleport",
     "mid-t1",
     "head-t1"
-   ]
+   ],
+   "nameZh": "滋母福特"
   },
   "f3-mist-forest": {
    "floor": 3,
@@ -213,7 +229,8 @@
     "f3-labyrinth"
    ],
    "minLevel": 4,
-   "maxLevel": 6
+   "maxLevel": 6,
+   "nameZh": "米霧森林"
   },
   "f3-outskirts": {
    "floor": 3,
@@ -223,7 +240,8 @@
     "f3-mist-forest"
    ],
    "minLevel": 4,
-   "maxLevel": 5
+   "maxLevel": 5,
+   "nameZh": "米霧森林外圍"
   },
   "f3-secret": {
    "floor": 3,
@@ -235,7 +253,8 @@
    "minLevel": 13,
    "maxLevel": 15,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "米霧森林秘境"
   },
   "f3-depths": {
    "floor": 3,
@@ -246,7 +265,8 @@
     "f3-secret"
    ],
    "minLevel": 6,
-   "maxLevel": 7
+   "maxLevel": 7,
+   "nameZh": "米霧森林深處"
   },
   "f3-labyrinth": {
    "floor": 3,
@@ -258,7 +278,8 @@
    ],
    "minLevel": 7,
    "maxLevel": 8,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第3層 謎宮區"
   },
   "f3-bossroom": {
    "floor": 3,
@@ -268,7 +289,8 @@
     "f3-labyrinth",
     "f4-town"
    ],
-   "maxLevel": 10
+   "maxLevel": 10,
+   "nameZh": "第3層 頭目房間"
   },
   "f4-town": {
    "floor": 4,
@@ -282,7 +304,8 @@
     "potion-1",
     "instant-1",
     "crystal-teleport"
-   ]
+   ],
+   "nameZh": "囉唯亞"
   },
   "f4-field": {
    "floor": 4,
@@ -295,7 +318,8 @@
     "f4-labyrinth"
    ],
    "minLevel": 5,
-   "maxLevel": 6
+   "maxLevel": 6,
+   "nameZh": "第4層 運河岸"
   },
   "f4-wilds": {
    "floor": 4,
@@ -306,7 +330,8 @@
     "f4-depths"
    ],
    "minLevel": 6,
-   "maxLevel": 9
+   "maxLevel": 9,
+   "nameZh": "第4層 蘆葦沼"
   },
   "f4-outskirts": {
    "floor": 4,
@@ -316,7 +341,8 @@
     "f4-field"
    ],
    "minLevel": 5,
-   "maxLevel": 6
+   "maxLevel": 6,
+   "nameZh": "第4層 運河岸外圍"
   },
   "f4-secret": {
    "floor": 4,
@@ -328,7 +354,8 @@
    "minLevel": 14,
    "maxLevel": 16,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第4層 蘆葦沼秘境"
   },
   "f4-depths": {
    "floor": 4,
@@ -339,7 +366,8 @@
     "f4-secret"
    ],
    "minLevel": 7,
-   "maxLevel": 8
+   "maxLevel": 8,
+   "nameZh": "第4層 蘆葦沼深處"
   },
   "f4-labyrinth": {
    "floor": 4,
@@ -351,7 +379,8 @@
    ],
    "minLevel": 8,
    "maxLevel": 9,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第4層 謎宮區"
   },
   "f4-bossroom": {
    "floor": 4,
@@ -361,7 +390,8 @@
     "f4-labyrinth",
     "f5-town"
    ],
-   "maxLevel": 11
+   "maxLevel": 11,
+   "nameZh": "第4層 頭目房間"
   },
   "f5-town": {
    "floor": 5,
@@ -384,7 +414,8 @@
     "armor-t5",
     "light-t5",
     "head-t5"
-   ]
+   ],
+   "nameZh": "卡路里恩"
   },
   "f5-field": {
    "floor": 5,
@@ -397,7 +428,8 @@
     "f5-labyrinth"
    ],
    "minLevel": 6,
-   "maxLevel": 7
+   "maxLevel": 7,
+   "nameZh": "第5層 遺跡古道"
   },
   "f5-wilds": {
    "floor": 5,
@@ -408,7 +440,8 @@
     "f5-depths"
    ],
    "minLevel": 7,
-   "maxLevel": 10
+   "maxLevel": 10,
+   "nameZh": "第5層 沙塵遺跡"
   },
   "f5-outskirts": {
    "floor": 5,
@@ -418,7 +451,8 @@
     "f5-field"
    ],
    "minLevel": 6,
-   "maxLevel": 7
+   "maxLevel": 7,
+   "nameZh": "第5層 遺跡古道外圍"
   },
   "f5-secret": {
    "floor": 5,
@@ -430,7 +464,8 @@
    "minLevel": 15,
    "maxLevel": 17,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第5層 沙塵遺跡秘境"
   },
   "f5-depths": {
    "floor": 5,
@@ -441,7 +476,8 @@
     "f5-secret"
    ],
    "minLevel": 8,
-   "maxLevel": 9
+   "maxLevel": 9,
+   "nameZh": "第5層 沙塵遺跡深處"
   },
   "f5-labyrinth": {
    "floor": 5,
@@ -453,7 +489,8 @@
    ],
    "minLevel": 9,
    "maxLevel": 10,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第5層 謎宮區"
   },
   "f5-bossroom": {
    "floor": 5,
@@ -463,7 +500,8 @@
     "f5-labyrinth",
     "f6-town"
    ],
-   "maxLevel": 12
+   "maxLevel": 12,
+   "nameZh": "第5層 頭目房間"
   },
   "f6-town": {
    "floor": 6,
@@ -480,7 +518,8 @@
     "crystal-teleport",
     "feet-t5",
     "shield-t5"
-   ]
+   ],
+   "nameZh": "死他奇恩"
   },
   "f6-field": {
    "floor": 6,
@@ -493,7 +532,8 @@
     "f6-labyrinth"
    ],
    "minLevel": 7,
-   "maxLevel": 8
+   "maxLevel": 8,
+   "nameZh": "第6層 方塊原野"
   },
   "f6-wilds": {
    "floor": 6,
@@ -504,7 +544,8 @@
     "f6-depths"
    ],
    "minLevel": 8,
-   "maxLevel": 11
+   "maxLevel": 11,
+   "nameZh": "第6層 機關庭園"
   },
   "f6-outskirts": {
    "floor": 6,
@@ -514,7 +555,8 @@
     "f6-field"
    ],
    "minLevel": 7,
-   "maxLevel": 8
+   "maxLevel": 8,
+   "nameZh": "第6層 方塊原野外圍"
   },
   "f6-secret": {
    "floor": 6,
@@ -526,7 +568,8 @@
    "minLevel": 16,
    "maxLevel": 18,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第6層 機關庭園秘境"
   },
   "f6-depths": {
    "floor": 6,
@@ -537,7 +580,8 @@
     "f6-secret"
    ],
    "minLevel": 9,
-   "maxLevel": 10
+   "maxLevel": 10,
+   "nameZh": "第6層 機關庭園深處"
   },
   "f6-labyrinth": {
    "floor": 6,
@@ -549,7 +593,8 @@
    ],
    "minLevel": 10,
    "maxLevel": 11,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第6層 謎宮區"
   },
   "f6-bossroom": {
    "floor": 6,
@@ -559,7 +604,8 @@
     "f6-labyrinth",
     "f7-town"
    ],
-   "maxLevel": 13
+   "maxLevel": 13,
+   "nameZh": "第6層 頭目房間"
   },
   "f7-town": {
    "floor": 7,
@@ -574,7 +620,8 @@
     "potion-1b",
     "instant-1",
     "crystal-teleport"
-   ]
+   ],
+   "nameZh": "撥錄普塔"
   },
   "f7-field": {
    "floor": 7,
@@ -587,7 +634,8 @@
     "f7-labyrinth"
    ],
    "minLevel": 9,
-   "maxLevel": 10
+   "maxLevel": 10,
+   "nameZh": "第7層 賭場外圍"
   },
   "f7-wilds": {
    "floor": 7,
@@ -598,7 +646,8 @@
     "f7-depths"
    ],
    "minLevel": 10,
-   "maxLevel": 13
+   "maxLevel": 13,
+   "nameZh": "第7層 競技場後台"
   },
   "f7-outskirts": {
    "floor": 7,
@@ -608,7 +657,8 @@
     "f7-field"
    ],
    "minLevel": 9,
-   "maxLevel": 10
+   "maxLevel": 10,
+   "nameZh": "第7層 賭場外圍外圍"
   },
   "f7-secret": {
    "floor": 7,
@@ -620,7 +670,8 @@
    "minLevel": 18,
    "maxLevel": 20,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第7層 競技場後台秘境"
   },
   "f7-depths": {
    "floor": 7,
@@ -631,7 +682,8 @@
     "f7-secret"
    ],
    "minLevel": 11,
-   "maxLevel": 12
+   "maxLevel": 12,
+   "nameZh": "第7層 競技場後台深處"
   },
   "f7-labyrinth": {
    "floor": 7,
@@ -643,7 +695,8 @@
    ],
    "minLevel": 12,
    "maxLevel": 13,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第7層 謎宮區"
   },
   "f7-bossroom": {
    "floor": 7,
@@ -653,7 +706,8 @@
     "f7-labyrinth",
     "f8-town"
    ],
-   "maxLevel": 15
+   "maxLevel": 15,
+   "nameZh": "第7層 頭目房間"
   },
   "f8-town": {
    "floor": 8,
@@ -669,7 +723,8 @@
     "instant-1",
     "crystal-teleport",
     "mid-t5"
-   ]
+   ],
+   "nameZh": "書屋村"
   },
   "f8-field": {
    "floor": 8,
@@ -682,7 +737,8 @@
     "f8-labyrinth"
    ],
    "minLevel": 10,
-   "maxLevel": 11
+   "maxLevel": 11,
+   "nameZh": "第8層 叢林"
   },
   "f8-wilds": {
    "floor": 8,
@@ -693,7 +749,8 @@
     "f8-depths"
    ],
    "minLevel": 11,
-   "maxLevel": 14
+   "maxLevel": 14,
+   "nameZh": "第8層 驚靈前線"
   },
   "f8-outskirts": {
    "floor": 8,
@@ -703,7 +760,8 @@
     "f8-field"
    ],
    "minLevel": 10,
-   "maxLevel": 11
+   "maxLevel": 11,
+   "nameZh": "第8層 叢林外圍"
   },
   "f8-secret": {
    "floor": 8,
@@ -715,7 +773,8 @@
    "minLevel": 19,
    "maxLevel": 21,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第8層 驚靈前線秘境"
   },
   "f8-depths": {
    "floor": 8,
@@ -726,7 +785,8 @@
     "f8-secret"
    ],
    "minLevel": 12,
-   "maxLevel": 13
+   "maxLevel": 13,
+   "nameZh": "第8層 驚靈前線深處"
   },
   "f8-labyrinth": {
    "floor": 8,
@@ -738,7 +798,8 @@
    ],
    "minLevel": 13,
    "maxLevel": 14,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第8層 謎宮區"
   },
   "f8-bossroom": {
    "floor": 8,
@@ -748,7 +809,8 @@
     "f8-labyrinth",
     "f9-town"
    ],
-   "maxLevel": 16
+   "maxLevel": 16,
+   "nameZh": "第8層 頭目房間"
   },
   "f9-town": {
    "floor": 9,
@@ -763,7 +825,8 @@
     "potion-1b",
     "instant-1",
     "crystal-teleport"
-   ]
+   ],
+   "nameZh": "黑暗驚靈要塞"
   },
   "f9-field": {
    "floor": 9,
@@ -776,7 +839,8 @@
     "f9-labyrinth"
    ],
    "minLevel": 11,
-   "maxLevel": 12
+   "maxLevel": 12,
+   "nameZh": "第9層 要塞外圍"
   },
   "f9-wilds": {
    "floor": 9,
@@ -787,7 +851,8 @@
     "f9-depths"
    ],
    "minLevel": 12,
-   "maxLevel": 15
+   "maxLevel": 15,
+   "nameZh": "第9層 驚靈戰場"
   },
   "f9-outskirts": {
    "floor": 9,
@@ -797,7 +862,8 @@
     "f9-field"
    ],
    "minLevel": 11,
-   "maxLevel": 12
+   "maxLevel": 12,
+   "nameZh": "第9層 要塞外圍外圍"
   },
   "f9-secret": {
    "floor": 9,
@@ -809,7 +875,8 @@
    "minLevel": 20,
    "maxLevel": 22,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第9層 驚靈戰場秘境"
   },
   "f9-depths": {
    "floor": 9,
@@ -820,7 +887,8 @@
     "f9-secret"
    ],
    "minLevel": 13,
-   "maxLevel": 14
+   "maxLevel": 14,
+   "nameZh": "第9層 驚靈戰場深處"
   },
   "f9-labyrinth": {
    "floor": 9,
@@ -832,7 +900,8 @@
    ],
    "minLevel": 14,
    "maxLevel": 15,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第9層 謎宮區"
   },
   "f9-bossroom": {
    "floor": 9,
@@ -842,7 +911,8 @@
     "f9-labyrinth",
     "f10-town"
    ],
-   "maxLevel": 17
+   "maxLevel": 17,
+   "nameZh": "第9層 頭目房間"
   },
   "f10-town": {
    "floor": 10,
@@ -866,7 +936,8 @@
     "mid-t10",
     "feet-t10",
     "shield-t10"
-   ]
+   ],
+   "nameZh": "城下町"
   },
   "f10-field": {
    "floor": 10,
@@ -879,7 +950,8 @@
     "f10-labyrinth"
    ],
    "minLevel": 12,
-   "maxLevel": 13
+   "maxLevel": 13,
+   "nameZh": "第10層 竹林"
   },
   "f10-wilds": {
    "floor": 10,
@@ -890,7 +962,8 @@
     "f10-depths"
    ],
    "minLevel": 13,
-   "maxLevel": 16
+   "maxLevel": 16,
+   "nameZh": "第10層 鬼之山"
   },
   "f10-outskirts": {
    "floor": 10,
@@ -900,7 +973,8 @@
     "f10-field"
    ],
    "minLevel": 12,
-   "maxLevel": 13
+   "maxLevel": 13,
+   "nameZh": "第10層 竹林外圍"
   },
   "f10-secret": {
    "floor": 10,
@@ -912,7 +986,8 @@
    "minLevel": 21,
    "maxLevel": 23,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第10層 鬼之山秘境"
   },
   "f10-depths": {
    "floor": 10,
@@ -924,7 +999,8 @@
    ],
    "minLevel": 14,
    "maxLevel": 15,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第10層 鬼之山深處"
   },
   "f10-labyrinth": {
    "floor": 10,
@@ -936,7 +1012,8 @@
    ],
    "minLevel": 15,
    "maxLevel": 16,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第10層 謎宮區"
   },
   "f10-bossroom": {
    "floor": 10,
@@ -946,7 +1023,8 @@
     "f10-labyrinth",
     "f11-town"
    ],
-   "maxLevel": 18
+   "maxLevel": 18,
+   "nameZh": "第10層 頭目房間"
   },
   "f11-town": {
    "floor": 11,
@@ -962,7 +1040,8 @@
     "instant-2",
     "crystal-teleport",
     "light-t10"
-   ]
+   ],
+   "nameZh": "踏夫特"
   },
   "f11-field": {
    "floor": 11,
@@ -975,7 +1054,8 @@
     "f11-labyrinth"
    ],
    "minLevel": 14,
-   "maxLevel": 15
+   "maxLevel": 15,
+   "nameZh": "第11層 月夜森林"
   },
   "f11-wilds": {
    "floor": 11,
@@ -986,7 +1066,8 @@
     "f11-depths"
    ],
    "minLevel": 15,
-   "maxLevel": 18
+   "maxLevel": 18,
+   "nameZh": "第11層 螢火谷"
   },
   "f11-outskirts": {
    "floor": 11,
@@ -996,7 +1077,8 @@
     "f11-field"
    ],
    "minLevel": 14,
-   "maxLevel": 15
+   "maxLevel": 15,
+   "nameZh": "第11層 月夜森林外圍"
   },
   "f11-secret": {
    "floor": 11,
@@ -1008,7 +1090,8 @@
    "minLevel": 23,
    "maxLevel": 25,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第11層 螢火谷秘境"
   },
   "f11-depths": {
    "floor": 11,
@@ -1020,7 +1103,8 @@
    ],
    "minLevel": 16,
    "maxLevel": 17,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第11層 螢火谷深處"
   },
   "f11-labyrinth": {
    "floor": 11,
@@ -1032,7 +1116,8 @@
    ],
    "minLevel": 17,
    "maxLevel": 18,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第11層 謎宮區"
   },
   "f11-bossroom": {
    "floor": 11,
@@ -1042,7 +1127,8 @@
     "f11-labyrinth",
     "f12-town"
    ],
-   "maxLevel": 20
+   "maxLevel": 20,
+   "nameZh": "第11層 頭目房間"
   },
   "f12-town": {
    "floor": 12,
@@ -1057,7 +1143,8 @@
     "potion-2",
     "instant-2",
     "crystal-teleport"
-   ]
+   ],
+   "nameZh": "第12層 主接區"
   },
   "f12-field": {
    "floor": 12,
@@ -1070,7 +1157,8 @@
     "f12-labyrinth"
    ],
    "minLevel": 15,
-   "maxLevel": 16
+   "maxLevel": 16,
+   "nameZh": "第12層 泥濘小徑"
   },
   "f12-wilds": {
    "floor": 12,
@@ -1081,7 +1169,8 @@
     "f12-depths"
    ],
    "minLevel": 16,
-   "maxLevel": 19
+   "maxLevel": 19,
+   "nameZh": "第12層 深沼"
   },
   "f12-outskirts": {
    "floor": 12,
@@ -1091,7 +1180,8 @@
     "f12-field"
    ],
    "minLevel": 15,
-   "maxLevel": 16
+   "maxLevel": 16,
+   "nameZh": "第12層 泥濘小徑外圍"
   },
   "f12-secret": {
    "floor": 12,
@@ -1103,7 +1193,8 @@
    "minLevel": 24,
    "maxLevel": 26,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第12層 深沼秘境"
   },
   "f12-depths": {
    "floor": 12,
@@ -1115,7 +1206,8 @@
    ],
    "minLevel": 17,
    "maxLevel": 18,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第12層 深沼深處"
   },
   "f12-labyrinth": {
    "floor": 12,
@@ -1127,7 +1219,8 @@
    ],
    "minLevel": 18,
    "maxLevel": 19,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第12層 謎宮區"
   },
   "f12-bossroom": {
    "floor": 12,
@@ -1137,7 +1230,8 @@
     "f12-labyrinth",
     "f13-town"
    ],
-   "maxLevel": 21
+   "maxLevel": 21,
+   "nameZh": "第12層 頭目房間"
   },
   "f13-town": {
    "floor": 13,
@@ -1153,7 +1247,8 @@
     "instant-2",
     "crystal-teleport",
     "head-t10"
-   ]
+   ],
+   "nameZh": "第13層 主接區"
   },
   "f13-field": {
    "floor": 13,
@@ -1166,7 +1261,8 @@
     "f13-labyrinth"
    ],
    "minLevel": 16,
-   "maxLevel": 17
+   "maxLevel": 17,
+   "nameZh": "第13層 泥濘小徑"
   },
   "f13-wilds": {
    "floor": 13,
@@ -1177,7 +1273,8 @@
     "f13-depths"
    ],
    "minLevel": 17,
-   "maxLevel": 20
+   "maxLevel": 20,
+   "nameZh": "第13層 深沼"
   },
   "f13-outskirts": {
    "floor": 13,
@@ -1187,7 +1284,8 @@
     "f13-field"
    ],
    "minLevel": 16,
-   "maxLevel": 17
+   "maxLevel": 17,
+   "nameZh": "第13層 泥濘小徑外圍"
   },
   "f13-secret": {
    "floor": 13,
@@ -1199,7 +1297,8 @@
    "minLevel": 25,
    "maxLevel": 27,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第13層 深沼秘境"
   },
   "f13-depths": {
    "floor": 13,
@@ -1211,7 +1310,8 @@
    ],
    "minLevel": 18,
    "maxLevel": 19,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第13層 深沼深處"
   },
   "f13-labyrinth": {
    "floor": 13,
@@ -1223,7 +1323,8 @@
    ],
    "minLevel": 19,
    "maxLevel": 20,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第13層 謎宮區"
   },
   "f13-bossroom": {
    "floor": 13,
@@ -1233,7 +1334,8 @@
     "f13-labyrinth",
     "f14-town"
    ],
-   "maxLevel": 22
+   "maxLevel": 22,
+   "nameZh": "第13層 頭目房間"
   },
   "f14-town": {
    "floor": 14,
@@ -1248,7 +1350,8 @@
     "potion-2",
     "instant-2",
     "crystal-teleport"
-   ]
+   ],
+   "nameZh": "第14層 主接區"
   },
   "f14-field": {
    "floor": 14,
@@ -1261,7 +1364,8 @@
     "f14-labyrinth"
    ],
    "minLevel": 17,
-   "maxLevel": 18
+   "maxLevel": 18,
+   "nameZh": "第14層 礦坑入口"
   },
   "f14-wilds": {
    "floor": 14,
@@ -1272,7 +1376,8 @@
     "f14-depths"
    ],
    "minLevel": 18,
-   "maxLevel": 21
+   "maxLevel": 21,
+   "nameZh": "第14層 深層礦坑"
   },
   "f14-outskirts": {
    "floor": 14,
@@ -1282,7 +1387,8 @@
     "f14-field"
    ],
    "minLevel": 17,
-   "maxLevel": 18
+   "maxLevel": 18,
+   "nameZh": "第14層 礦坑入口外圍"
   },
   "f14-secret": {
    "floor": 14,
@@ -1294,7 +1400,8 @@
    "minLevel": 26,
    "maxLevel": 28,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第14層 深層礦坑秘境"
   },
   "f14-depths": {
    "floor": 14,
@@ -1306,7 +1413,8 @@
    ],
    "minLevel": 19,
    "maxLevel": 20,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第14層 深層礦坑深處"
   },
   "f14-labyrinth": {
    "floor": 14,
@@ -1318,7 +1426,8 @@
    ],
    "minLevel": 20,
    "maxLevel": 21,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第14層 謎宮區"
   },
   "f14-bossroom": {
    "floor": 14,
@@ -1328,7 +1437,8 @@
     "f14-labyrinth",
     "f15-town"
    ],
-   "maxLevel": 23
+   "maxLevel": 23,
+   "nameZh": "第14層 頭目房間"
   },
   "f15-town": {
    "floor": 15,
@@ -1352,7 +1462,8 @@
     "armor-t15",
     "light-t15",
     "head-t15"
-   ]
+   ],
+   "nameZh": "第15層 主接區"
   },
   "f15-field": {
    "floor": 15,
@@ -1365,7 +1476,8 @@
     "f15-labyrinth"
    ],
    "minLevel": 19,
-   "maxLevel": 20
+   "maxLevel": 20,
+   "nameZh": "第15層 礦坑入口"
   },
   "f15-wilds": {
    "floor": 15,
@@ -1376,7 +1488,8 @@
     "f15-depths"
    ],
    "minLevel": 20,
-   "maxLevel": 23
+   "maxLevel": 23,
+   "nameZh": "第15層 深層礦坑"
   },
   "f15-outskirts": {
    "floor": 15,
@@ -1386,7 +1499,8 @@
     "f15-field"
    ],
    "minLevel": 19,
-   "maxLevel": 20
+   "maxLevel": 20,
+   "nameZh": "第15層 礦坑入口外圍"
   },
   "f15-secret": {
    "floor": 15,
@@ -1398,7 +1512,8 @@
    "minLevel": 28,
    "maxLevel": 30,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第15層 深層礦坑秘境"
   },
   "f15-depths": {
    "floor": 15,
@@ -1410,7 +1525,8 @@
    ],
    "minLevel": 21,
    "maxLevel": 22,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第15層 深層礦坑深處"
   },
   "f15-labyrinth": {
    "floor": 15,
@@ -1422,7 +1538,8 @@
    ],
    "minLevel": 22,
    "maxLevel": 23,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第15層 謎宮區"
   },
   "f15-bossroom": {
    "floor": 15,
@@ -1432,7 +1549,8 @@
     "f15-labyrinth",
     "f16-town"
    ],
-   "maxLevel": 25
+   "maxLevel": 25,
+   "nameZh": "第15層 頭目房間"
   },
   "f16-town": {
    "floor": 16,
@@ -1450,7 +1568,8 @@
     "crystal-heal",
     "mid-t15",
     "shield-t15"
-   ]
+   ],
+   "nameZh": "第16層 主接區"
   },
   "f16-field": {
    "floor": 16,
@@ -1463,7 +1582,8 @@
     "f16-labyrinth"
    ],
    "minLevel": 20,
-   "maxLevel": 21
+   "maxLevel": 21,
+   "nameZh": "第16層 沙丘"
   },
   "f16-wilds": {
    "floor": 16,
@@ -1474,7 +1594,8 @@
     "f16-depths"
    ],
    "minLevel": 21,
-   "maxLevel": 24
+   "maxLevel": 24,
+   "nameZh": "第16層 流沙地"
   },
   "f16-outskirts": {
    "floor": 16,
@@ -1484,7 +1605,8 @@
     "f16-field"
    ],
    "minLevel": 20,
-   "maxLevel": 21
+   "maxLevel": 21,
+   "nameZh": "第16層 沙丘外圍"
   },
   "f16-secret": {
    "floor": 16,
@@ -1496,7 +1618,8 @@
    "minLevel": 29,
    "maxLevel": 31,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第16層 流沙地秘境"
   },
   "f16-depths": {
    "floor": 16,
@@ -1508,7 +1631,8 @@
    ],
    "minLevel": 22,
    "maxLevel": 23,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第16層 流沙地深處"
   },
   "f16-labyrinth": {
    "floor": 16,
@@ -1520,7 +1644,8 @@
    ],
    "minLevel": 23,
    "maxLevel": 24,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第16層 謎宮區"
   },
   "f16-bossroom": {
    "floor": 16,
@@ -1530,7 +1655,8 @@
     "f16-labyrinth",
     "f17-town"
    ],
-   "maxLevel": 26
+   "maxLevel": 26,
+   "nameZh": "第16層 頭目房間"
   },
   "f17-town": {
    "floor": 17,
@@ -1546,7 +1672,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第17層 主接區"
   },
   "f17-field": {
    "floor": 17,
@@ -1559,7 +1686,8 @@
     "f17-labyrinth"
    ],
    "minLevel": 21,
-   "maxLevel": 22
+   "maxLevel": 22,
+   "nameZh": "第17層 沙丘"
   },
   "f17-wilds": {
    "floor": 17,
@@ -1570,7 +1698,8 @@
     "f17-depths"
    ],
    "minLevel": 22,
-   "maxLevel": 25
+   "maxLevel": 25,
+   "nameZh": "第17層 流沙地"
   },
   "f17-outskirts": {
    "floor": 17,
@@ -1580,7 +1709,8 @@
     "f17-field"
    ],
    "minLevel": 21,
-   "maxLevel": 22
+   "maxLevel": 22,
+   "nameZh": "第17層 沙丘外圍"
   },
   "f17-secret": {
    "floor": 17,
@@ -1592,7 +1722,8 @@
    "minLevel": 30,
    "maxLevel": 32,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第17層 流沙地秘境"
   },
   "f17-depths": {
    "floor": 17,
@@ -1604,7 +1735,8 @@
    ],
    "minLevel": 23,
    "maxLevel": 24,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第17層 流沙地深處"
   },
   "f17-labyrinth": {
    "floor": 17,
@@ -1616,7 +1748,8 @@
    ],
    "minLevel": 24,
    "maxLevel": 25,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第17層 謎宮區"
   },
   "f17-bossroom": {
    "floor": 17,
@@ -1626,7 +1759,8 @@
     "f17-labyrinth",
     "f18-town"
    ],
-   "maxLevel": 27
+   "maxLevel": 27,
+   "nameZh": "第17層 頭目房間"
   },
   "f18-town": {
    "floor": 18,
@@ -1643,7 +1777,8 @@
     "crystal-teleport",
     "crystal-heal",
     "feet-t15"
-   ]
+   ],
+   "nameZh": "第18層 主接區"
   },
   "f18-field": {
    "floor": 18,
@@ -1656,7 +1791,8 @@
     "f18-labyrinth"
    ],
    "minLevel": 22,
-   "maxLevel": 23
+   "maxLevel": 23,
+   "nameZh": "第18層 雪原"
   },
   "f18-wilds": {
    "floor": 18,
@@ -1667,7 +1803,8 @@
     "f18-depths"
    ],
    "minLevel": 23,
-   "maxLevel": 26
+   "maxLevel": 26,
+   "nameZh": "第18層 冰河"
   },
   "f18-outskirts": {
    "floor": 18,
@@ -1677,7 +1814,8 @@
     "f18-field"
    ],
    "minLevel": 22,
-   "maxLevel": 23
+   "maxLevel": 23,
+   "nameZh": "第18層 雪原外圍"
   },
   "f18-secret": {
    "floor": 18,
@@ -1689,7 +1827,8 @@
    "minLevel": 31,
    "maxLevel": 33,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第18層 冰河秘境"
   },
   "f18-depths": {
    "floor": 18,
@@ -1701,7 +1840,8 @@
    ],
    "minLevel": 24,
    "maxLevel": 25,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第18層 冰河深處"
   },
   "f18-labyrinth": {
    "floor": 18,
@@ -1713,7 +1853,8 @@
    ],
    "minLevel": 25,
    "maxLevel": 26,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第18層 謎宮區"
   },
   "f18-bossroom": {
    "floor": 18,
@@ -1723,7 +1864,8 @@
     "f18-labyrinth",
     "f19-town"
    ],
-   "maxLevel": 28
+   "maxLevel": 28,
+   "nameZh": "第18層 頭目房間"
   },
   "f19-town": {
    "floor": 19,
@@ -1739,7 +1881,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第19層 主接區"
   },
   "f19-field": {
    "floor": 19,
@@ -1752,7 +1895,8 @@
     "f19-labyrinth"
    ],
    "minLevel": 24,
-   "maxLevel": 25
+   "maxLevel": 25,
+   "nameZh": "第19層 雪原"
   },
   "f19-wilds": {
    "floor": 19,
@@ -1763,7 +1907,8 @@
     "f19-depths"
    ],
    "minLevel": 25,
-   "maxLevel": 28
+   "maxLevel": 28,
+   "nameZh": "第19層 冰河"
   },
   "f19-outskirts": {
    "floor": 19,
@@ -1773,7 +1918,8 @@
     "f19-field"
    ],
    "minLevel": 24,
-   "maxLevel": 25
+   "maxLevel": 25,
+   "nameZh": "第19層 雪原外圍"
   },
   "f19-secret": {
    "floor": 19,
@@ -1785,7 +1931,8 @@
    "minLevel": 33,
    "maxLevel": 35,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第19層 冰河秘境"
   },
   "f19-depths": {
    "floor": 19,
@@ -1797,7 +1944,8 @@
    ],
    "minLevel": 26,
    "maxLevel": 27,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第19層 冰河深處"
   },
   "f19-labyrinth": {
    "floor": 19,
@@ -1809,7 +1957,8 @@
    ],
    "minLevel": 27,
    "maxLevel": 28,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第19層 謎宮區"
   },
   "f19-bossroom": {
    "floor": 19,
@@ -1819,7 +1968,8 @@
     "f19-labyrinth",
     "f20-town"
    ],
-   "maxLevel": 30
+   "maxLevel": 30,
+   "nameZh": "第19層 頭目房間"
   },
   "f20-town": {
    "floor": 20,
@@ -1844,7 +1994,8 @@
     "light-t20",
     "feet-t20",
     "shield-t20"
-   ]
+   ],
+   "nameZh": "第20層 主接區"
   },
   "f20-field": {
    "floor": 20,
@@ -1857,7 +2008,8 @@
     "f20-labyrinth"
    ],
    "minLevel": 25,
-   "maxLevel": 26
+   "maxLevel": 26,
+   "nameZh": "第20層 熔岩原"
   },
   "f20-wilds": {
    "floor": 20,
@@ -1868,7 +2020,8 @@
     "f20-depths"
    ],
    "minLevel": 26,
-   "maxLevel": 29
+   "maxLevel": 29,
+   "nameZh": "第20層 火山口"
   },
   "f20-outskirts": {
    "floor": 20,
@@ -1878,7 +2031,8 @@
     "f20-field"
    ],
    "minLevel": 25,
-   "maxLevel": 26
+   "maxLevel": 26,
+   "nameZh": "第20層 熔岩原外圍"
   },
   "f20-secret": {
    "floor": 20,
@@ -1890,7 +2044,8 @@
    "minLevel": 34,
    "maxLevel": 36,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第20層 火山口秘境"
   },
   "f20-depths": {
    "floor": 20,
@@ -1902,7 +2057,8 @@
    ],
    "minLevel": 27,
    "maxLevel": 28,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第20層 火山口深處"
   },
   "f20-labyrinth": {
    "floor": 20,
@@ -1914,7 +2070,8 @@
    ],
    "minLevel": 28,
    "maxLevel": 29,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第20層 謎宮區"
   },
   "f20-bossroom": {
    "floor": 20,
@@ -1924,7 +2081,8 @@
     "f20-labyrinth",
     "f21-town"
    ],
-   "maxLevel": 31
+   "maxLevel": 31,
+   "nameZh": "第20層 頭目房間"
   },
   "f21-town": {
    "floor": 21,
@@ -1940,7 +2098,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第21層 主接區"
   },
   "f21-field": {
    "floor": 21,
@@ -1953,7 +2112,8 @@
     "f21-labyrinth"
    ],
    "minLevel": 26,
-   "maxLevel": 27
+   "maxLevel": 27,
+   "nameZh": "第21層 熔岩原"
   },
   "f21-wilds": {
    "floor": 21,
@@ -1964,7 +2124,8 @@
     "f21-depths"
    ],
    "minLevel": 27,
-   "maxLevel": 30
+   "maxLevel": 30,
+   "nameZh": "第21層 火山口"
   },
   "f21-outskirts": {
    "floor": 21,
@@ -1974,7 +2135,8 @@
     "f21-field"
    ],
    "minLevel": 26,
-   "maxLevel": 27
+   "maxLevel": 27,
+   "nameZh": "第21層 熔岩原外圍"
   },
   "f21-secret": {
    "floor": 21,
@@ -1986,7 +2148,8 @@
    "minLevel": 35,
    "maxLevel": 37,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第21層 火山口秘境"
   },
   "f21-depths": {
    "floor": 21,
@@ -1998,7 +2161,8 @@
    ],
    "minLevel": 28,
    "maxLevel": 29,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第21層 火山口深處"
   },
   "f21-labyrinth": {
    "floor": 21,
@@ -2010,7 +2174,8 @@
    ],
    "minLevel": 29,
    "maxLevel": 30,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第21層 謎宮區"
   },
   "f21-bossroom": {
    "floor": 21,
@@ -2020,7 +2185,8 @@
     "f21-labyrinth",
     "f22-town"
    ],
-   "maxLevel": 32
+   "maxLevel": 32,
+   "nameZh": "第21層 頭目房間"
   },
   "f22-town": {
    "floor": 22,
@@ -2038,7 +2204,8 @@
     "crystal-heal",
     "armor-t20",
     "head-t20"
-   ]
+   ],
+   "nameZh": "可樂兒村"
   },
   "f22-lake": {
    "floor": 22,
@@ -2051,7 +2218,8 @@
     "f22-labyrinth"
    ],
    "minLevel": 27,
-   "maxLevel": 30
+   "maxLevel": 30,
+   "nameZh": "壺畔森林"
   },
   "f22-outskirts": {
    "floor": 22,
@@ -2061,7 +2229,8 @@
     "f22-lake"
    ],
    "minLevel": 27,
-   "maxLevel": 28
+   "maxLevel": 28,
+   "nameZh": "壺畔森林外圍"
   },
   "f22-secret": {
    "floor": 22,
@@ -2073,7 +2242,8 @@
    "minLevel": 36,
    "maxLevel": 38,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "壺畔森林秘境"
   },
   "f22-depths": {
    "floor": 22,
@@ -2085,7 +2255,8 @@
    ],
    "minLevel": 29,
    "maxLevel": 30,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "壺畔森林深處"
   },
   "f22-labyrinth": {
    "floor": 22,
@@ -2097,7 +2268,8 @@
    ],
    "minLevel": 30,
    "maxLevel": 30,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第22層 謎宮區"
   },
   "f22-bossroom": {
    "floor": 22,
@@ -2107,7 +2279,8 @@
     "f22-labyrinth",
     "f23-town"
    ],
-   "maxLevel": 33
+   "maxLevel": 33,
+   "nameZh": "第22層 頭目房間"
   },
   "f23-town": {
    "floor": 23,
@@ -2123,7 +2296,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第23層 主接區"
   },
   "f23-field": {
    "floor": 23,
@@ -2136,7 +2310,8 @@
     "f23-labyrinth"
    ],
    "minLevel": 29,
-   "maxLevel": 30
+   "maxLevel": 30,
+   "nameZh": "第23層 古戰場"
   },
   "f23-wilds": {
    "floor": 23,
@@ -2147,7 +2322,8 @@
     "f23-depths"
    ],
    "minLevel": 30,
-   "maxLevel": 33
+   "maxLevel": 33,
+   "nameZh": "第23層 墓園"
   },
   "f23-outskirts": {
    "floor": 23,
@@ -2157,7 +2333,8 @@
     "f23-field"
    ],
    "minLevel": 29,
-   "maxLevel": 30
+   "maxLevel": 30,
+   "nameZh": "第23層 古戰場外圍"
   },
   "f23-secret": {
    "floor": 23,
@@ -2169,7 +2346,8 @@
    "minLevel": 38,
    "maxLevel": 40,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第23層 墓園秘境"
   },
   "f23-depths": {
    "floor": 23,
@@ -2181,7 +2359,8 @@
    ],
    "minLevel": 31,
    "maxLevel": 32,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第23層 墓園深處"
   },
   "f23-labyrinth": {
    "floor": 23,
@@ -2193,7 +2372,8 @@
    ],
    "minLevel": 32,
    "maxLevel": 33,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第23層 謎宮區"
   },
   "f23-bossroom": {
    "floor": 23,
@@ -2203,7 +2383,8 @@
     "f23-labyrinth",
     "f24-town"
    ],
-   "maxLevel": 35
+   "maxLevel": 35,
+   "nameZh": "第23層 頭目房間"
   },
   "f24-town": {
    "floor": 24,
@@ -2219,7 +2400,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第24層 主接區"
   },
   "f24-field": {
    "floor": 24,
@@ -2232,7 +2414,8 @@
     "f24-labyrinth"
    ],
    "minLevel": 30,
-   "maxLevel": 31
+   "maxLevel": 31,
+   "nameZh": "第24層 古戰場"
   },
   "f24-wilds": {
    "floor": 24,
@@ -2243,7 +2426,8 @@
     "f24-depths"
    ],
    "minLevel": 31,
-   "maxLevel": 34
+   "maxLevel": 34,
+   "nameZh": "第24層 墓園"
   },
   "f24-outskirts": {
    "floor": 24,
@@ -2253,7 +2437,8 @@
     "f24-field"
    ],
    "minLevel": 30,
-   "maxLevel": 31
+   "maxLevel": 31,
+   "nameZh": "第24層 古戰場外圍"
   },
   "f24-secret": {
    "floor": 24,
@@ -2265,7 +2450,8 @@
    "minLevel": 39,
    "maxLevel": 41,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第24層 墓園秘境"
   },
   "f24-depths": {
    "floor": 24,
@@ -2277,7 +2463,8 @@
    ],
    "minLevel": 32,
    "maxLevel": 33,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第24層 墓園深處"
   },
   "f24-labyrinth": {
    "floor": 24,
@@ -2289,7 +2476,8 @@
    ],
    "minLevel": 33,
    "maxLevel": 34,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第24層 謎宮區"
   },
   "f24-bossroom": {
    "floor": 24,
@@ -2299,7 +2487,8 @@
     "f24-labyrinth",
     "f25-town"
    ],
-   "maxLevel": 36
+   "maxLevel": 36,
+   "nameZh": "第24層 頭目房間"
   },
   "f25-town": {
    "floor": 25,
@@ -2326,7 +2515,8 @@
     "head-t25",
     "feet-t25",
     "shield-t25"
-   ]
+   ],
+   "nameZh": "第25層 主接區"
   },
   "f25-field": {
    "floor": 25,
@@ -2339,7 +2529,8 @@
     "f25-labyrinth"
    ],
    "minLevel": 31,
-   "maxLevel": 32
+   "maxLevel": 32,
+   "nameZh": "第25層 巨人腳印"
   },
   "f25-wilds": {
    "floor": 25,
@@ -2350,7 +2541,8 @@
     "f25-depths"
    ],
    "minLevel": 32,
-   "maxLevel": 35
+   "maxLevel": 35,
+   "nameZh": "第25層 巨木林"
   },
   "f25-outskirts": {
    "floor": 25,
@@ -2360,7 +2552,8 @@
     "f25-field"
    ],
    "minLevel": 31,
-   "maxLevel": 32
+   "maxLevel": 32,
+   "nameZh": "第25層 巨人腳印外圍"
   },
   "f25-secret": {
    "floor": 25,
@@ -2372,7 +2565,8 @@
    "minLevel": 40,
    "maxLevel": 42,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第25層 巨木林秘境"
   },
   "f25-depths": {
    "floor": 25,
@@ -2384,7 +2578,8 @@
    ],
    "minLevel": 33,
    "maxLevel": 34,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第25層 巨木林深處"
   },
   "f25-labyrinth": {
    "floor": 25,
@@ -2396,7 +2591,8 @@
    ],
    "minLevel": 34,
    "maxLevel": 35,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第25層 謎宮區"
   },
   "f25-bossroom": {
    "floor": 25,
@@ -2406,7 +2602,8 @@
     "f25-labyrinth",
     "f26-town"
    ],
-   "maxLevel": 37
+   "maxLevel": 37,
+   "nameZh": "第25層 頭目房間"
   },
   "f26-town": {
    "floor": 26,
@@ -2422,7 +2619,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第26層 主接區"
   },
   "f26-field": {
    "floor": 26,
@@ -2435,7 +2633,8 @@
     "f26-labyrinth"
    ],
    "minLevel": 32,
-   "maxLevel": 33
+   "maxLevel": 33,
+   "nameZh": "第26層 雲海"
   },
   "f26-wilds": {
    "floor": 26,
@@ -2446,7 +2645,8 @@
     "f26-depths"
    ],
    "minLevel": 33,
-   "maxLevel": 36
+   "maxLevel": 36,
+   "nameZh": "第26層 雷雲"
   },
   "f26-outskirts": {
    "floor": 26,
@@ -2456,7 +2656,8 @@
     "f26-field"
    ],
    "minLevel": 32,
-   "maxLevel": 33
+   "maxLevel": 33,
+   "nameZh": "第26層 雲海外圍"
   },
   "f26-secret": {
    "floor": 26,
@@ -2468,7 +2669,8 @@
    "minLevel": 41,
    "maxLevel": 43,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第26層 雷雲秘境"
   },
   "f26-depths": {
    "floor": 26,
@@ -2480,7 +2682,8 @@
    ],
    "minLevel": 34,
    "maxLevel": 35,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第26層 雷雲深處"
   },
   "f26-labyrinth": {
    "floor": 26,
@@ -2492,7 +2695,8 @@
    ],
    "minLevel": 35,
    "maxLevel": 36,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第26層 謎宮區"
   },
   "f26-bossroom": {
    "floor": 26,
@@ -2502,7 +2706,8 @@
     "f26-labyrinth",
     "f27-town"
    ],
-   "maxLevel": 38
+   "maxLevel": 38,
+   "nameZh": "第26層 頭目房間"
   },
   "f27-town": {
    "floor": 27,
@@ -2518,7 +2723,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第27層 主接區"
   },
   "f27-field": {
    "floor": 27,
@@ -2531,7 +2737,8 @@
     "f27-labyrinth"
    ],
    "minLevel": 34,
-   "maxLevel": 35
+   "maxLevel": 35,
+   "nameZh": "第27層 廢墟"
   },
   "f27-wilds": {
    "floor": 27,
@@ -2542,7 +2749,8 @@
     "f27-depths"
    ],
    "minLevel": 35,
-   "maxLevel": 38
+   "maxLevel": 38,
+   "nameZh": "第27層 陷阱迴廊"
   },
   "f27-outskirts": {
    "floor": 27,
@@ -2552,7 +2760,8 @@
     "f27-field"
    ],
    "minLevel": 34,
-   "maxLevel": 35
+   "maxLevel": 35,
+   "nameZh": "第27層 廢墟外圍"
   },
   "f27-secret": {
    "floor": 27,
@@ -2564,7 +2773,8 @@
    "minLevel": 43,
    "maxLevel": 45,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第27層 陷阱迴廊秘境"
   },
   "f27-depths": {
    "floor": 27,
@@ -2576,7 +2786,8 @@
    ],
    "minLevel": 36,
    "maxLevel": 37,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第27層 陷阱迴廊深處"
   },
   "f27-labyrinth": {
    "floor": 27,
@@ -2588,7 +2799,8 @@
    ],
    "minLevel": 37,
    "maxLevel": 38,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第27層 謎宮區"
   },
   "f27-bossroom": {
    "floor": 27,
@@ -2598,7 +2810,8 @@
     "f27-labyrinth",
     "f28-town"
    ],
-   "maxLevel": 40
+   "maxLevel": 40,
+   "nameZh": "第27層 頭目房間"
   },
   "f28-town": {
    "floor": 28,
@@ -2615,7 +2828,8 @@
     "crystal-teleport",
     "crystal-heal",
     "feet-t25"
-   ]
+   ],
+   "nameZh": "第28層 主接區"
   },
   "f28-field": {
    "floor": 28,
@@ -2628,7 +2842,8 @@
     "f28-labyrinth"
    ],
    "minLevel": 35,
-   "maxLevel": 36
+   "maxLevel": 36,
+   "nameZh": "第28層 瘴氣森林"
   },
   "f28-wilds": {
    "floor": 28,
@@ -2639,7 +2854,8 @@
     "f28-depths"
    ],
    "minLevel": 36,
-   "maxLevel": 39
+   "maxLevel": 39,
+   "nameZh": "第28層 毒沼"
   },
   "f28-outskirts": {
    "floor": 28,
@@ -2649,7 +2865,8 @@
     "f28-field"
    ],
    "minLevel": 35,
-   "maxLevel": 36
+   "maxLevel": 36,
+   "nameZh": "第28層 瘴氣森林外圍"
   },
   "f28-secret": {
    "floor": 28,
@@ -2661,7 +2878,8 @@
    "minLevel": 44,
    "maxLevel": 46,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第28層 毒沼秘境"
   },
   "f28-depths": {
    "floor": 28,
@@ -2673,7 +2891,8 @@
    ],
    "minLevel": 37,
    "maxLevel": 38,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第28層 毒沼深處"
   },
   "f28-labyrinth": {
    "floor": 28,
@@ -2685,7 +2904,8 @@
    ],
    "minLevel": 38,
    "maxLevel": 39,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第28層 謎宮區"
   },
   "f28-bossroom": {
    "floor": 28,
@@ -2695,7 +2915,8 @@
     "f28-labyrinth",
     "f29-town"
    ],
-   "maxLevel": 41
+   "maxLevel": 41,
+   "nameZh": "第28層 頭目房間"
   },
   "f29-town": {
    "floor": 29,
@@ -2711,7 +2932,8 @@
     "instant-2",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "第29層 主接區"
   },
   "f29-field": {
    "floor": 29,
@@ -2724,7 +2946,8 @@
     "f29-labyrinth"
    ],
    "minLevel": 36,
-   "maxLevel": 37
+   "maxLevel": 37,
+   "nameZh": "第29層 瘴氣森林"
   },
   "f29-wilds": {
    "floor": 29,
@@ -2735,7 +2958,8 @@
     "f29-depths"
    ],
    "minLevel": 37,
-   "maxLevel": 40
+   "maxLevel": 40,
+   "nameZh": "第29層 毒沼"
   },
   "f29-outskirts": {
    "floor": 29,
@@ -2745,7 +2969,8 @@
     "f29-field"
    ],
    "minLevel": 36,
-   "maxLevel": 37
+   "maxLevel": 37,
+   "nameZh": "第29層 瘴氣森林外圍"
   },
   "f29-secret": {
    "floor": 29,
@@ -2757,7 +2982,8 @@
    "minLevel": 45,
    "maxLevel": 47,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第29層 毒沼秘境"
   },
   "f29-depths": {
    "floor": 29,
@@ -2769,7 +2995,8 @@
    ],
    "minLevel": 38,
    "maxLevel": 39,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第29層 毒沼深處"
   },
   "f29-labyrinth": {
    "floor": 29,
@@ -2781,7 +3008,8 @@
    ],
    "minLevel": 39,
    "maxLevel": 40,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第29層 謎宮區"
   },
   "f29-bossroom": {
    "floor": 29,
@@ -2791,7 +3019,8 @@
     "f29-labyrinth",
     "f30-town"
    ],
-   "maxLevel": 42
+   "maxLevel": 42,
+   "nameZh": "第29層 頭目房間"
   },
   "f30-town": {
    "floor": 30,
@@ -2816,7 +3045,8 @@
     "mid-t30",
     "head-t30",
     "shield-t30"
-   ]
+   ],
+   "nameZh": "第30層 主接區"
   },
   "f30-field": {
    "floor": 30,
@@ -2829,7 +3059,8 @@
     "f30-labyrinth"
    ],
    "minLevel": 37,
-   "maxLevel": 38
+   "maxLevel": 38,
+   "nameZh": "第30層 龍谷"
   },
   "f30-wilds": {
    "floor": 30,
@@ -2841,7 +3072,8 @@
    ],
    "minLevel": 38,
    "maxLevel": 41,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第30層 龍巢"
   },
   "f30-outskirts": {
    "floor": 30,
@@ -2851,7 +3083,8 @@
     "f30-field"
    ],
    "minLevel": 37,
-   "maxLevel": 38
+   "maxLevel": 38,
+   "nameZh": "第30層 龍谷外圍"
   },
   "f30-secret": {
    "floor": 30,
@@ -2863,7 +3096,8 @@
    "minLevel": 46,
    "maxLevel": 48,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第30層 龍巢秘境"
   },
   "f30-depths": {
    "floor": 30,
@@ -2875,7 +3109,8 @@
    ],
    "minLevel": 39,
    "maxLevel": 40,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第30層 龍巢深處"
   },
   "f30-labyrinth": {
    "floor": 30,
@@ -2887,7 +3122,8 @@
    ],
    "minLevel": 40,
    "maxLevel": 41,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第30層 謎宮區"
   },
   "f30-bossroom": {
    "floor": 30,
@@ -2897,7 +3133,8 @@
     "f30-labyrinth",
     "f31-town"
    ],
-   "maxLevel": 43
+   "maxLevel": 43,
+   "nameZh": "第30層 頭目房間"
   },
   "f31-town": {
    "floor": 31,
@@ -2915,7 +3152,8 @@
     "crystal-heal",
     "light-t30",
     "feet-t30"
-   ]
+   ],
+   "nameZh": "霧寶"
   },
   "f31-field": {
    "floor": 31,
@@ -2928,7 +3166,8 @@
     "f31-labyrinth"
    ],
    "minLevel": 39,
-   "maxLevel": 40
+   "maxLevel": 40,
+   "nameZh": "第31層 濃霧高原"
   },
   "f31-wilds": {
    "floor": 31,
@@ -2940,7 +3179,8 @@
    ],
    "minLevel": 40,
    "maxLevel": 43,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第31層 迷霧峽谷"
   },
   "f31-outskirts": {
    "floor": 31,
@@ -2950,7 +3190,8 @@
     "f31-field"
    ],
    "minLevel": 39,
-   "maxLevel": 40
+   "maxLevel": 40,
+   "nameZh": "第31層 濃霧高原外圍"
   },
   "f31-secret": {
    "floor": 31,
@@ -2962,7 +3203,8 @@
    "minLevel": 48,
    "maxLevel": 50,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第31層 迷霧峽谷秘境"
   },
   "f31-depths": {
    "floor": 31,
@@ -2974,7 +3216,8 @@
    ],
    "minLevel": 41,
    "maxLevel": 42,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第31層 迷霧峽谷深處"
   },
   "f31-labyrinth": {
    "floor": 31,
@@ -2986,7 +3229,8 @@
    ],
    "minLevel": 42,
    "maxLevel": 43,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第31層 謎宮區"
   },
   "f31-bossroom": {
    "floor": 31,
@@ -2996,7 +3240,8 @@
     "f31-labyrinth",
     "f32-town"
    ],
-   "maxLevel": 45
+   "maxLevel": 45,
+   "nameZh": "第31層 頭目房間"
   },
   "f32-town": {
    "floor": 32,
@@ -3012,7 +3257,8 @@
     "instant-3",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "晶晶"
   },
   "f32-field": {
    "floor": 32,
@@ -3025,7 +3271,8 @@
     "f32-labyrinth"
    ],
    "minLevel": 40,
-   "maxLevel": 41
+   "maxLevel": 41,
+   "nameZh": "第32層 水晶洞窟"
   },
   "f32-wilds": {
    "floor": 32,
@@ -3037,7 +3284,8 @@
    ],
    "minLevel": 41,
    "maxLevel": 44,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第32層 深層礦脈"
   },
   "f32-outskirts": {
    "floor": 32,
@@ -3047,7 +3295,8 @@
     "f32-field"
    ],
    "minLevel": 40,
-   "maxLevel": 41
+   "maxLevel": 41,
+   "nameZh": "第32層 水晶洞窟外圍"
   },
   "f32-secret": {
    "floor": 32,
@@ -3059,7 +3308,8 @@
    "minLevel": 49,
    "maxLevel": 51,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第32層 深層礦脈秘境"
   },
   "f32-depths": {
    "floor": 32,
@@ -3071,7 +3321,8 @@
    ],
    "minLevel": 42,
    "maxLevel": 43,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第32層 深層礦脈深處"
   },
   "f32-labyrinth": {
    "floor": 32,
@@ -3083,7 +3334,8 @@
    ],
    "minLevel": 43,
    "maxLevel": 44,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第32層 謎宮區"
   },
   "f32-bossroom": {
    "floor": 32,
@@ -3093,7 +3345,8 @@
     "f32-labyrinth",
     "f33-town"
    ],
-   "maxLevel": 46
+   "maxLevel": 46,
+   "nameZh": "第32層 頭目房間"
   },
   "f33-town": {
    "floor": 33,
@@ -3109,7 +3362,8 @@
     "instant-3",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "雲端"
   },
   "f33-field": {
    "floor": 33,
@@ -3122,7 +3376,8 @@
     "f33-labyrinth"
    ],
    "minLevel": 41,
-   "maxLevel": 42
+   "maxLevel": 42,
+   "nameZh": "第33層 天空浮島"
   },
   "f33-wilds": {
    "floor": 33,
@@ -3134,7 +3389,8 @@
    ],
    "minLevel": 42,
    "maxLevel": 45,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第33層 狂風斷崖"
   },
   "f33-outskirts": {
    "floor": 33,
@@ -3144,7 +3400,8 @@
     "f33-field"
    ],
    "minLevel": 41,
-   "maxLevel": 42
+   "maxLevel": 42,
+   "nameZh": "第33層 天空浮島外圍"
   },
   "f33-secret": {
    "floor": 33,
@@ -3156,7 +3413,8 @@
    "minLevel": 50,
    "maxLevel": 52,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第33層 狂風斷崖秘境"
   },
   "f33-depths": {
    "floor": 33,
@@ -3168,7 +3426,8 @@
    ],
    "minLevel": 43,
    "maxLevel": 44,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第33層 狂風斷崖深處"
   },
   "f33-labyrinth": {
    "floor": 33,
@@ -3180,7 +3439,8 @@
    ],
    "minLevel": 44,
    "maxLevel": 45,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第33層 謎宮區"
   },
   "f33-bossroom": {
    "floor": 33,
@@ -3190,7 +3450,8 @@
     "f33-labyrinth",
     "f34-town"
    ],
-   "maxLevel": 47
+   "maxLevel": 47,
+   "nameZh": "第33層 頭目房間"
   },
   "f34-town": {
    "floor": 34,
@@ -3206,7 +3467,8 @@
     "instant-3",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "齒輪"
   },
   "f34-field": {
    "floor": 34,
@@ -3219,7 +3481,8 @@
     "f34-labyrinth"
    ],
    "minLevel": 42,
-   "maxLevel": 43
+   "maxLevel": 43,
+   "nameZh": "第34層 發條街道"
   },
   "f34-wilds": {
    "floor": 34,
@@ -3231,7 +3494,8 @@
    ],
    "minLevel": 43,
    "maxLevel": 46,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第34層 蒸氣工廠"
   },
   "f34-outskirts": {
    "floor": 34,
@@ -3241,7 +3505,8 @@
     "f34-field"
    ],
    "minLevel": 42,
-   "maxLevel": 43
+   "maxLevel": 43,
+   "nameZh": "第34層 發條街道外圍"
   },
   "f34-secret": {
    "floor": 34,
@@ -3253,7 +3518,8 @@
    "minLevel": 51,
    "maxLevel": 53,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第34層 蒸氣工廠秘境"
   },
   "f34-depths": {
    "floor": 34,
@@ -3265,7 +3531,8 @@
    ],
    "minLevel": 44,
    "maxLevel": 45,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第34層 蒸氣工廠深處"
   },
   "f34-labyrinth": {
    "floor": 34,
@@ -3277,7 +3544,8 @@
    ],
    "minLevel": 45,
    "maxLevel": 46,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第34層 謎宮區"
   },
   "f34-bossroom": {
    "floor": 34,
@@ -3287,7 +3555,8 @@
     "f34-labyrinth",
     "f35-town"
    ],
-   "maxLevel": 48
+   "maxLevel": 48,
+   "nameZh": "第34層 頭目房間"
   },
   "f35-town": {
    "floor": 35,
@@ -3312,7 +3581,8 @@
     "mid-t35",
     "light-t35",
     "head-t35"
-   ]
+   ],
+   "nameZh": "迷蝦"
   },
   "f35-wandering": {
    "floor": 35,
@@ -3325,7 +3595,8 @@
     "f35-labyrinth"
    ],
    "minLevel": 44,
-   "maxLevel": 46
+   "maxLevel": 46,
+   "nameZh": "迷兔森林"
   },
   "f35-outskirts": {
    "floor": 35,
@@ -3335,7 +3606,8 @@
     "f35-wandering"
    ],
    "minLevel": 44,
-   "maxLevel": 45
+   "maxLevel": 45,
+   "nameZh": "迷兔森林外圍"
   },
   "f35-secret": {
    "floor": 35,
@@ -3347,7 +3619,8 @@
    "minLevel": 53,
    "maxLevel": 55,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "迷兔森林秘境"
   },
   "f35-depths": {
    "floor": 35,
@@ -3359,7 +3632,8 @@
    ],
    "minLevel": 46,
    "maxLevel": 47,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "迷兔森林深處"
   },
   "f35-labyrinth": {
    "floor": 35,
@@ -3371,7 +3645,8 @@
    ],
    "minLevel": 47,
    "maxLevel": 48,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第35層 謎宮區"
   },
   "f35-bossroom": {
    "floor": 35,
@@ -3381,7 +3656,8 @@
     "f35-labyrinth",
     "f36-town"
    ],
-   "maxLevel": 50
+   "maxLevel": 50,
+   "nameZh": "第35層 頭目房間"
   },
   "f36-town": {
    "floor": 36,
@@ -3399,7 +3675,8 @@
     "crystal-heal",
     "feet-t35",
     "shield-t35"
-   ]
+   ],
+   "nameZh": "神殿"
   },
   "f36-field": {
    "floor": 36,
@@ -3412,7 +3689,8 @@
     "f36-labyrinth"
    ],
    "minLevel": 45,
-   "maxLevel": 46
+   "maxLevel": 46,
+   "nameZh": "第36層 王家之谷"
   },
   "f36-wilds": {
    "floor": 36,
@@ -3424,7 +3702,8 @@
    ],
    "minLevel": 46,
    "maxLevel": 49,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第36層 地下墓室"
   },
   "f36-outskirts": {
    "floor": 36,
@@ -3434,7 +3713,8 @@
     "f36-field"
    ],
    "minLevel": 45,
-   "maxLevel": 46
+   "maxLevel": 46,
+   "nameZh": "第36層 王家之谷外圍"
   },
   "f36-secret": {
    "floor": 36,
@@ -3446,7 +3726,8 @@
    "minLevel": 54,
    "maxLevel": 56,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第36層 地下墓室秘境"
   },
   "f36-depths": {
    "floor": 36,
@@ -3458,7 +3739,8 @@
    ],
    "minLevel": 47,
    "maxLevel": 48,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第36層 地下墓室深處"
   },
   "f36-labyrinth": {
    "floor": 36,
@@ -3470,7 +3752,8 @@
    ],
    "minLevel": 48,
    "maxLevel": 49,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第36層 謎宮區"
   },
   "f36-bossroom": {
    "floor": 36,
@@ -3480,7 +3763,8 @@
     "f36-labyrinth",
     "f37-town"
    ],
-   "maxLevel": 51
+   "maxLevel": 51,
+   "nameZh": "第36層 頭目房間"
   },
   "f37-town": {
    "floor": 37,
@@ -3496,7 +3780,8 @@
     "instant-3",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "珊瑚"
   },
   "f37-field": {
    "floor": 37,
@@ -3509,7 +3794,8 @@
     "f37-labyrinth"
    ],
    "minLevel": 46,
-   "maxLevel": 47
+   "maxLevel": 47,
+   "nameZh": "第37層 珊瑚淺灘"
   },
   "f37-wilds": {
    "floor": 37,
@@ -3521,7 +3807,8 @@
    ],
    "minLevel": 47,
    "maxLevel": 50,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第37層 沉船海域"
   },
   "f37-outskirts": {
    "floor": 37,
@@ -3531,7 +3818,8 @@
     "f37-field"
    ],
    "minLevel": 46,
-   "maxLevel": 47
+   "maxLevel": 47,
+   "nameZh": "第37層 珊瑚淺灘外圍"
   },
   "f37-secret": {
    "floor": 37,
@@ -3543,7 +3831,8 @@
    "minLevel": 55,
    "maxLevel": 57,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第37層 沉船海域秘境"
   },
   "f37-depths": {
    "floor": 37,
@@ -3555,7 +3844,8 @@
    ],
    "minLevel": 48,
    "maxLevel": 49,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第37層 沉船海域深處"
   },
   "f37-labyrinth": {
    "floor": 37,
@@ -3567,7 +3857,8 @@
    ],
    "minLevel": 49,
    "maxLevel": 50,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第37層 謎宮區"
   },
   "f37-bossroom": {
    "floor": 37,
@@ -3577,7 +3868,8 @@
     "f37-labyrinth",
     "f38-town"
    ],
-   "maxLevel": 52
+   "maxLevel": 52,
+   "nameZh": "第37層 頭目房間"
   },
   "f38-town": {
    "floor": 38,
@@ -3594,7 +3886,8 @@
     "crystal-teleport",
     "crystal-heal",
     "mid-t35"
-   ]
+   ],
+   "nameZh": "鬼燈"
   },
   "f38-field": {
    "floor": 38,
@@ -3607,7 +3900,8 @@
     "f38-labyrinth"
    ],
    "minLevel": 47,
-   "maxLevel": 48
+   "maxLevel": 48,
+   "nameZh": "第38層 黑森林"
   },
   "f38-wilds": {
    "floor": 38,
@@ -3619,7 +3913,8 @@
    ],
    "minLevel": 48,
    "maxLevel": 51,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第38層 廢棄古堡"
   },
   "f38-outskirts": {
    "floor": 38,
@@ -3629,7 +3924,8 @@
     "f38-field"
    ],
    "minLevel": 47,
-   "maxLevel": 48
+   "maxLevel": 48,
+   "nameZh": "第38層 黑森林外圍"
   },
   "f38-secret": {
    "floor": 38,
@@ -3641,7 +3937,8 @@
    "minLevel": 56,
    "maxLevel": 58,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第38層 廢棄古堡秘境"
   },
   "f38-depths": {
    "floor": 38,
@@ -3653,7 +3950,8 @@
    ],
    "minLevel": 49,
    "maxLevel": 50,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第38層 廢棄古堡深處"
   },
   "f38-labyrinth": {
    "floor": 38,
@@ -3665,7 +3963,8 @@
    ],
    "minLevel": 50,
    "maxLevel": 51,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第38層 謎宮區"
   },
   "f38-bossroom": {
    "floor": 38,
@@ -3675,7 +3974,8 @@
     "f38-labyrinth",
     "f39-town"
    ],
-   "maxLevel": 53
+   "maxLevel": 53,
+   "nameZh": "第38層 頭目房間"
   },
   "f39-town": {
    "floor": 39,
@@ -3691,7 +3991,8 @@
     "instant-3",
     "crystal-teleport",
     "crystal-heal"
-   ]
+   ],
+   "nameZh": "荊棘"
   },
   "f39-field": {
    "floor": 39,
@@ -3704,7 +4005,8 @@
     "f39-labyrinth"
    ],
    "minLevel": 49,
-   "maxLevel": 50
+   "maxLevel": 50,
+   "nameZh": "第39層 荊棘森林"
   },
   "f39-wilds": {
    "floor": 39,
@@ -3716,7 +4018,8 @@
    ],
    "minLevel": 50,
    "maxLevel": 53,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第39層 毒蜂巢"
   },
   "f39-outskirts": {
    "floor": 39,
@@ -3726,7 +4029,8 @@
     "f39-field"
    ],
    "minLevel": 49,
-   "maxLevel": 50
+   "maxLevel": 50,
+   "nameZh": "第39層 荊棘森林外圍"
   },
   "f39-secret": {
    "floor": 39,
@@ -3738,7 +4042,8 @@
    "minLevel": 58,
    "maxLevel": 60,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第39層 毒蜂巢秘境"
   },
   "f39-depths": {
    "floor": 39,
@@ -3750,7 +4055,8 @@
    ],
    "minLevel": 51,
    "maxLevel": 52,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第39層 毒蜂巢深處"
   },
   "f39-labyrinth": {
    "floor": 39,
@@ -3762,7 +4068,8 @@
    ],
    "minLevel": 52,
    "maxLevel": 53,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第39層 謎宮區"
   },
   "f39-bossroom": {
    "floor": 39,
@@ -3772,7 +4079,8 @@
     "f39-labyrinth",
     "f40-town"
    ],
-   "maxLevel": 55
+   "maxLevel": 55,
+   "nameZh": "第39層 頭目房間"
   },
   "f40-town": {
    "floor": 40,
@@ -3798,7 +4106,8 @@
     "head-t40",
     "feet-t40",
     "shield-t40"
-   ]
+   ],
+   "nameZh": "黑曜"
   },
   "f40-field": {
    "floor": 40,
@@ -3811,7 +4120,8 @@
     "f40-labyrinth"
    ],
    "minLevel": 50,
-   "maxLevel": 51
+   "maxLevel": 51,
+   "nameZh": "第40層 焦土平原"
   },
   "f40-wilds": {
    "floor": 40,
@@ -3823,7 +4133,8 @@
    ],
    "minLevel": 51,
    "maxLevel": 54,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第40層 魔王城外牆"
   },
   "f40-outskirts": {
    "floor": 40,
@@ -3833,7 +4144,8 @@
     "f40-field"
    ],
    "minLevel": 50,
-   "maxLevel": 51
+   "maxLevel": 51,
+   "nameZh": "第40層 焦土平原外圍"
   },
   "f40-secret": {
    "floor": 40,
@@ -3845,7 +4157,8 @@
    "minLevel": 59,
    "maxLevel": 61,
    "aggressive": true,
-   "secret": true
+   "secret": true,
+   "nameZh": "第40層 魔王城外牆秘境"
   },
   "f40-depths": {
    "floor": 40,
@@ -3857,7 +4170,8 @@
    ],
    "minLevel": 52,
    "maxLevel": 53,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第40層 魔王城外牆深處"
   },
   "f40-labyrinth": {
    "floor": 40,
@@ -3869,7 +4183,8 @@
    ],
    "minLevel": 53,
    "maxLevel": 54,
-   "aggressive": true
+   "aggressive": true,
+   "nameZh": "第40層 謎宮區"
   },
   "f40-bossroom": {
    "floor": 40,
@@ -3879,7 +4194,8 @@
     "f40-labyrinth",
     "f41-town"
    ],
-   "maxLevel": 56
+   "maxLevel": 56,
+   "nameZh": "第40層 頭目房間"
   },
   "f41-town": {
    "floor": 41,
@@ -3887,7 +4203,8 @@
    "name": "Floor 41",
    "links": [
     "f40-bossroom"
-   ]
+   ],
+   "nameZh": "第41層"
   }
  }
 }

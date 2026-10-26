@@ -5,17 +5,33 @@
 // - The TANK starts fighting first. Everyone else only fights while the tank
 //   is in the area, fighting, and above `tankRetreatPct` HP.
 // - The goal area must be safe for the LOWEST-level member.
-// - `shouldSyncInGame` also mirrors the party into the game's own party
-//   system (invite / accept / promote / leave). The game has no tank role.
+// - Every running party is mirrored into the game's own party system
+//   (invite / accept / promote / leave). The game has no tank role.
 
 import { randomUUID } from 'node:crypto'
-import { areaLevel, isAreaSafeFor, parseArea, townOf } from '#shared/game-rules'
-import type { Party, PartyGoal, PartySummary } from '#shared/types'
+import { areaLevel, isAreaSafeFor, parseArea, totalPotions, townOf } from '#shared/game-rules'
+import type { Party, PartyGoal, PartyMode, PartyStatus, PartySummary } from '#shared/types'
 import type { PartyOpKey, CommandKey } from '../sao/protocol'
 import type { Session } from './session'
 
 const NUDGE_COOLDOWN_MS = 3000
-const EDITABLE_FIELDS = ['name', 'memberIds', 'leaderId', 'tankId', 'tankRetreatPct', 'shouldSyncInGame'] as const
+const status = (code: string, text: string, params?: PartyStatus['params']): PartyStatus => ({ code, text, ...(params ? { params } : {}) })
+const PARTY_MODES: PartyMode[] = ['rest', 'standby', 'fight']
+const isTown = (areaId: string) => parseArea(areaId)?.kind === 'town'
+
+// Settle a requested goal: towns mean rest, rest means the floor's town, and a
+// party can't fight in town. Missing mode: rest in town, otherwise keep the old mode.
+export function resolveGoal(requested: Partial<PartyGoal>, fallback: PartyGoal | null, leaderAreaId?: string): PartyGoal | string {
+  if (requested.mode && !PARTY_MODES.includes(requested.mode)) return `Unknown party mode "${requested.mode}"`
+  let areaId = requested.areaId || fallback?.areaId || leaderAreaId
+  if (!areaId) return 'Pick a location first'
+  let mode: PartyMode = requested.mode ?? (isTown(areaId) ? 'rest' : fallback?.mode === 'rest' || !fallback ? (requested.areaId ? 'standby' : 'fight') : fallback.mode)
+  if (requested.areaId && isTown(requested.areaId)) mode = 'rest'
+  if (mode === 'rest') areaId = townOf(parseArea(areaId)?.floor ?? 1)
+  else if (isTown(areaId)) return 'Pick a field or boss room to stand by or fight in'
+  return { areaId, mode }
+}
+const EDITABLE_FIELDS = ['name', 'memberIds', 'leaderId', 'tankId', 'tankRetreatPct'] as const
 
 export type PartyChanges = Partial<Pick<Party, typeof EDITABLE_FIELDS[number]>>
 type PartyResult = { party: Party, error?: undefined } | { error: string }
@@ -30,7 +46,6 @@ export function newParty(name: string): Party {
     isActive: false,
     goal: null,
     tankRetreatPct: 40,
-    shouldSyncInGame: false,
   }
 }
 
@@ -46,6 +61,20 @@ export function validateParty(party: Party, parties: Pick<Party, 'id' | 'name' |
   if (party.tankId && !memberSet.has(party.tankId)) return 'The tank must be a party member'
   const retreatPct = Number(party.tankRetreatPct)
   if (!Number.isFinite(retreatPct) || retreatPct < 10 || retreatPct > 90) return 'Tank retreat HP must be 10–90%'
+  return null
+}
+
+// A boss fight can't be left once started, so every member must carry enough
+// recovery potions: at least the "restock when below" amount from its settings.
+export function lowPotionMember(sessions: Session[]): { name: string, count: number, needed: number } | null {
+  for (const session of sessions) {
+    const player = session.player
+    if (!player) continue
+    const potionItem = player.settings?.potionItem
+    const count = potionItem ? player.inventory?.[potionItem] ?? 0 : totalPotions(player.inventory)
+    const needed = Math.max(1, session.safety.restock.autoDrinkMin)
+    if (count < needed) return { name: session.name, count, needed }
+  }
   return null
 }
 
@@ -65,7 +94,10 @@ export function goalSafetyError(goalAreaId: string | undefined, sessions: Sessio
 
 export class PartyManager {
   parties: Party[] = []
-  private statusByPartyId = new Map<string, string>()
+  private statusByPartyId = new Map<string, PartyStatus>()
+  // Running parties already formed in the game since this server started.
+  private syncedPartyIds = new Set<string>()
+  private lastMemberIds = new Set<string>()
   private timer: ReturnType<typeof setInterval>
   private getSession: (accountId: string | null) => Session | undefined
   private save: () => void
@@ -78,7 +110,15 @@ export class PartyManager {
 
   stop() { clearInterval(this.timer) }
 
-  load(parties: Party[]) { this.parties = parties || []; this.refreshRoles() }
+  load(parties: Party[]) {
+    this.parties = parties || []
+    for (const party of this.parties) { // older saves had { shouldHunt } instead of a mode
+      const goal = party.goal as (PartyGoal & { shouldHunt?: boolean }) | null
+      if (goal && !goal.mode) party.goal = { areaId: goal.areaId, mode: isTown(goal.areaId) ? 'rest' : goal.shouldHunt ? 'fight' : 'standby' }
+      delete (party as Party & { shouldSyncInGame?: boolean }).shouldSyncInGame // in-game sync is always on now
+    }
+    this.refreshRoles()
+  }
 
   byId(partyId: string) { return this.parties.find((party) => party.id === partyId) || null }
   sessionsOf(party: Party) { return party.memberIds.map((memberId) => this.getSession(memberId)).filter((session): session is Session => !!session) }
@@ -105,10 +145,15 @@ export class PartyManager {
     if (validationError) return { error: validationError }
     const hasLeaderChanged = draft.leaderId !== party.leaderId
     const previousLeaderId = party.leaderId
+    const addedIds = draft.memberIds.filter((memberId) => !party.memberIds.includes(memberId))
+    const removedIds = party.memberIds.filter((memberId) => !draft.memberIds.includes(memberId))
     Object.assign(party, draft)
     this.persist()
-    if (party.isActive && party.shouldSyncInGame && hasLeaderChanged) {
-      await this.sendFrom(party, previousLeaderId, 'promote', this.nameOf(party.leaderId))
+    // Keep the in-game party in step with a running party.
+    if (party.isActive && this.syncedPartyIds.has(party.id)) {
+      for (const memberId of removedIds) await this.sendFrom(party, memberId, 'leave')
+      if (hasLeaderChanged && previousLeaderId && !removedIds.includes(previousLeaderId)) await this.sendFrom(party, previousLeaderId, 'promote', this.nameOf(party.leaderId))
+      for (const memberId of addedIds) await this.joinInGame(party, memberId)
     }
     return { party }
   }
@@ -133,39 +178,33 @@ export class PartyManager {
     this.persist()
   }
 
-  // Start the party. The goal defaults to "hunt where the leader is now".
-  async activate(partyId: string, requestedGoal?: Partial<PartyGoal>): Promise<PartyResult> {
+  // Start the party, or change where it is / what it does there. With no
+  // location it acts where the party already is (or where the leader is).
+  async setGoal(partyId: string, requestedGoal: Partial<PartyGoal> = {}): Promise<PartyResult> {
     const party = this.byId(partyId)
     if (!party) return { error: 'No such party' }
     if (party.memberIds.length < 2) return { error: 'A party needs at least 2 members' }
-    const goalAreaId = requestedGoal?.areaId || this.getSession(party.leaderId)?.player?.areaId
-    const safetyError = goalSafetyError(goalAreaId, this.sessionsOf(party))
+    const currentGoal = party.isActive ? party.goal : null
+    const goal = resolveGoal(requestedGoal, currentGoal, this.getSession(party.leaderId)?.player?.areaId)
+    if (typeof goal === 'string') return { error: goal }
+    const safetyError = goalSafetyError(goal.areaId, this.sessionsOf(party))
     if (safetyError) return { error: safetyError }
-    party.goal = { areaId: goalAreaId!, shouldHunt: requestedGoal?.shouldHunt ?? true }
+    const lowMember = goal.mode === 'fight' && parseArea(goal.areaId)?.kind === 'bossroom' ? lowPotionMember(this.sessionsOf(party)) : null
+    if (lowMember) return { error: `${lowMember.name} has only ${lowMember.count} potions (needs ${lowMember.needed}) — restock before the boss` }
+    party.goal = goal
     party.isActive = true
-    this.persist()
-    if (party.shouldSyncInGame) await this.syncCreate(party)
+    this.persist() // the next tick forms the party in-game once everyone is online
     return { party }
   }
 
-  async setGoal(partyId: string, requestedGoal: Partial<PartyGoal>): Promise<PartyResult> {
-    const party = this.byId(partyId)
-    if (!party) return { error: 'No such party' }
-    if (!party.isActive || !party.goal) return this.activate(partyId, requestedGoal)
-    const goalAreaId = requestedGoal.areaId ?? party.goal.areaId
-    const safetyError = goalSafetyError(goalAreaId, this.sessionsOf(party))
-    if (safetyError) return { error: safetyError }
-    party.goal = { areaId: goalAreaId, shouldHunt: requestedGoal.shouldHunt ?? party.goal.shouldHunt }
-    this.persist()
-    return { party }
-  }
+  activate(partyId: string, requestedGoal?: Partial<PartyGoal>) { return this.setGoal(partyId, requestedGoal) }
 
   async deactivate(partyId: string): Promise<PartyResult> {
     const party = this.byId(partyId)
     if (!party) return { error: 'No such party' }
     party.isActive = false
     this.persist()
-    if (party.shouldSyncInGame) for (const memberId of party.memberIds) await this.sendFrom(party, memberId, 'leave')
+    if (this.syncedPartyIds.delete(party.id)) for (const memberId of party.memberIds) await this.sendFrom(party, memberId, 'leave')
     return { party }
   }
 
@@ -181,26 +220,40 @@ export class PartyManager {
 
   // Inviting is what creates a party in the game; there's no separate "create".
   private async syncCreate(party: Party) {
-    const leaderName = this.nameOf(party.leaderId)
-    for (const memberId of party.memberIds) {
-      if (memberId === party.leaderId) continue
-      await this.sendFrom(party, party.leaderId, 'invite', this.nameOf(memberId))
-      await this.sendFrom(party, memberId, 'accept', leaderName)
-    }
+    for (const memberId of party.memberIds) if (memberId !== party.leaderId) await this.joinInGame(party, memberId)
+  }
+
+  // The member accepts when the game delivers the invite (see acceptsInviteFrom),
+  // so the accept can't race ahead of the invite.
+  private async joinInGame(party: Party, memberId: string) {
+    const gameParty = this.getSession(party.leaderId)?.client.gameParty
+    if (gameParty?.members.some((member) => member.name === this.nameOf(memberId))) return // already in
+    await this.sendFrom(party, party.leaderId, 'invite', this.nameOf(memberId))
+  }
+
+  // An invite we sent ourselves: from the leader of the running party this account is in.
+  acceptsInviteFrom(accountId: string, inviterName: string) {
+    const party = this.parties.find((candidate) => candidate.isActive && candidate.memberIds.includes(accountId))
+    return Boolean(party && party.leaderId !== accountId && this.nameOf(party.leaderId) === inviterName)
   }
 
   // ---- the follow/tank loop ----------------------------------------------
 
   private refreshRoles() {
+    const memberIdsNow = new Set<string>()
     for (const party of this.parties) {
       for (const memberId of party.memberIds) {
         const session = this.getSession(memberId)
         if (!session) continue
+        memberIdsNow.add(memberId)
         const roles = ([memberId === party.leaderId && 'leader', memberId === party.tankId && 'tank'] as const)
           .filter((role): role is 'leader' | 'tank' => !!role)
         session.partyRole = { partyId: party.id, partyName: party.name, roles: roles.length ? roles : ['member'], isActive: party.isActive }
       }
     }
+    // Members who left a party, or whose party was deleted, are solo again.
+    for (const memberId of this.lastMemberIds) if (!memberIdsNow.has(memberId)) { const session = this.getSession(memberId); if (session) session.partyRole = null }
+    this.lastMemberIds = memberIdsNow
   }
 
   private persist() { this.refreshRoles(); this.save() }
@@ -208,30 +261,37 @@ export class PartyManager {
   private tickAll() {
     this.refreshRoles()
     for (const party of this.parties) {
-      if (!party.isActive) { this.statusByPartyId.set(party.id, 'Off'); continue }
-      try { this.statusByPartyId.set(party.id, this.tick(party)) } catch (error) { this.statusByPartyId.set(party.id, `Error: ${(error as Error).message}`) }
+      if (!party.isActive) { this.statusByPartyId.set(party.id, status('off', 'Off')); continue }
+      try { this.statusByPartyId.set(party.id, this.tick(party)) } catch (error) { this.statusByPartyId.set(party.id, status('error', `Error: ${(error as Error).message}`, { message: (error as Error).message })) }
     }
   }
 
   // One coordination step; returns a status line. It never awaits: moves run
   // in the background under each account's own lock, so one slow bot can't
   // stall the others.
-  private tick(party: Party): string {
+  private tick(party: Party): PartyStatus {
     const members = this.sessionsOf(party)
     const leader = this.getSession(party.leaderId)
-    if (!leader?.player || !leader.isConnected) return 'Waiting for the leader to connect'
+    if (!leader?.player || !leader.isConnected) return status('waitLeader', 'Waiting for the leader to connect', { name: leader?.name ?? '?' })
     const offlineMembers = members.filter((member) => !member.isConnected || !member.player)
-    if (offlineMembers.length) return `Waiting for ${offlineMembers.map((member) => member.name).join(', ')}`
+    if (offlineMembers.length) {
+      const names = offlineMembers.map((member) => member.name).join(', ')
+      return status('waitMembers', `Waiting for ${names}`, { names })
+    }
+    if (!this.syncedPartyIds.has(party.id)) { // everyone is online: form the party in the game (once per server run)
+      this.syncedPartyIds.add(party.id)
+      this.syncCreate(party).catch((error: Error) => leader.log('error', `In-game party: ${error.message}`))
+    }
 
     const goal = party.goal!
     const safetyError = goalSafetyError(goal.areaId, members)
     if (safetyError) {
       this.stopAllHunting(members)
-      party.goal = { areaId: townOf(parseArea(goal.areaId)?.floor || 1), shouldHunt: false }
-      return `Pulled back to town: ${safetyError}`
+      party.goal = { areaId: townOf(parseArea(goal.areaId)?.floor || 1), mode: 'rest' }
+      return status('pulledBack', `Pulled back to town: ${safetyError}`, { area: party.goal.areaId })
     }
     const haltedMember = members.find((member) => member.haltReason)
-    if (haltedMember) { this.stopAllHunting(members); return `Holding — ${haltedMember.name} stopped itself (${haltedMember.haltReason})` }
+    if (haltedMember) { this.stopAllHunting(members); return status('halted', `Holding — ${haltedMember.name} stopped itself (${haltedMember.haltReason})`, { name: haltedMember.name }) }
 
     // 1. The leader goes to the goal; everyone else follows the leader.
     for (const member of members) {
@@ -240,22 +300,36 @@ export class PartyManager {
       if (member.player!.areaId === targetAreaId || member.busyLabel || member.isInBossFight) continue
       member.withLock(isLeader ? `party: lead to ${targetAreaId}` : `party: follow ${leader.name}`, () => member.goTo(targetAreaId))
     }
-    if (!members.every((member) => member.player!.areaId === goal.areaId)) return `Moving to ${goal.areaId}`
-    if (!goal.shouldHunt) { this.stopAllHunting(members); return `Holding at ${goal.areaId}` }
+    const area = goal.areaId
+    if (!members.every((member) => member.player!.areaId === area)) return status('moving', `Moving to ${area}`, { area })
+    if (goal.mode === 'rest') { this.stopAllHunting(members); return status('rest', `Resting in ${area}`, { area }) }
+    if (goal.mode === 'standby') { this.stopAllHunting(members); return status('standby', `Standing by at ${area}`, { area }) }
 
-    // 2. The tank fights first; the rest fight only while the tank is up.
+    // 2. Fight: the tank goes first; the rest fight only while the tank is up.
+    // In a boss room "fighting" means challenging the boss (it can't be stopped).
+    const isBossRoom = parseArea(goal.areaId)?.kind === 'bossroom'
+    const fightCommand: CommandKey = isBossRoom ? 'startBoss' : 'startHunt'
+    const isFighting = (member: Session) => member.isHunting || member.isInBossFight
+    const lowMember = isBossRoom && !members.some((member) => member.isInBossFight) ? lowPotionMember(members) : null
+    if (lowMember) {
+      return status('lowPotions', `${lowMember.name} is low on potions (${lowMember.count}/${lowMember.needed}) — no boss fight`, { name: lowMember.name, count: lowMember.count, needed: lowMember.needed, area })
+    }
     const tank = this.getSession(party.tankId)
     const tankHpPct = tank?.hpPct()
     const isTankHealthy = tankHpPct == null || tankHpPct >= party.tankRetreatPct
-    const isTankHolding = !tank || (tank.isHunting && isTankHealthy)
-    if (tank && !tank.busyLabel && !tank.isHunting && isTankHealthy) this.nudge(tank, 'startHunt', party)
+    const isTankHolding = !tank || (isFighting(tank) && isTankHealthy)
+    if (tank && !tank.busyLabel && !isFighting(tank) && isTankHealthy) this.nudge(tank, fightCommand, party)
     for (const member of members) {
       if (member === tank || member.busyLabel) continue
-      if (isTankHolding && !member.isHunting) this.nudge(member, 'startHunt', party)
+      if (isTankHolding && !isFighting(member)) this.nudge(member, fightCommand, party)
       if (!isTankHolding && member.isHunting) this.nudge(member, 'stopHunt', party)
     }
-    if (!isTankHolding) return `Tank ${tank!.name} is ${isTankHealthy ? 'not fighting' : `low (${tankHpPct}%)`} — others wait`
-    return `Hunting at ${goal.areaId}`
+    if (!isTankHolding) {
+      return isTankHealthy
+        ? status('tankWaiting', `Tank ${tank!.name} is not fighting — others wait`, { name: tank!.name, area })
+        : status('tankLow', `Tank ${tank!.name} is low (${tankHpPct}%) — others wait`, { name: tank!.name, hp: tankHpPct ?? 0, area })
+    }
+    return isBossRoom ? status('fightBoss', `Fighting the boss at ${area}`, { area }) : status('fight', `Fighting at ${area}`, { area })
   }
 
   private stopAllHunting(members: Session[]) {
@@ -273,6 +347,6 @@ export class PartyManager {
   }
 
   summary(): PartySummary[] {
-    return this.parties.map((party) => ({ ...party, status: this.statusByPartyId.get(party.id) || (party.isActive ? 'Starting…' : 'Off') }))
+    return this.parties.map((party) => ({ ...party, status: this.statusByPartyId.get(party.id) ?? (party.isActive ? status('starting', 'Starting…') : status('off', 'Off')) }))
   }
 }

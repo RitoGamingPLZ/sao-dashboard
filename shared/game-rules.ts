@@ -4,6 +4,12 @@
 import type { Kit } from './types'
 
 export const TOP_FLOOR = 40
+// How many characters one dashboard runs.
+export const MAX_ACCOUNTS = 10
+
+// EXP needed to go from `level` to the next one — the game client's own formula
+// (the server never sends it). Lv1 → 51, Lv7 → 3117.
+export const expToNextLevel = (level: number) => Math.floor(25 * level * level * Math.pow(1.035, level) * 2)
 
 // Unique-weapon questlines a character can be pointed at. Dashboard-only
 // bookkeeping, not a game protocol field.
@@ -11,7 +17,7 @@ export const WEAPON_TYPES = ['one-handed-sword', 'rapier', 'dual-blades', 'spear
 
 import world from './world.json'
 
-export interface WorldArea { floor: number, kind: string, name: string, links: string[], minLevel?: number, maxLevel?: number, aggressive?: boolean, secret?: boolean, shop?: string[] }
+export interface WorldArea { floor: number, kind: string, name: string, nameZh?: string, links: string[], minLevel?: number, maxLevel?: number, aggressive?: boolean, secret?: boolean, shop?: string[] }
 // Real map, copied from the game client (areas, links, monster levels).
 export const WORLD_AREAS: Record<string, WorldArea> = world.areas
 

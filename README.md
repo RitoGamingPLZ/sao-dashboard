@@ -55,7 +55,7 @@ The game has one call for both: `POST /api/link {account, password, name?}` → 
 - The **tank** fights first. The others fight only while the tank is in the area, fighting, and above its **retreat HP** (default 40%).
 - The goal area must be safe for the **lowest-level** member, or the party is pulled back to town.
 - If any member's bot halts itself after repeated close calls, the whole party holds.
-- **Also form the party in-game** (party settings, off by default) sends the game's own party frames: the leader `invite`s, members `accept`, `promote` on leader change, `leave` on stop. The game has no tank role.
+- **Every running party is also formed in the game**, once all members are online: the leader `invite`s, members `accept`; members added or removed later are invited or `leave`; `promote` on leader change. The game has no tank role.
 
 ## Health and potions (per bot)
 

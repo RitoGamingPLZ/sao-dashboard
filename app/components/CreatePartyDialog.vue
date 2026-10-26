@@ -2,13 +2,14 @@
 import type { Party } from '#shared/types'
 
 const { t } = useI18n()
-const { accounts, takenAccountIds, patchParty } = useDashboard()
+const { accountById, patchParty } = useDashboard()
 const dialog = ref<HTMLDialogElement>()
 const name = ref('')
 const memberIds = ref<string[]>([])
 const retreatPct = ref(40)
 const errorText = ref('')
-const freeAccounts = computed(() => accounts.value.filter((account) => !takenAccountIds.value.has(account.id)))
+const addMember = (accountId: string) => { memberIds.value = [...memberIds.value, accountId] }
+const removeMember = (accountId: string) => { memberIds.value = memberIds.value.filter((memberId) => memberId !== accountId) }
 
 function open() {
   name.value = ''
@@ -44,11 +45,14 @@ async function submit() {
     <form class="stack" @submit.prevent="submit">
       <label>{{ t('partyNamePlaceholder') }} <input v-model="name" required maxlength="32" autofocus></label>
       <div>
-        <div class="section-title">{{ t('addMember') }}</div>
-        <p v-if="!freeAccounts.length" class="muted">{{ t('noFree') }}</p>
-        <label v-for="account in freeAccounts" :key="account.id" class="checkbox">
-          <input v-model="memberIds" type="checkbox" :value="account.id"> {{ account.name }}
-        </label>
+        <div class="section-title">{{ t('members') }}</div>
+        <ul class="member-chips">
+          <li v-for="memberId in memberIds" :key="memberId">
+            {{ accountById(memberId)?.name ?? memberId }}
+            <button type="button" class="icon-button" :aria-label="`${t('remove')} ${accountById(memberId)?.name ?? ''}`" @click="removeMember(memberId)">✕</button>
+          </li>
+        </ul>
+        <MemberPicker :exclude-ids="memberIds" @pick="addMember" />
       </div>
       <label>{{ t('retreatLabel') }} <input v-model.number="retreatPct" type="number" min="10" max="90"></label>
       <p class="form-error">{{ errorText }}</p>

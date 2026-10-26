@@ -8,6 +8,10 @@ const create = reactive({ account: '', name: '' })
 const created = ref<{ name: string, password: string } | null>(null)
 const status = ref('')
 const isBusy = ref(false)
+// Accounts removed earlier: one click adds them back (if a password was saved) or fills the form.
+const previousAccounts = ref<Array<{ account: string, name: string, hasPassword: boolean }>>([])
+const passwordInput = ref<HTMLInputElement>()
+const loadPrevious = async () => { previousAccounts.value = await callApi('GET', '/api/accounts/previous').catch(() => []) as typeof previousAccounts.value }
 
 function open() {
   Object.assign(login, { account: '', password: '', shouldRememberPassword: true })
@@ -15,6 +19,7 @@ function open() {
   created.value = null
   status.value = ''
   tab.value = 'login'
+  loadPrevious()
   dialog.value?.showModal()
 }
 defineExpose({ open })
@@ -41,6 +46,21 @@ const submitCreate = () => submit('/api/accounts/create', create, (result) => {
   showToast(`${result.name} created — copy the password now`)
 })
 
+function pickPrevious(previous: { account: string, hasPassword: boolean }) {
+  if (previous.hasPassword) {
+    return submit('/api/accounts/previous', { account: previous.account }, (result) => {
+      dialog.value?.close()
+      showToast(t('addedAccount', { name: result.account! }))
+    })
+  }
+  login.account = previous.account
+  login.password = ''
+  nextTick(() => passwordInput.value?.focus())
+}
+async function forgetPrevious(account: string) {
+  if (await runAndReport(() => callApi('DELETE', '/api/accounts/previous', { account }))) loadPrevious()
+}
+
 async function copyPassword() {
   try { await navigator.clipboard.writeText(created.value!.password); showToast('Password copied') } catch { showToast('Copy failed — select it by hand', 'error') }
 }
@@ -54,8 +74,18 @@ async function copyPassword() {
     </div>
 
     <form v-if="tab === 'login'" class="stack" @submit.prevent="submitLogin">
+      <div v-if="previousAccounts.length">
+        <div class="section-title">{{ t('previousAccounts') }}</div>
+        <ul class="previous-accounts">
+          <li v-for="previous in previousAccounts" :key="previous.account">
+            <button type="button" class="link-name" :disabled="isBusy" @click="pickPrevious(previous)">{{ previous.name }}</button>
+            <span class="muted">{{ previous.account }} · {{ previous.hasPassword ? t('oneClickLogin') : t('needsPassword') }}</span>
+            <button type="button" class="icon-button" :title="t('forget')" :aria-label="`${t('forget')} ${previous.account}`" @click="forgetPrevious(previous.account)">✕</button>
+          </li>
+        </ul>
+      </div>
       <label>{{ t('accountId') }} <input v-model.trim="login.account" required autocomplete="username"></label>
-      <label>{{ t('password') }} <input v-model="login.password" type="password" required autocomplete="current-password"></label>
+      <label>{{ t('password') }} <input ref="passwordInput" v-model="login.password" type="password" required autocomplete="current-password"></label>
       <label class="checkbox"><input v-model="login.shouldRememberPassword" type="checkbox"> {{ t('rememberPassword') }}</label>
       <p class="form-error">{{ status }}</p>
       <div class="dialog-actions">

@@ -24,7 +24,8 @@ const thresholdRows = [
   { key: 'crystalPct', label: 'thresholdCrystal', min: 10 },
 ] as const
 const restockRows = [
-  { label: 'autoDrinkItem', min: 'autoDrinkMin', target: 'autoDrinkTarget' },
+  { label: 'recoveryPotion', min: 'autoDrinkMin', target: 'autoDrinkTarget' },
+  { label: 'instantPotion', min: 'instantMin', target: 'instantTarget' },
   { label: 'healCrystal', min: 'crystalHealMin', target: 'crystalHealTarget' },
   { label: 'teleportCrystal', min: 'teleportMin', target: 'teleportTarget' },
 ] as const

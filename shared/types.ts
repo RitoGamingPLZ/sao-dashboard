@@ -9,6 +9,8 @@ export interface RestockLimits {
   crystalHealTarget: number
   teleportMin: number
   teleportTarget: number
+  instantMin: number
+  instantTarget: number
   maxSpendPct: number
 }
 export interface Safety {
@@ -17,12 +19,16 @@ export interface Safety {
   normal: Thresholds
   boss: Thresholds
   isAutoRestockOn: boolean
+  // The instant potion (瞬補) to keep stocked; null = the one recommended for the level.
+  instantItem: string | null
   restock: RestockLimits
   haltAfterCriticalCount: number
 }
 export type FightContext = 'normal' | 'boss'
 
-export interface PartyGoal { areaId: string, shouldHunt: boolean }
+// rest = idle in town, standby = at the area without fighting, fight = fighting monsters (or the boss) there.
+export type PartyMode = 'rest' | 'standby' | 'fight'
+export interface PartyGoal { areaId: string, mode: PartyMode }
 export interface Party {
   id: string
   name: string
@@ -32,13 +38,15 @@ export interface Party {
   isActive: boolean
   goal: PartyGoal | null
   tankRetreatPct: number
-  shouldSyncInGame: boolean
 }
-export interface PartySummary extends Party { status: string }
+// What the party is doing, worded by the UI: `partyStatus_<code>`; `area` is shown like a character's location.
+export interface PartyStatus { code: string, params?: Record<string, string | number>, text: string }
+export interface PartySummary extends Party { status: PartyStatus }
 export interface PartyRole { partyId: string, partyName: string, roles: Array<'leader' | 'tank' | 'member'>, isActive: boolean }
 
 export interface Consumables {
   autoDrink: { itemId: string, name?: string, quantity: number } | null
+  instant: { itemId: string, name?: string, quantity: number }
   potionsTotal: number
   crystalHeal: number
   crystalTeleport: number
@@ -107,12 +115,18 @@ export interface LogEvent {
   source?: string
   // A question from the game or the bot; each choice is an action to send back.
   choices?: LogChoice[]
+  // The question stops taking answers at this time (default: 10 minutes after ts).
+  expiresAt?: number
+  // The label of the choice already sent: a question is answered once.
+  answer?: string
 }
 
-export interface LogChoice { label: string, request: ActionRequest }
+// `until`: the choice is moot once this is true of the character (e.g. it's back online).
+export interface LogChoice { label: string, request: ActionRequest, until?: 'online' | 'resumed' | 'farming' }
 
 // Body of POST /api/accounts/:id/action.
-export interface ActionRequest { action: AccountAction, areaId?: string, command?: { type: string, [key: string]: unknown }, untilLevel?: number | null, name?: string }
+// answering/answerLabel: this request answers the log question sent at that ts.
+export interface ActionRequest { answering?: number, answerLabel?: string, action: AccountAction, areaId?: string, command?: { type: string, [key: string]: unknown }, untilLevel?: number | null, name?: string }
 
 export type AccountAction =
   | 'startHunt' | 'stopHunt' | 'startBoss' | 'stopBoss' | 'completeMission'

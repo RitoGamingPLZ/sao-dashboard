@@ -1,31 +1,28 @@
 <script setup lang="ts">
 import { TOP_FLOOR, WORLD_AREAS, areasOnFloor, parseArea } from '#shared/game-rules'
-import type { Party, PartySummary } from '#shared/types'
+import type { Party, PartyMode, PartySummary } from '#shared/types'
 
 const props = defineProps<{ party: PartySummary }>()
 defineEmits<{ 'open-profile': [accountId: string] }>()
-const { t } = useI18n()
-const { accounts, takenAccountIds, accountById, patchParty } = useDashboard()
+const { t, areaLabel, areaName, partyStatusText } = useI18n()
+const { accountById, patchParty } = useDashboard()
 
-const currentGoal = parseArea(props.party.goal?.areaId)
-const goalFloor = ref(currentGoal?.floor ?? 1)
-const goalAreaId = ref(props.party.goal?.areaId ?? 'f1-town')
+// Where the party is now: its goal while active, otherwise where the leader stands.
+const currentAreaId = computed(() => (props.party.isActive && props.party.goal ? props.party.goal.areaId : accountById(props.party.leaderId)?.player?.areaId) ?? null)
+const currentMode = computed<PartyMode | null>(() => (props.party.isActive ? props.party.goal?.mode ?? null : null))
+const goalFloor = ref(parseArea(currentAreaId.value)?.floor ?? 1)
+const goalAreaId = ref(currentAreaId.value ?? 'f1-town')
+// Follow the party when it moves (or a pull-back sends it to town).
+watch(currentAreaId, (areaId) => { if (areaId) { goalFloor.value = parseArea(areaId)?.floor ?? goalFloor.value; goalAreaId.value = areaId } })
+const isNewLocation = computed(() => goalAreaId.value !== currentAreaId.value)
+const MODES: PartyMode[] = ['rest', 'standby', 'fight']
 const goalAreaOptions = computed(() => areasOnFloor(goalFloor.value).filter((areaId) => !WORLD_AREAS[areaId]!.secret))
 watch(goalFloor, () => { if (!goalAreaOptions.value.includes(goalAreaId.value)) goalAreaId.value = goalAreaOptions.value[0]! })
-const areaLabel = (areaId: string) => {
-  const area = WORLD_AREAS[areaId]!
-  return area.maxLevel == null ? area.name : `${area.name} (Lv${area.minLevel ?? area.maxLevel}–${area.maxLevel}${area.aggressive ? ', aggressive' : ''})`
-}
-const addMemberQuery = ref('')
-const isAddMemberOpen = ref(false)
+
 const settingsDialog = ref<HTMLDialogElement>()
 const floorOptions = Array.from({ length: TOP_FLOOR }, (_, i) => i + 1)
 
 const members = computed(() => props.party.memberIds.map(accountById).filter((account) => account != null))
-const filteredFreeAccounts = computed(() => {
-  const query = addMemberQuery.value.trim().toLowerCase()
-  return accounts.value.filter((account) => !takenAccountIds.value.has(account.id) && (!query || account.name.toLowerCase().includes(query)))
-})
 
 async function partyCall(method: string, path: string, body?: unknown, successMessage?: string) {
   const result = await runAndReport(() => callApi<{ party?: Party }>(method, path, body), successMessage)
@@ -34,20 +31,11 @@ async function partyCall(method: string, path: string, body?: unknown, successMe
 }
 const update = (changes: Partial<Party>) => partyCall('PUT', `/api/parties/${props.party.id}`, changes)
 
-function selectMember(id: string) {
-  update({ memberIds: [...props.party.memberIds, id] })
-  addMemberQuery.value = ''
-  isAddMemberOpen.value = false
-}
+const addMember = (id: string) => update({ memberIds: [...props.party.memberIds, id] })
 const removeMember = (id: string) => update({ memberIds: props.party.memberIds.filter((memberId) => memberId !== id) })
 
-function startParty(shouldHunt: boolean) {
-  const areaId = goalAreaId.value
-  const message = shouldHunt ? 'Party heading out' : 'Party holding'
-  if (props.party.isActive) partyCall('POST', `/api/parties/${props.party.id}/goal`, { areaId, shouldHunt }, message)
-  else partyCall('POST', `/api/parties/${props.party.id}/start`, { goal: { areaId, shouldHunt } }, message)
-}
-const stopParty = () => partyCall('POST', `/api/parties/${props.party.id}/stop`, {}, 'Party stopped')
+const goToSelected = () => partyCall('POST', `/api/parties/${props.party.id}/goal`, { areaId: goalAreaId.value }, t('partyMoving'))
+const setMode = (mode: PartyMode) => partyCall('POST', `/api/parties/${props.party.id}/goal`, { mode }, t(`partyMode_${mode}`))
 function deleteParty() {
   if (confirm(`${t('deleteParty')} "${props.party.name}"?`)) runAndReport(() => callApi('DELETE', `/api/parties/${props.party.id}`), 'Party deleted')
 }
@@ -58,7 +46,7 @@ function deleteParty() {
     <div class="card-head">
       <h3>{{ party.name }}</h3>
       <span class="badge" :class="{ on: party.isActive }">{{ party.isActive ? 'ACTIVE' : 'off' }}</span>
-      <span class="party-status">{{ party.status }}</span>
+      <span class="party-status"><b>{{ partyStatusText(party.status) }}</b><span v-if="party.status.params?.area" class="row-location">{{ areaName(String(party.status.params.area)) }}</span></span>
       <span class="head-actions">
         <button class="button small" @click="settingsDialog?.showModal()">{{ t('settings') }}</button>
         <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
@@ -72,29 +60,21 @@ function deleteParty() {
       <select v-model="goalAreaId" class="goal-area" :aria-label="t('goalAreaKind')">
         <option v-for="areaId in goalAreaOptions" :key="areaId" :value="areaId">{{ areaLabel(areaId) }}</option>
       </select>
-      <button class="button small primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
-      <button class="button small" @click="startParty(false)">{{ t('hold') }}</button>
-      <button v-if="party.isActive" class="button small danger" @click="stopParty">{{ t('stopParty') }}</button>
+      <button class="button small primary" :disabled="!isNewLocation" @click="goToSelected">{{ t('goTo') }}</button>
+      <span class="mode-toggle" role="group" :aria-label="t('partyState')">
+        <button
+          v-for="mode in MODES" :key="mode" class="button small" :class="{ primary: currentMode === mode }"
+          :aria-pressed="currentMode === mode" @click="setMode(mode)"
+        >{{ t(`partyMode_${mode}`) }}</button>
+      </span>
     </div>
-    <div class="combo">
-      <input
-        v-model="addMemberQuery" type="text" :placeholder="t('addMember')" :aria-label="t('addMember')"
-        @focus="isAddMemberOpen = true" @blur="isAddMemberOpen = false" @keydown.esc="isAddMemberOpen = false"
-      >
-      <ul v-if="isAddMemberOpen" class="combo-list">
-        <li v-for="account in filteredFreeAccounts" :key="account.id" class="combo-option" @mousedown.prevent @click="selectMember(account.id)">{{ account.name }}</li>
-        <li v-if="!filteredFreeAccounts.length" class="muted">{{ t('noFree') }}</li>
-      </ul>
-    </div>
+    <MemberPicker @pick="addMember" />
 
     <dialog ref="settingsDialog" class="dialog">
       <h3>{{ t('settings') }} — {{ party.name }}</h3>
       <div class="stack">
         <label>{{ t('retreatLabel') }}
           <input type="number" min="10" max="90" :value="party.tankRetreatPct" @change="update({ tankRetreatPct: Number(($event.target as HTMLInputElement).value) })">
-        </label>
-        <label class="checkbox">
-          <input type="checkbox" :checked="party.shouldSyncInGame" @change="update({ shouldSyncInGame: ($event.target as HTMLInputElement).checked })"> {{ t('syncInGame') }}
         </label>
         <div class="dialog-actions">
           <button type="button" class="button" @click="settingsDialog?.close()">{{ t('close') }}</button>

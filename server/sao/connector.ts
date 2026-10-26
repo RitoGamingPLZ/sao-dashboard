@@ -151,6 +151,8 @@ export function applyPatch(state: Record<string, unknown>, operations: PatchOp[]
 export class GameSocket extends EventEmitter<GameSocketEvents> {
   state: GameState | null = null
   serverParams: Record<string, unknown> | null = null
+  // The in-game party this character is in (from the game's `party` frames), or null.
+  gameParty: { leader: string, members: Array<{ name: string }> } | null = null
   isConnected = false
   lastPatchAt = 0
   endReason: EndReason | null = null
@@ -252,6 +254,7 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
         break
       case 'replaced': this.end('replaced'); break
       case 'kicked': this.end(message.reason === 'banned' ? 'banned' : 'kicked'); break
+      case 'party': this.gameParty = message.party ?? null; break
       case 'idleKick': this.end('idleKick'); break
       case 'dead': this.end('dead'); break
       case 'reborn': // the game made a new character for this login: carry on with its token

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// Character profile: skills, gear, weapon goal, default potion, and account management.
+// Character profile: skills, gear, weapon goal, potions, and account management.
 import { ITEMS, WEAPON_TYPES, shopStock } from '#shared/game-rules'
 import type { AccountSummary } from '#shared/types'
 
@@ -21,38 +21,27 @@ defineExpose({ open })
 const act = (action: string) => accountAction(account.value!.id, action)
 const setWeapon = (weapon: string) => runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/weapon`, { weapon: weapon || null }))
 
-// Default potion: what the game auto-drinks. Choices are the potions sold on unlocked floors.
-const potion = computed(() => account.value?.player?.consumables.autoDrink)
-const potionChoices = computed(() => {
+// Potions: the recovery potion is the game's own auto-drink setting; the instant
+// potion (瞬補) is the one the dashboard keeps stocked. Choices: sold on unlocked floors.
+const consumables = computed(() => account.value?.player?.consumables)
+const choicesOf = (kind: 'potion' | 'instant', currentItemId?: string) => {
   const unlockedFloors = Array.from({ length: account.value?.player?.frontierFloor ?? 1 }, (_, i) => i + 1)
-  const itemIds = new Set([...unlockedFloors.flatMap(shopStock), potion.value?.itemId ?? ''])
-  return [...itemIds].filter((itemId) => ITEMS[itemId]?.kind === 'potion')
-})
-const setPotion = (itemId: string) =>
-  accountAction(account.value!.id, 'raw', { command: { type: 'updateSettings', settings: { potionItem: itemId } } })
-// "Keep N": restock back up to N when below half of it.
-async function setKeepCount(event: Event) {
-  const keepCount = Math.max(0, Math.floor(Number((event.target as HTMLInputElement).value)))
-  await runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/safety`,
-    { safety: { restock: { autoDrinkTarget: keepCount, autoDrinkMin: Math.ceil(keepCount / 2) } } }), t('keepingPotions', { count: keepCount }))
+  const itemIds = new Set([...unlockedFloors.flatMap(shopStock), currentItemId ?? ''])
+  return [...itemIds].filter((itemId) => ITEMS[itemId]?.kind === kind)
 }
+const setRecoveryPotion = (itemId: string) =>
+  accountAction(account.value!.id, 'raw', { command: { type: 'updateSettings', settings: { potionItem: itemId } } })
+const setInstantPotion = (itemId: string) =>
+  runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/safety`, { safety: { instantItem: itemId } }), t('settingsSaved'))
 
 async function showPassword() {
   const result = await runAndReport(() => callApi<{ password: string }>('POST', `/api/accounts/${account.value!.id}/password`, {}))
   if (result) prompt(`Password for ${account.value!.name} (copy it now):`, result.password)
 }
 
-function rawCommand() {
-  const commandText = prompt('Command JSON, e.g. {"type":"startHunt"}')
-  if (!commandText) return
-  let command: unknown
-  try { command = JSON.parse(commandText) } catch { return showToast('That is not valid JSON', 'error') }
-  runAndReport(() => callApi('POST', `/api/accounts/${account.value!.id}/action`, { action: 'raw', command }), 'Sent')
-}
-
 async function removeAccount() {
-  if (!confirm(`Remove ${account.value!.name}? The game account itself is not deleted.`)) return
-  if (await runAndReport(() => callApi('DELETE', `/api/accounts/${account.value!.id}`), 'Removed')) dialog.value?.close()
+  if (!confirm(t('confirmRemoveAccount', { name: account.value!.name }))) return
+  if (await runAndReport(() => callApi('DELETE', `/api/accounts/${account.value!.id}`), t('removedAccount', { name: account.value!.name }))) dialog.value?.close()
 }
 </script>
 
@@ -69,14 +58,19 @@ async function removeAccount() {
           </select>
         </div>
         <div v-if="account.player">
-          <div class="section-title">{{ t('autoDrinkItem') }}</div>
+          <div class="section-title">{{ t('potion') }}</div>
           <p class="hint">{{ t('potionHint') }}</p>
-          <div class="row-potion">
-            <select :value="potion?.itemId" :aria-label="t('potion')" @change="setPotion(($event.target as HTMLSelectElement).value)">
-              <option v-for="itemId in potionChoices" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
+          <div class="potion-grid">
+            <span>{{ t('recoveryPotion') }}</span>
+            <select :value="consumables?.autoDrink?.itemId" :aria-label="t('recoveryPotion')" @change="setRecoveryPotion(($event.target as HTMLSelectElement).value)">
+              <option v-for="itemId in choicesOf('potion', consumables?.autoDrink?.itemId)" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
             </select>
-            <span>×{{ potion?.quantity ?? 0 }}</span>
-            <label>{{ t('keep') }} <input type="number" min="0" :value="account.safety.restock.autoDrinkTarget" @change="setKeepCount"></label>
+            <span>×{{ consumables?.autoDrink?.quantity ?? 0 }}</span>
+            <span>{{ t('instantPotion') }}</span>
+            <select :value="consumables?.instant.itemId" :aria-label="t('instantPotion')" @change="setInstantPotion(($event.target as HTMLSelectElement).value)">
+              <option v-for="itemId in choicesOf('instant', consumables?.instant.itemId)" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
+            </select>
+            <span>×{{ consumables?.instant.quantity ?? 0 }}</span>
           </div>
         </div>
         <div>
@@ -98,7 +92,6 @@ async function removeAccount() {
           <button v-if="canReconnect" type="button" class="button primary" @click="act('reconnect')">{{ t('reconnect') }}</button>
           <button type="button" class="button" @click="emit('open-settings', account)">{{ t('healthPotions') }}</button>
           <button type="button" class="button" @click="showPassword">{{ t('showPassword') }}</button>
-          <button type="button" class="button" @click="rawCommand">{{ t('rawCommand') }}</button>
           <button type="button" class="button danger" @click="removeAccount">{{ t('removeAccount') }}</button>
         </div>
       </div>
