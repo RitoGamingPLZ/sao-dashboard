@@ -1,24 +1,33 @@
     <div class="char-row" :class="{ dead: account.player?.isDead }">
-      <slot name="leading"></slot>
-      <span class="status-dot" :data-state="statusDotState" :title="statusDotState"></span>
-      <button class="link-name" @click="$emit('open-profile', account.id)">{{ account.name }}</button>
-      <span class="field"><b>Lv</b> {{ account.player?.level ?? '—' }}</span>
-      <span class="field cell-hp">
+      <div class="row-head">
+        <span class="status-dot" :data-state="statusDotState" :title="statusDotState"></span>
+        <span class="row-lv">Lv {{ account.player?.level ?? '—' }}</span>
+        <button class="link-name" @click="$emit('open-profile', account.id)">{{ account.name }}</button>
+        <slot name="leading"></slot>
+        <span class="row-rule"></span>
+        <span class="row-location" :title="account.player?.areaId || ''">{{ account.player?.areaId || '—' }}</span>
+      </div>
+      <div class="row-bar">
         <b>HP</b>
         <span class="sb-track mini" :class="hpBarClass"><i :style="hpFillStyle"></i></span>
         <span class="cell-sub">{{ account.player?.hpPct != null ? account.player.hpPct + '%' : '—' }}</span>
-      </span>
-      <span class="field"><b>EXP</b> {{ account.player?.expPct != null ? account.player.expPct + '%' : fmt(account.player?.exp) }}</span>
-      <span class="field"><b>ATK</b> {{ fmt(account.player?.attack) }}</span>
-      <span class="field" :title="account.player?.areaId || ''"><b>@</b> {{ account.player?.areaId || '—' }}</span>
-      <span class="field">{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></span>
-      <span class="field"><b>摳</b> {{ fmtCompact(account.player?.gold) }}</span>
-      <span class="field"><b>EXP/m</b> {{ fmt(account.rates?.expPerMin) }}</span>
-      <span class="row-actions">
+      </div>
+      <div class="row-bar">
+        <b>EXP</b>
+        <span class="sb-track mini sb-exp"><i :style="expFillStyle"></i></span>
+        <span class="cell-sub">{{ account.player?.expPct != null ? account.player.expPct + '%' : fmt(account.player?.exp) }}</span>
+      </div>
+      <div class="row-stats">
+        <span class="field"><b>ATK</b> {{ fmt(account.player?.attack) }}</span>
+        <span class="field"><b>摳</b> {{ fmtCompact(account.player?.gold) }}</span>
+        <span class="field"><b>EXP/m</b> {{ fmt(account.rates?.expPerMin) }}</span>
+        <span class="field">{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></span>
+      </div>
+      <p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p>
+      <div class="row-actions">
         <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!account.player" @click="toggleFarm">{{ t('farm') }}</button>
         <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!account.player" @click="toggleBoss">{{ t('boss') }}</button>
         <button class="button small" :disabled="!account.player" @click="doMission">{{ t('mission') }}</button>
-      </span>
-      <slot name="trailing"></slot>
+        <slot name="trailing"></slot>
+      </div>
     </div>
-    <div v-if="account.alerts.length" class="alert-row"><p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p></div>

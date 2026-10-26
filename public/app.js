@@ -135,6 +135,7 @@ const CharacterRow = {
     },
     hpFillStyle() { return { width: `${Math.max(0, Math.min(100, this.account.player?.hpPct ?? 0))}%` }; },
     hpBarClass() { return hpBarClass(this.account); },
+    expFillStyle() { return { width: `${Math.max(0, Math.min(100, this.account.player?.expPct ?? 0))}%` }; },
   },
   methods: {
     t, fmt: formatNumber, fmtCompact: formatCompact,
@@ -158,6 +159,7 @@ const PartyCard = {
   components: { CharacterRow },
   props: { party: { type: Object, required: true }, accounts: { type: Array, required: true }, takenIds: { type: Set, required: true } },
   emits: ['open-profile'],
+  inject: ['patchParty'],
   data() {
     return { goalAreaId: this.party.goal?.areaId || '', addMemberId: '' };
   },
@@ -172,24 +174,40 @@ const PartyCard = {
   methods: {
     t,
     accountName(id) { return this.accounts.find((account) => account.id === id)?.name ?? '?'; },
+    // Every party mutation returns the full updated party; patch it into the
+    // shared snapshot immediately instead of waiting for the next ~1s SSE
+    // broadcast — otherwise a second edit within that window reads a stale
+    // party.memberIds/etc. and clobbers the first (this is what made rapid
+    // "add member" clicks lose earlier members, and the in-game-sync
+    // checkbox look stuck after a quick toggle).
+    async applyPartyUpdate(changes) {
+      const result = await Api.updateParty(this.party.id, changes);
+      if (result?.party) this.patchParty(result.party);
+      return result;
+    },
+    async applyPartyAction(path, body, successMessage) {
+      const result = await runAndReport(() => callApi('POST', path, body), successMessage);
+      if (result?.party) this.patchParty(result.party);
+      return result;
+    },
     addMember() {
       if (!this.addMemberId) return;
-      Api.updateParty(this.party.id, { memberIds: [...this.party.memberIds, this.addMemberId] });
+      this.applyPartyUpdate({ memberIds: [...this.party.memberIds, this.addMemberId] });
       this.addMemberId = '';
     },
-    removeMember(id) { Api.updateParty(this.party.id, { memberIds: this.party.memberIds.filter((memberId) => memberId !== id) }); },
-    makeLeader(id) { Api.updateParty(this.party.id, { leaderId: id }); },
-    makeTank(id) { Api.updateParty(this.party.id, { tankId: id }); },
-    untank() { Api.updateParty(this.party.id, { tankId: null }); },
-    updateRetreat(event) { Api.updateParty(this.party.id, { tankRetreatPct: Number(event.target.value) }); },
-    toggleSync(event) { Api.updateParty(this.party.id, { shouldSyncInGame: event.target.checked }); },
+    removeMember(id) { this.applyPartyUpdate({ memberIds: this.party.memberIds.filter((memberId) => memberId !== id) }); },
+    makeLeader(id) { this.applyPartyUpdate({ leaderId: id }); },
+    makeTank(id) { this.applyPartyUpdate({ tankId: id }); },
+    untank() { this.applyPartyUpdate({ tankId: null }); },
+    updateRetreat(event) { this.applyPartyUpdate({ tankRetreatPct: Number(event.target.value) }); },
+    toggleSync(event) { this.applyPartyUpdate({ shouldSyncInGame: event.target.checked }); },
     startParty(shouldHunt) {
       const areaId = this.goalAreaId.trim() || undefined;
       const path = this.party.isActive ? `/api/parties/${this.party.id}/goal` : `/api/parties/${this.party.id}/start`;
       const body = this.party.isActive ? { areaId, shouldHunt } : { goal: { areaId, shouldHunt } };
-      runAndReport(() => callApi('POST', path, body), shouldHunt ? 'Party heading out' : 'Party holding');
+      this.applyPartyAction(path, body, shouldHunt ? 'Party heading out' : 'Party holding');
     },
-    stopParty() { runAndReport(() => callApi('POST', `/api/parties/${this.party.id}/stop`, {}), 'Party stopped'); },
+    stopParty() { this.applyPartyAction(`/api/parties/${this.party.id}/stop`, {}, 'Party stopped'); },
     deleteParty() {
       if (confirm(`${t('deleteParty')} "${this.party.name}"?`)) runAndReport(() => callApi('DELETE', `/api/parties/${this.party.id}`), 'Party deleted');
     },
@@ -245,9 +263,16 @@ const app = createApp({
     },
     profileAccount() { return this.snapshot.accounts.find((account) => account.id === this.profileAccountId) || null; },
   },
+  provide() {
+    return { patchParty: this.patchParty };
+  },
   methods: {
     t,
     formatTime,
+    patchParty(party) {
+      const index = this.snapshot.parties.findIndex((candidate) => candidate.id === party.id);
+      if (index !== -1) this.snapshot.parties.splice(index, 1, party);
+    },
     toggleLang() {
       i18nState.lang = i18nState.lang === 'en' ? 'zh' : 'en';
       localStorage.setItem('sao-lang', i18nState.lang);

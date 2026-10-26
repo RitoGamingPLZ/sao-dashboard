@@ -4,6 +4,21 @@
         <span class="badge" :class="{ on: party.isActive }">{{ party.isActive ? 'ACTIVE' : 'off' }}</span>
         <span class="party-status">{{ party.status }}</span>
       </div>
+      <div class="party-controls">
+        <select v-model="addMemberId" @change="addMember" :aria-label="t('addMember')">
+          <option value="">{{ freeAccounts.length ? t('addMember') : t('noFree') }}</option>
+          <option v-for="account in freeAccounts" :key="account.id" :value="account.id">{{ account.name }}</option>
+        </select>
+        <input v-model="goalAreaId" :placeholder="t('goalPlaceholder')" :aria-label="t('goalPlaceholder')">
+        <button class="button primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
+        <button class="button" @click="startParty(false)">{{ t('hold') }}</button>
+        <button v-if="party.isActive" class="button danger" @click="stopParty">{{ t('stopParty') }}</button>
+      </div>
+      <div class="party-options">
+        <label>{{ t('retreatLabel') }} <input type="number" min="10" max="90" :value="party.tankRetreatPct" @change="updateRetreat"></label>
+        <label class="checkbox" :title="t('syncLabel')"><input type="checkbox" :checked="party.shouldSyncInGame" @change="toggleSync"> {{ t('syncLabel') }}</label>
+        <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
+      </div>
       <div class="char-list">
         <p v-if="!members.length" class="empty">{{ t('noMembers') }}</p>
         <character-row v-for="member in members" :key="member.id" :account="member" @open-profile="(id) => $emit('open-profile', id)">
@@ -20,20 +35,5 @@
             </span>
           </template>
         </character-row>
-      </div>
-      <div class="party-controls">
-        <select v-model="addMemberId" @change="addMember" :aria-label="t('addMember')">
-          <option value="">{{ freeAccounts.length ? t('addMember') : t('noFree') }}</option>
-          <option v-for="account in freeAccounts" :key="account.id" :value="account.id">{{ account.name }}</option>
-        </select>
-        <input v-model="goalAreaId" :placeholder="t('goalPlaceholder')" :aria-label="t('goalPlaceholder')">
-        <button class="button primary" @click="startParty(true)">{{ party.isActive ? t('huntHere') : t('startParty') }}</button>
-        <button class="button" @click="startParty(false)">{{ t('hold') }}</button>
-        <button v-if="party.isActive" class="button danger" @click="stopParty">{{ t('stopParty') }}</button>
-      </div>
-      <div class="party-options">
-        <label>{{ t('retreatLabel') }} <input type="number" min="10" max="90" :value="party.tankRetreatPct" @change="updateRetreat"></label>
-        <label class="checkbox" :title="t('syncLabel')"><input type="checkbox" :checked="party.shouldSyncInGame" @change="toggleSync"> {{ t('syncLabel') }}</label>
-        <button class="button small danger" @click="deleteParty">{{ t('deleteParty') }}</button>
       </div>
     </article>
