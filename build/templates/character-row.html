@@ -5,13 +5,14 @@
         <button class="link-name" @click="$emit('open-profile', account.id)">{{ account.name }}</button>
         <slot name="leading"></slot>
         <span class="row-rule"></span>
+        <span class="row-status">{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></span>
         <span class="row-location" :title="account.player?.areaId || ''">{{ account.player?.areaId || '—' }}</span>
-        <span class="row-actions">
-          <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!account.player" @click="toggleFarm">{{ t('farm') }}</button>
-          <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!account.player" @click="toggleBoss">{{ t('boss') }}</button>
-          <button class="button small" :disabled="!account.player" @click="doMission">{{ t('mission') }}</button>
-          <slot name="trailing"></slot>
-        </span>
+      </div>
+      <div class="row-actions">
+        <button class="button small" :class="{ primary: mode === 'farm' }" :disabled="!account.player" @click="toggleFarm">{{ t('farm') }}</button>
+        <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!account.player" @click="toggleBoss">{{ t('boss') }}</button>
+        <button class="button small" :disabled="!account.player" @click="doMission">{{ t('mission') }}</button>
+        <slot name="trailing"></slot>
       </div>
       <div class="row-bar">
         <b>HP</b>
@@ -27,7 +28,6 @@
         <span class="field"><b>ATK</b> {{ fmt(account.player?.attack) }}</span>
         <span class="field"><b>摳</b> {{ fmtCompact(account.player?.gold) }}</span>
         <span class="field"><b>EXP/m</b> {{ fmt(account.rates?.expPerMin) }}</span>
-        <span class="field">{{ doingLabel(account) }}<span v-if="account.busyLabel" class="cell-sub"> · {{ account.busyLabel }}</span></span>
       </div>
       <p v-for="text in account.alerts" :key="text" class="alert">{{ text }}</p>
     </div>
