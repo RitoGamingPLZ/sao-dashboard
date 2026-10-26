@@ -216,6 +216,15 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
         if (command.itemId === 'crystal-heal') player.hp = player.maxHp;
         if (command.itemId === 'crystal-teleport') { player.areaId = `f${floorOf(player.areaId)}-town`; player.activity = { type: 'idle' }; }
         return { ok: true };
+      case 'equip': { // like the game: the worn piece goes back to the bag
+        if (!(inventory[command.itemId] > 0)) return { error: 'noItem' };
+        const slot = command.slot;
+        const previous = player.equipment[slot];
+        if (previous) inventory[previous] = (inventory[previous] || 0) + 1;
+        inventory[command.itemId] -= 1;
+        player.equipment[slot] = command.itemId;
+        return { ok: true };
+      }
       case 'buy':
         if (!player.areaId.endsWith('-town')) return { error: 'notInTown' };
         inventory[command.itemId] = (inventory[command.itemId] || 0) + command.qty;

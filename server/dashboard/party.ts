@@ -15,6 +15,7 @@ import type { PartyOpKey, CommandKey } from '../sao/protocol'
 import type { Session } from './session'
 
 const NUDGE_COOLDOWN_MS = 3000
+const REFIT_EVERY_MS = 10 * 60 * 1000 // while the party rests in town
 const status = (code: string, text: string, params?: PartyStatus['params']): PartyStatus => ({ code, text, ...(params ? { params } : {}) })
 const PARTY_MODES: PartyMode[] = ['rest', 'standby', 'fight']
 const isTown = (areaId: string) => parseArea(areaId)?.kind === 'town'
@@ -302,7 +303,14 @@ export class PartyManager {
     }
     const area = goal.areaId
     if (!members.every((member) => member.player!.areaId === area)) return status('moving', `Moving to ${area}`, { area })
-    if (goal.mode === 'rest') { this.stopAllHunting(members); return status('rest', `Resting in ${area}`, { area }) }
+    if (goal.mode === 'rest') { // 修整: each member refits on arrival, then every 10 minutes
+      this.stopAllHunting(members)
+      for (const member of members) {
+        if (member.busyLabel || Date.now() - member.lastRefitAt < REFIT_EVERY_MS) continue
+        member.refit().then((result) => result?.error && member.log('error', `Refit: ${result.error}`))
+      }
+      return status('rest', `Refitting in ${area}`, { area })
+    }
     if (goal.mode === 'standby') { this.stopAllHunting(members); return status('standby', `Standing by at ${area}`, { area }) }
 
     // 2. Fight: the tank goes first; the rest fight only while the tank is up.

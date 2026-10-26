@@ -326,11 +326,17 @@ export class GameSocket extends EventEmitter<GameSocketEvents> {
   expNeeded() { return this.player ? this.firstNumberField(this.protocol.fields.expNeeded) : null }
   attack() { return this.player ? this.firstNumberField(this.protocol.fields.attack) : null }
 
+  // The game's own limit (params.maxCmdsPerSec) minus one for safety, never above our setting.
+  private commandsPerSecond() {
+    const serverLimit = Number(this.serverParams?.maxCmdsPerSec)
+    return Number.isFinite(serverLimit) && serverLimit > 1 ? Math.min(this.protocol.rateLimitPerSec, serverLimit - 1) : this.protocol.rateLimitPerSec
+  }
+
   private async waitForRateLimit() {
     for (;;) {
       const currentTime = this.now()
       this.recentSendTimes = this.recentSendTimes.filter((sentAt) => currentTime - sentAt < 1000)
-      if (this.recentSendTimes.length < this.protocol.rateLimitPerSec) { this.recentSendTimes.push(currentTime); return }
+      if (this.recentSendTimes.length < this.commandsPerSecond()) { this.recentSendTimes.push(currentTime); return }
       await new Promise((resolve) => setTimeout(resolve, 1000 - (currentTime - this.recentSendTimes[0]!) + 5))
     }
   }

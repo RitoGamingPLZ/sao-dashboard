@@ -51,7 +51,7 @@ export const DEFAULT_PROTOCOL: SaoProtocol = {
     completeMission: 'completeAllQuests',
   },
   partyOps: { invite: 'invite', accept: 'accept', leave: 'leave', promote: 'promote' },
-  rateLimitPerSec: 8, // game allows ~10
+  rateLimitPerSec: 4, // the game's params say maxCmdsPerSec: 5; the socket also follows the live value
   commandTimeoutMs: 8000,
   travelStepMs: 1600, // game param travelStepMs is 1500
   pingMs: 20000,

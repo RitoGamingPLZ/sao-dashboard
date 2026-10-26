@@ -32,6 +32,7 @@ const farmLabel = computed(() => (props.account.autoFarm?.untilLevel ? `${t('far
 const toggleBoss = () => accountAction(props.account.id, mode.value === 'boss' ? 'stopBoss' : 'startBoss')
 const doMission = () => accountAction(props.account.id, 'completeMission')
 const reconnect = () => accountAction(props.account.id, 'reconnect')
+const refit = () => accountAction(props.account.id, 'refit') // 修整: town, quests, restock, best gear, enhance
 const isInParty = computed(() => props.account.partyRole != null)
 async function removeAccount() {
   if (!confirm(t('confirmRemoveAccount', { name: props.account.name }))) return
@@ -43,9 +44,10 @@ const consumables = computed(() => player.value?.consumables)
 
 <template>
   <div class="char-row" :class="{ dead: player?.isDead }">
-    <!-- Masks (they block clicks; ⟳ and ✕ sit above them): a dead character everywhere;
+    <!-- Masks (they block clicks; ⟳ and ✕ sit above them): dead or refitting, everywhere;
          a party member in the Characters list, since its party drives it. -->
     <div v-if="player?.isDead" class="party-mask dead-mask"><span><b>{{ t('deadMask') }}</b>{{ areaName(player.areaId) }}</span></div>
+    <div v-else-if="account.busyLabel === 'refit'" class="party-mask"><span><b>{{ t('refitting') }} <i class="spinner" aria-hidden="true" /></b>{{ areaName(player?.areaId) }}</span></div>
     <div v-else-if="showActions && isInParty" class="party-mask"><span><b>{{ t('inParty') }}</b>{{ account.partyRole!.partyName }}</span></div>
     <div class="row-head">
       <span class="status-dot" :data-state="statusDotState" :title="statusDotState" />
@@ -83,7 +85,7 @@ const consumables = computed(() => player.value?.consumables)
     </div>
     <div class="row-bottom">
       <div class="row-alerts">
-        <p v-for="alert in account.alerts" :key="alert.code" class="alert">{{ alertText(alert) }}</p>
+        <p v-for="alert in account.alerts.slice(0, 3)" :key="alert.code" class="alert" :title="alertText(alert)">{{ alertText(alert) }}</p>
       </div>
       <div class="row-actions">
         <!-- A party member is driven by its party: its own buttons are masked. -->
@@ -91,6 +93,7 @@ const consumables = computed(() => player.value?.consumables)
           <button class="button small" :class="{ primary: account.autoFarm }" :aria-pressed="Boolean(account.autoFarm)" :disabled="!player || isInParty" @click="toggleFarm">{{ farmLabel }}</button>
           <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!player || isInParty" @click="toggleBoss">{{ t('boss') }}</button>
           <button class="button small" :disabled="!player || isInParty" @click="doMission">{{ t('mission') }}</button>
+          <button class="button small" :disabled="!player || isInParty || account.busyLabel === 'refit'" @click="refit">{{ t('partyMode_rest') }}</button>
         </div>
         <slot name="trailing" />
       </div>

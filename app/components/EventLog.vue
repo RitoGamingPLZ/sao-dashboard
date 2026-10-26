@@ -66,6 +66,7 @@ const COMMANDS = [
   { text: 'town', hint: 'teleport crystal to town' },
   { text: 'goto ', hint: 'walk to an area' },
   { text: 'restock', hint: 'buy potions now' },
+  { text: 'refit', hint: '修整: town, quests, restock, best gear, enhance' },
   { text: 'resume', hint: 'resume a halted bot' },
   { text: 'reconnect', hint: 'take the session back' },
   { text: 'awake', hint: 'answer the idle warning' },
@@ -125,6 +126,7 @@ function parseCommand(text: string): ActionRequest | string {
     case 'town': return { action: 'town' }
     case 'goto': return argument ? { action: 'goto', areaId: argument } : 'goto needs an area, like goto f1-west'
     case 'restock': return { action: 'restock' }
+    case 'refit': case '修整': return { action: 'refit' }
     case 'resume': return { action: 'resume' }
     case 'reconnect': return { action: 'reconnect' }
     case 'awake': return { action: 'awake' }

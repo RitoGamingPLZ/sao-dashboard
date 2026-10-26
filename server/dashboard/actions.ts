@@ -61,6 +61,10 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
         .then((result) => result?.error && session.log('error', `Travel: ${result.error}`))
       return { ok: true, isStarted: true }
     }
+    case 'refit':
+      if (session.busyLabel) return busyError
+      session.refit().then((result) => result?.error && session.log('error', `Refit: ${result.error}`))
+      return { ok: true, isStarted: true }
     case 'restock':
       if (session.busyLabel) return busyError
       session.restock().then((result) => result?.error && session.log('error', `Restock: ${(result as CommandResult).detail || result.error}`))

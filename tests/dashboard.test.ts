@@ -11,7 +11,7 @@ import { runAccountAction } from '../server/dashboard/actions'
 import { decideSafety, validateSafety, planRestock, DEFAULT_SAFETY } from '../server/dashboard/safety'
 import { validateParty, resolveGoal, lowPotionMember } from '../server/dashboard/party'
 import { generatePassword } from '../server/dashboard/vault'
-import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor, expToNextLevel } from '#shared/game-rules'
+import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor, expToNextLevel, gearUpgrades, bestGearOf } from '#shared/game-rules'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 async function waitUntil(isDone: () => boolean | undefined, timeoutMs = 8000) {
@@ -89,6 +89,16 @@ describe('pure rules', () => {
     const member = (name: string, potions: number) => ({ name, player: { settings: { potionItem: 'potion-1' }, inventory: { 'potion-1': potions } }, safety: { restock: { autoDrinkMin: 5 } } })
     expect(lowPotionMember([member('a', 9), member('b', 5)] as never)).toBeNull()
     expect(lowPotionMember([member('a', 9), member('b', 4)] as never)).toEqual({ name: 'b', count: 4, needed: 5 })
+  })
+
+  test('gear upgrades: same family, usable level, best first; rare pieces untouched', () => {
+    const forSale = ['weapon-t5', 'rapier-t5', 'weapon-t9', 'light-t5', 'mid-t5', 'potion-1']
+    expect(gearUpgrades('weapon-t1', 11, forSale)).toEqual(['weapon-t9', 'weapon-t5']) // a sword stays a sword
+    expect(gearUpgrades('weapon-t1', 10, forSale)).toEqual(['weapon-t5']) // t9 needs Lv11
+    expect(gearUpgrades('light-t1', 10, forSale)).toEqual(['light-t5'])
+    expect(gearUpgrades('weapon-t9', 20, forSale)).toEqual([])
+    expect(gearUpgrades('Elucidator', 99, forSale)).toEqual([])
+    expect(bestGearOf('light', 0, 6, forSale)).toEqual(['light-t5']) // an empty armour slot gets light armour
   })
 
   test('generated passwords are strong', () => {
@@ -228,6 +238,20 @@ describe('against the practice server', () => {
     expect(session.markAnswered(question.ts, 'Yes')).toBe(true)
     expect(session.markAnswered(question.ts, 'Yes')).toBe(false)
     expect(question.answer).toBe('Yes')
+  })
+
+  test('修整 refit: goes to town and swaps in the best same-family gear sold there', async () => {
+    const session = sessionNamed('fresh_alt')
+    const player = mock.accountsByName.get('fresh_alt').player
+    await waitUntil(() => session.busyLabel == null)
+    player.areaId = 'f5-town' // sells weapon-t5, light-t5, rapier-t5, …
+    player.activity = { type: 'idle' }
+    player.equipment = { weapon: 'weapon-t1', armor: 'light-t1' } // head, feet, accessory empty
+    await waitUntil(() => session.player?.equipment?.weapon === 'weapon-t1')
+    expect(await session.refit()).toMatchObject({ ok: true })
+    // f5 sells weapon/light/head t5 but no feet or ring: those slots stay empty
+    expect(player.equipment).toEqual({ weapon: 'weapon-t5', armor: 'light-t5', head: 'head-t5' })
+    expect(player.inventory['weapon-t1']).toBe(1) // the old piece is back in the bag
   })
 
   test('keep farming: goes out to hunt, then stops at the target level and asks what next', async () => {

@@ -9,6 +9,35 @@ export const MAX_ACCOUNTS = 10
 
 // EXP needed to go from `level` to the next one — the game client's own formula
 // (the server never sends it). Lv1 → 51, Lv7 → 3117.
+// Shop gear ids are <family>-t<N>: N is the floor whose town sells it, e.g.
+// weapon-t5 (sword), rapier-t5, light-t5. Families: weapon (sword), rapier,
+// katana, axe, mace, shield, armor, mid, light, head, feet, acc.
+export function parseGear(itemId: string | null | undefined) {
+  const match = /^([a-z]+)-t(\d+)$/.exec(itemId || '')
+  return match ? { family: match[1]!, tier: Number(match[2]) } : null
+}
+export const gearRequiredLevel = (tier: number) => Math.round(1 + (tier - 1) * 1.25)
+
+// Better pieces of the same family as the equipped one (so a sword stays a sword),
+// usable at this level, best first. Rare or enhanced pieces aren't "<family>-t<N>",
+// so they're never replaced.
+export function gearUpgrades(equippedId: string, level: number, availableIds: string[]): string[] {
+  const equipped = parseGear(equippedId)
+  return equipped ? bestGearOf(equipped.family, equipped.tier, level, availableIds) : []
+}
+
+// What an empty slot gets filled with (armour: light armour).
+export const EMPTY_SLOT_FAMILIES: Record<string, string> = { armor: 'light', head: 'head', feet: 'feet', accessory: 'acc' }
+
+// Pieces of a family above `aboveTier`, usable at this level, best first.
+export function bestGearOf(family: string, aboveTier: number, level: number, availableIds: string[]): string[] {
+  return [...new Set(availableIds)]
+    .map((itemId) => ({ itemId, gear: parseGear(itemId) }))
+    .filter(({ gear }) => gear && gear.family === family && gear.tier > aboveTier && gearRequiredLevel(gear.tier) <= level)
+    .sort((first, second) => second.gear!.tier - first.gear!.tier)
+    .map(({ itemId }) => itemId)
+}
+
 export const expToNextLevel = (level: number) => Math.floor(25 * level * level * Math.pow(1.035, level) * 2)
 
 // Unique-weapon questlines a character can be pointed at. Dashboard-only

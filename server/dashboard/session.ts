@@ -3,7 +3,7 @@
 // never touches another.
 
 import { EventEmitter } from 'node:events'
-import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS, expToNextLevel } from '#shared/game-rules'
+import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS, expToNextLevel, gearUpgrades, bestGearOf, EMPTY_SLOT_FAMILIES } from '#shared/game-rules'
 import type { AccountSummary, Alert, AutoFarm, LogChoice, LogEvent, PartyRole, Safety } from '#shared/types'
 import type { SaoProtocol, CommandKey } from '../sao/protocol'
 import type { CommandResult, GameCommand, GameLogEntry, GameSocket, SaoConnector } from '../sao/connector'
@@ -18,6 +18,7 @@ const MIASMA_STAGE_MS = 20 * 60 * 1000
 const METRICS_WINDOW_MS = 15 * 60 * 1000
 const MAX_BUY_PER_CALL = 500
 const QUEST_VISIT_MS = 10 * 60 * 1000
+const ENHANCE_TRIES_PER_REFIT = 3
 
 // Game log params look like {a:{a:'f1-west'}} (area), {m:{m:'f1-boar'}} (monster), {st:'prologue'}.
 function describeGameValue(value: unknown): string {
@@ -61,6 +62,7 @@ export class Session extends EventEmitter<SessionEvents> {
   private isRunningSafety = false
   private lastQuestVisitAt = 0
   private isStopped = false
+  lastRefitAt = 0
   private samples: Array<{ takenAt: number, gold: number, exp: number, level: number }> = []
   private timers: Array<ReturnType<typeof setInterval>> = []
 
@@ -247,7 +249,12 @@ export class Session extends EventEmitter<SessionEvents> {
 
   async sendCommand(command: GameCommand | null, source = 'bot'): Promise<CommandResult> {
     if (!command) return { error: 'unsupported' }
-    const result = await this.client.sendCommand(command)
+    let result = await this.client.sendCommand(command)
+    // "tooFast": the game refused it outright, so it's safe to send again shortly.
+    for (let retry = 0; result.error === 'tooFast' && retry < 3; retry++) {
+      await sleep(1100)
+      result = await this.client.sendCommand(command)
+    }
     const outcome = result.ok ? 'ok' : result.timeout ? 'timeout' : result.error || 'ok'
     this.log(result.error || result.timeout ? 'result' : 'cmd', `${command.type} → ${outcome}`, { source })
     return result
@@ -430,33 +437,103 @@ export class Session extends EventEmitter<SessionEvents> {
 
   async restock() {
     return this.withLock('restock', async (): Promise<CommandResult> => {
-      const plan = this.restockPlan()
-      if ('blockedReason' in plan) return { error: 'noGold', detail: plan.blockedReason }
-      if (!plan.length) return { ok: true, purchases: [] }
       const homeAreaId = this.player!.areaId
       const wasHunting = this.isHunting
-      const purchases: Array<{ itemId: string, quantity: number }> = []
-      for (const shopFloor of new Set(plan.map((purchase) => purchase.floor))) {
-        const travelResult = await this.goTo(townOf(shopFloor))
-        if (!travelResult.ok) { this.log('error', `Restock: couldn't reach floor ${shopFloor} town (${travelResult.error})`); break }
-        if (this.autoFarm) await this.handleQuests()
-        for (const purchase of plan.filter((candidate) => candidate.floor === shopFloor)) {
-          let remaining = purchase.quantity
-          while (remaining > 0) {
-            const batchSize = Math.min(MAX_BUY_PER_CALL, remaining)
-            const buyResult = await this.command('buy', { itemId: purchase.itemId, qty: batchSize })
-            if (!buyResult.ok) { this.log('error', `Buy ${purchase.itemId} failed: ${buyResult.error || 'timeout'}`); break }
-            remaining -= batchSize
-          }
-          purchases.push({ itemId: purchase.itemId, quantity: purchase.quantity - remaining })
-        }
-      }
-      const boughtText = purchases.map((purchase) => `${purchase.quantity}× ${purchase.itemId}`).join(', ')
-      this.log('mode', `Restocked ${boughtText || 'nothing'}`)
+      const result = await this.buySupplies()
       if (homeAreaId && this.player?.areaId !== homeAreaId) await this.goTo(homeAreaId)
       if (wasHunting && this.player?.areaId === homeAreaId) await this.command('startHunt')
-      return { ok: true, purchases }
+      return result
     })
+  }
+
+  // Buy what the restock plan says, in whichever towns sell it. Caller holds the lock.
+  private async buySupplies(): Promise<CommandResult> {
+    const plan = this.restockPlan()
+    if ('blockedReason' in plan) return { error: 'noGold', detail: plan.blockedReason }
+    if (!plan.length) return { ok: true, purchases: [] }
+    const purchases: Array<{ itemId: string, quantity: number }> = []
+    for (const shopFloor of new Set(plan.map((purchase) => purchase.floor))) {
+      const travelResult = await this.goTo(townOf(shopFloor))
+      if (!travelResult.ok) { this.log('error', `Restock: couldn't reach floor ${shopFloor} town (${travelResult.error})`); break }
+      if (this.autoFarm) await this.handleQuests()
+      for (const purchase of plan.filter((candidate) => candidate.floor === shopFloor)) {
+        let remaining = purchase.quantity
+        while (remaining > 0) {
+          const batchSize = Math.min(MAX_BUY_PER_CALL, remaining)
+          const buyResult = await this.command('buy', { itemId: purchase.itemId, qty: batchSize })
+          if (!buyResult.ok) { this.log('error', `Buy ${purchase.itemId} failed: ${buyResult.error || 'timeout'}`); break }
+          remaining -= batchSize
+        }
+        purchases.push({ itemId: purchase.itemId, quantity: purchase.quantity - remaining })
+      }
+    }
+    const boughtText = purchases.map((purchase) => `${purchase.quantity}× ${purchase.itemId}`).join(', ')
+    this.log('mode', `Restocked ${boughtText || 'nothing'}`)
+    return { ok: true, purchases }
+  }
+
+  // 修整 (refit): in this floor's town, turn in quests, restock, swap in the best
+  // gear of the same kind, and enhance what's worn. Runs under the 'refit' lock,
+  // which the UI shows as a "refitting" mask.
+  async refit() {
+    return this.withLock('refit', async (): Promise<CommandResult> => {
+      const player = this.player
+      if (!player) return { error: 'disconnected' }
+      const townId = townOf(parseArea(player.areaId)?.floor ?? 1)
+      if (this.isHunting) await this.command('stopHunt')
+      const travelResult = await this.goTo(townId)
+      if (travelResult.error) return travelResult
+      await this.handleQuests()
+      await this.buySupplies()
+      if (this.player?.areaId !== townId) await this.goTo(townId)
+      const swaps = await this.upgradeGear()
+      const enhanced = await this.enhanceGear()
+      this.lastRefitAt = Date.now()
+      this.log('mode', `Refit done${swaps.length ? ` — new gear: ${swaps.join(', ')}` : ''}${enhanced ? ` — ${enhanced} enhanced` : ''}`)
+      return { ok: true, swaps }
+    })
+  }
+
+  // Slot by slot: equip the best same-family piece this town sells (or the bag
+  // holds); empty armour/head/feet/accessory slots get the best one too.
+  private async upgradeGear(): Promise<string[]> {
+    const swaps: string[] = []
+    const equipment = this.player?.equipment ?? {}
+    const slots = [...new Set([...Object.keys(equipment), ...Object.keys(EMPTY_SLOT_FAMILIES)])]
+    for (const slot of slots) {
+      const player = this.player
+      if (!player) break
+      const equippedId = player.equipment?.[slot]
+      const ownedIds = Object.entries(player.inventory ?? {}).filter(([, quantity]) => quantity > 0).map(([itemId]) => itemId)
+      const availableIds = [...(WORLD_AREAS[player.areaId]?.shop ?? []), ...ownedIds]
+      const candidates = equippedId ? gearUpgrades(equippedId, player.level, availableIds) : bestGearOf(EMPTY_SLOT_FAMILIES[slot]!, 0, player.level, availableIds)
+      for (const itemId of candidates) {
+        if (!((this.player?.inventory?.[itemId] ?? 0) > 0)) {
+          const buyResult = await this.sendCommand({ type: 'buy', itemId, qty: 1 }, 'refit')
+          if (!buyResult.ok) continue // too expensive: try the next best
+        }
+        const equipResult = await this.sendCommand({ type: 'equip', itemId, slot }, 'refit')
+        if (equipResult.ok) { swaps.push(`${equippedId ?? `(${slot})`} → ${itemId}`); break }
+      }
+    }
+    return swaps
+  }
+
+  // 強化: a few tries per worn piece while the game allows (materials, tries left).
+  // The forge opens after floor 1's boss. ponytail: fixed directions (attack /
+  // defence / HP); make them a setting if players want speed or crit builds.
+  private async enhanceGear(): Promise<number> {
+    if (!(this.player?.clearedFloors ?? []).includes(1)) return 0
+    let successes = 0
+    for (const slot of Object.keys(this.player?.equipment ?? {})) {
+      const dir = slot === 'weapon' ? 'sharp' : ['accessory', 'ring2', 'neck'].includes(slot) ? 'vital' : 'hard'
+      for (let attempt = 0; attempt < ENHANCE_TRIES_PER_REFIT; attempt++) {
+        const result = await this.sendCommand({ type: 'enhance', slot, dir, mats: 1 }, 'refit')
+        if (result.error || result.timeout) break // out of materials or tries: next slot
+        if (result.ok) successes++
+      }
+    }
+    return successes
   }
 
   // ---- metrics -----------------------------------------------------------

@@ -130,7 +130,7 @@ export interface ActionRequest { answering?: number, answerLabel?: string, actio
 
 export type AccountAction =
   | 'startHunt' | 'stopHunt' | 'startBoss' | 'stopBoss' | 'completeMission'
-  | 'town' | 'goto' | 'restock' | 'resume' | 'reconnect' | 'raw' | 'farm' | 'awake' | 'partyAccept'
+  | 'town' | 'goto' | 'restock' | 'resume' | 'reconnect' | 'raw' | 'farm' | 'awake' | 'partyAccept' | 'refit'
 
 // Every dashboard API call answers with either a payload or { error }.
 export type Result<T = object> = (T & { error?: undefined }) | { error: string, needsConfirm?: boolean }
