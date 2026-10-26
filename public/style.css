@@ -1,0 +1,299 @@
+/* Matches the game's own look (dev-sao.potato-proxy.com main.css): monospace,
+   flat white page, 1px solid line boxes, bordered stat bars, dotted rows.
+   Token names and values are copied from the game so the two read as one.
+   Retune the look by editing the :root blocks only. */
+
+:root {
+  --bg: #ffffff;
+  --fg: #1a1a1a;
+  --dim: #808080;
+  --line: #1a1a1a;
+  --hover: #f0f0f0;
+  --hp: #555555;
+  --hp-low: #1a1a1a;
+  --exp: #999999;
+  --mp: #777777;
+  --danger: #1a1a1a;
+  --level: #1a1a1a;
+  --rare: #1a1a1a;
+  --log-me: #1a1a1a;
+  --log-party: #6a1b9a;
+  --log-enemy: #1a1a1a;
+  --log-loot: #1a1a1a;
+  --mate-blue: #1e6fd9;
+  --warn: #e07b00;
+  --font: "Cascadia Mono", Consolas, "Courier New", "Microsoft JhengHei", monospace;
+  color-scheme: light;
+}
+
+:root[data-theme="color"] {
+  --hp: #2e7d32;
+  --hp-low: #c62828;
+  --exp: #f9a825;
+  --mp: #1e88e5;
+  --danger: #c62828;
+  --level: #1565c0;
+  --rare: #b8860b;
+  --log-me: #00796b;
+  --log-enemy: #d84315;
+  --log-loot: #a07400;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141414;
+    --fg: #d6d6d6;
+    --dim: #7a7a7a;
+    --line: #d6d6d6;
+    --hover: #222222;
+    --hp: #a0a0a0;
+    --hp-low: #e0e0e0;
+    --exp: #6e6e6e;
+    --danger: #e0e0e0;
+    --level: #e0e0e0;
+    --log-party: #ce93d8;
+    --mate-blue: #64a8ff;
+    --warn: #ffb74d;
+    color-scheme: dark;
+  }
+  :root[data-theme="color"] {
+    --hp: #66bb6a;
+    --hp-low: #ef5350;
+    --exp: #ffd54f;
+    --mp: #64b5f6;
+    --danger: #ef5350;
+    --level: #64b5f6;
+    --rare: #ffd54f;
+    --log-me: #4db6ac;
+    --log-enemy: #ff8a65;
+    --log-loot: #ffd54f;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #141414;
+  --fg: #d6d6d6;
+  --dim: #7a7a7a;
+  --line: #d6d6d6;
+  --hover: #222222;
+  --hp: #66bb6a;
+  --hp-low: #ef5350;
+  --exp: #ffd54f;
+  --danger: #ef5350;
+  --level: #64b5f6;
+  --log-party: #ce93d8;
+  --mate-blue: #64a8ff;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+body {
+  max-width: 1200px;
+  margin: 0 auto;
+  min-height: 100vh;
+  border-left: 1px solid var(--line);
+  border-right: 1px solid var(--line);
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+h1, h2, h3 { font-size: inherit; margin: 0; }
+.muted, .hint { color: var(--dim); }
+.hint { font-size: 12px; margin: 0 0 .5rem; }
+.empty { color: var(--dim); padding: 1rem 0; }
+
+/* ---- top bar (game .topbar) ---- */
+.top-bar {
+  display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  padding: .5rem 1rem; border-bottom: 1px solid var(--line);
+}
+.brand { display: flex; gap: .5rem; align-items: center; min-width: 0; }
+.brand h1 { font-weight: 700; letter-spacing: .05em; }
+.brand-mark { display: none; }
+.top-actions { display: flex; gap: .5rem; align-items: center; }
+.link-status { font-size: 12px; color: var(--dim); }
+.link-status[data-state="live"] { color: var(--hp); }
+.link-status[data-state="down"] { color: var(--danger); font-weight: 700; }
+
+main { padding: 1rem; display: grid; gap: 1rem; }
+
+/* ---- panels (game .panel / .section-title) ---- */
+.stat-tile, .account-card, .party-card { border: 1px solid var(--line); padding: .75rem 1rem; min-width: 0; }
+.section-head { display: flex; flex-wrap: wrap; gap: .5rem; align-items: baseline; justify-content: space-between; margin: .25rem 0 .4rem; }
+.section-head h2 { font-weight: 700; }
+
+/* ---- buttons, chips, inputs (game .btn / .chip) ---- */
+.button {
+  border: 1px solid var(--line); background: var(--bg);
+  padding: .3rem .8rem; cursor: pointer; margin: 0; border-radius: 0;
+}
+.button:hover:not(:disabled) { background: var(--hover); }
+.button:disabled { opacity: .45; cursor: default; }
+.button.primary { font-weight: 700; }
+.button.danger { color: var(--danger); border-color: var(--danger); }
+.button.small { padding: .1rem .5rem; font-size: 12px; }
+.button:focus-visible, input:focus-visible, select:focus-visible { outline: 1px dashed var(--fg); outline-offset: 2px; }
+
+input, select {
+  border: 1px solid var(--line); background: var(--bg);
+  padding: .2rem .4rem; border-radius: 0; min-width: 0;
+}
+.inline-form { display: flex; gap: .25rem; }
+label { display: grid; gap: .2rem; font-size: 13px; }
+label.checkbox { display: inline-flex; align-items: center; gap: .4rem; cursor: pointer; }
+label.checkbox input[type="checkbox"] {
+  appearance: none; width: 16px; height: 16px; margin: 0; padding: 0;
+  border: 1px solid var(--fg); background: var(--bg); display: inline-grid; place-content: center; flex: none;
+}
+label.checkbox input[type="checkbox"]::after { content: ""; width: 8px; height: 8px; background: var(--fg); transform: scale(0); transition: transform .1s; }
+label.checkbox input[type="checkbox"]:checked::after { transform: scale(1); }
+
+/* ---- overview (game .gc-kpi) ---- */
+.overview { display: flex; flex-wrap: wrap; gap: .5rem; }
+.stat-tile { padding: .3rem .8rem; min-width: 7rem; display: grid; }
+.stat-tile.warn { border-color: var(--danger); color: var(--danger); }
+.stat-label { font-size: 12px; color: var(--dim); }
+.stat-tile.warn .stat-label { color: inherit; }
+.stat-value { font-size: 1.3rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* ---- character cards ---- */
+.account-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(340px, 100%), 1fr)); gap: 1rem; }
+.account-card { display: grid; gap: .3rem; align-content: start; }
+.account-card.offline { border-style: dashed; opacity: .7; }
+.account-card.dead { border-color: var(--danger); outline: 1px solid var(--danger); }
+.card-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: .4rem; }
+.card-head h3 { font-weight: 700; }
+.level { color: var(--dim); }
+.status-dot::before { content: "●"; font-size: 10px; color: var(--danger); }
+.status-dot[data-state="live"]::before { color: var(--hp); }
+.status-dot[data-state="stale"]::before { color: var(--warn); }
+
+.badge { font-size: 11px; border: 1px solid var(--fg); padding: 0 .3rem; line-height: 1.5; }
+.badge.on { font-weight: 700; color: var(--hp); border-color: var(--hp); }
+.badge.role-leader { color: var(--rare); border-color: var(--rare); font-weight: 700; }
+.badge.role-tank { color: var(--mate-blue); border-color: var(--mate-blue); border-style: double; border-width: 3px; line-height: 1.1; }
+
+/* game .stat-bar: label | bordered track, number underneath */
+.stat-bar { display: grid; grid-template-columns: 2.8em 1fr; align-items: center; column-gap: .3rem; margin: .15rem 0 .1rem; }
+.sb-label { font-weight: 700; }
+.sb-track { height: .75em; border: 1px solid var(--line); position: relative; }
+.sb-track > i { display: block; height: 100%; transition: width .3s ease; }
+.sb-hp > i { background: var(--hp); }
+.sb-hp.low > i { background: var(--hp-low); }
+.sb-hp.warn > i { background: var(--warn); }
+.sb-exp > i { background: var(--exp); }
+.sb-marker { position: absolute; top: -3px; bottom: -3px; width: 1px; background: var(--fg); opacity: .5; }
+.sb-num { grid-column: 2; font-size: 12px; line-height: 1.3; display: flex; justify-content: space-between; gap: .5rem; white-space: nowrap; }
+.sb-num .dim { color: var(--dim); }
+
+.facts { display: grid; grid-template-columns: 1fr 1fr; margin: .25rem 0 0; gap: 0 1rem; }
+.facts > div { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.facts dt { display: inline; color: var(--dim); }
+.facts dt::after { content: " "; }
+.facts dd { display: inline; margin: 0; }
+
+.section-title { font-weight: 700; margin: .5rem 0 .1rem; }
+.stock-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0 1rem; }
+.stock { display: flex; justify-content: space-between; gap: .5rem; padding: .1rem 0; border-bottom: 1px dotted var(--dim); }
+.stock-label { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.stock-value { font-variant-numeric: tabular-nums; }
+.stock.low .stock-value { color: var(--danger); font-weight: 700; }
+.stock.low .stock-value::after { content: " ▼"; font-size: 11px; }
+
+.alert { margin: 0; color: var(--danger); font-weight: 700; font-size: 13px; }
+.alert::before { content: "! "; }
+.busy { margin: 0; font-size: 13px; color: var(--log-party); }
+.busy::before { content: "◆ "; }
+
+.card-actions { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; margin-top: .3rem; }
+.more summary { cursor: pointer; font-size: 12px; color: var(--dim); list-style: none; padding: .1rem .3rem; border: 1px dashed var(--dim); }
+.more summary:hover { color: var(--fg); border-color: var(--line); }
+.more[open] { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: .25rem; }
+.more[open] summary { flex-basis: 100%; border-style: solid; }
+
+/* ---- parties (game .mates / .mate-card) ---- */
+.parties { display: grid; gap: 1rem; grid-template-columns: repeat(auto-fill, minmax(min(480px, 100%), 1fr)); }
+.party-card { display: grid; gap: .4rem; }
+.party-card.active { border: 3px double var(--fg); }
+:root[data-theme="color"] .party-card.active { border-color: var(--mate-blue); }
+.party-status { font-size: 12px; color: var(--dim); flex-basis: 100%; }
+.party-card.active .party-status { color: var(--log-party); }
+.members { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: .4rem; }
+.member { position: relative; border: 1px solid var(--line); padding: .2rem .4rem .25rem; min-width: 0; line-height: 1.3; display: grid; gap: .1rem; font-size: 13px; }
+.member.away { border-style: dashed; opacity: .6; }
+.member.is-tank { border: 3px double var(--fg); }
+:root[data-theme="color"] .member.is-tank { border-color: var(--mate-blue); }
+.member-head { display: flex; align-items: center; gap: .3rem; }
+.member-name { flex: 1; min-width: 0; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.member-sub { font-size: 12px; color: var(--dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.mate-bar { height: 6px; border: 1px solid var(--line); position: relative; margin: .15rem 0 .05rem; }
+.mate-bar i { position: absolute; inset: 0 auto 0 0; background: var(--hp); transition: width .4s ease; }
+.mate-bar.low i { background: var(--hp-low); }
+.member-actions { display: flex; gap: .2rem; justify-content: flex-end; flex-wrap: wrap; margin-top: .2rem; }
+.member-actions .button { padding: 0 .4rem; font-size: 11px; }
+.party-controls { display: flex; flex-wrap: wrap; gap: .25rem; align-items: center; }
+.party-controls input { flex: 1 1 220px; }
+.party-options { display: flex; flex-wrap: wrap; gap: .4rem 1rem; align-items: center; font-size: 13px; border-top: 1px dotted var(--dim); padding-top: .3rem; }
+.party-options label:not(.checkbox) { display: inline-flex; align-items: center; gap: .3rem; }
+.party-options input[type="number"] { width: 4em; padding: 0 .25rem; }
+
+/* ---- log (game .log-tabs / .log colours) ---- */
+.event-log { list-style: none; margin: 0; padding: .3rem 0 0; height: 18.6em; overflow-y: auto; font-size: 13px; border-top: 1px solid var(--line); }
+.log-row { display: grid; grid-template-columns: 6em 9em 1fr; gap: .5rem; padding: 1px 0; }
+.log-row time { color: var(--dim); font-variant-numeric: tabular-nums; }
+.log-account { font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.log-kind { display: none; }
+.log-detail { overflow-wrap: anywhere; }
+.kind-cmd .log-detail, .kind-state .log-detail { color: var(--dim); }
+.kind-mode .log-detail { color: var(--log-party); }
+.kind-result .log-detail { color: var(--log-enemy); }
+.kind-safety .log-detail { color: var(--log-me); font-weight: 700; }
+.kind-alert .log-detail, .kind-error .log-detail { color: var(--danger); font-weight: 700; }
+.kind-levelUp .log-detail { color: var(--level); font-weight: 700; }
+.kind-drop .log-detail { color: var(--log-loot); }
+
+/* ---- dialogs (game .sheet-box) ---- */
+.dialog { background: var(--bg); color: var(--fg); border: 1px solid var(--line); width: min(420px, calc(100vw - 32px)); max-height: 85vh; padding: 1rem 1.1rem; }
+.dialog::backdrop { background: #0006; }
+.dialog h3 { font-weight: 700; font-size: 1.05rem; }
+.stack { display: grid; gap: .55rem; }
+.dialog-tabs { display: flex; gap: .25rem; border-bottom: 1px solid var(--line); margin: 0 0 .75rem; }
+.dialog-tabs button { border: 1px solid transparent; border-bottom: none; background: none; padding: .25rem .75rem; cursor: pointer; }
+.dialog-tabs button[aria-selected="true"] { border-color: var(--line); position: relative; top: 1px; background: var(--bg); font-weight: 700; }
+.dialog-actions { display: flex; justify-content: flex-end; gap: .4rem; margin-top: .3rem; }
+.form-error { margin: 0; min-height: 1em; font-size: 12px; color: var(--danger); }
+.password-reveal { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .35rem .5rem; border: 1px dashed var(--line); }
+.password-reveal code { font-weight: 700; user-select: all; }
+.threshold-grid { display: grid; grid-template-columns: 1fr 5em 5em; gap: .2rem .6rem; align-items: center; border: 0; border-top: 1px dotted var(--dim); padding: .4rem 0 0; margin: 0; font-size: 13px; }
+.threshold-grid legend { font-weight: 700; padding: 0 .3rem 0 0; }
+.threshold-grid input { padding: 0 .25rem; }
+
+/* ---- toast (game .toast) ---- */
+.toast {
+  position: fixed; left: 50%; bottom: 1.5rem; transform: translate(-50%); z-index: 22;
+  max-width: min(28rem, calc(100vw - 2rem)); border: 1px solid var(--line); padding: .35rem .8rem;
+  background: var(--bg); box-shadow: 0 2px 8px #0000002e; text-align: center; font-size: 13px;
+}
+.toast.error { color: var(--danger); border-color: var(--danger); }
+
+@media (max-width: 640px) {
+  body { border: 0; }
+  main { padding: .5rem; }
+  .top-bar { padding: .3rem .6rem; }
+  .facts, .stock-row { grid-template-columns: 1fr; }
+  .log-row { grid-template-columns: 5em 1fr; }
+  .log-account { display: none; }
+}
+
+@media (pointer: coarse) {
+  .button { min-height: 38px; padding: .4rem .9rem; }
+  .button.small { min-height: 32px; padding: .25rem .7rem; font-size: 13px; }
+}

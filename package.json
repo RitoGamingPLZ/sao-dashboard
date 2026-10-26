@@ -1,0 +1,14 @@
+{
+  "name": "sao-dashboard",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Multi-account dashboard for Snored Art Online: accounts, live stats, parties, per-bot potion/health safety.",
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "start": "node src/server.js",
+    "mock": "node mock/mock-server.js",
+    "dev:mock": "node mock/mock-server.js & SAO_PROTOCOL=protocol.mock.json node src/server.js",
+    "test": "node --test test/*.test.js"
+  }
+}
