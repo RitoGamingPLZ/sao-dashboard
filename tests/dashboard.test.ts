@@ -9,9 +9,10 @@ import { applyPatch, SaoConnector, SaoApiError } from '../server/sao/connector'
 import { AccountManager } from '../server/dashboard/accounts'
 import { runAccountAction } from '../server/dashboard/actions'
 import { decideSafety, validateSafety, planRestock, DEFAULT_SAFETY } from '../server/dashboard/safety'
-import { validateParty, resolveGoal, lowPotionMember } from '../server/dashboard/party'
+import { validateParty, resolveGoal } from '../server/dashboard/party'
+import { planMission } from '../server/dashboard/missions'
 import { generatePassword } from '../server/dashboard/vault'
-import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor, expToNextLevel, gearUpgrades, bestGearOf } from '#shared/game-rules'
+import { areaLevel, shopStock, isAreaSafeFor, safeAreaFor, expToNextLevel, gearUpgrades, bestGearOf, characterStats, stockLevelsFor } from '#shared/game-rules'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 async function waitUntil(isDone: () => boolean | undefined, timeoutMs = 8000) {
@@ -85,20 +86,38 @@ describe('pure rules', () => {
     expect(resolveGoal({ mode: 'standby' }, null, 'f1-west')).toEqual({ areaId: 'f1-west', mode: 'standby' })
   })
 
-  test('boss fights need every member stocked with potions', () => {
-    const member = (name: string, potions: number) => ({ name, player: { settings: { potionItem: 'potion-1' }, inventory: { 'potion-1': potions } }, safety: { restock: { autoDrinkMin: 5 } } })
-    expect(lowPotionMember([member('a', 9), member('b', 5)] as never)).toBeNull()
-    expect(lowPotionMember([member('a', 9), member('b', 4)] as never)).toEqual({ name: 'b', count: 4, needed: 5 })
+  test('任務 planner: story first, then quests, then turn in; scenes go back to the player', () => {
+    const at = (fields: object) => ({ level: 5, areaId: 'f1-town', quests: {}, ...fields })
+    expect(planMission(at({ level: 1, story: { ch: 'prologue', step: 0 } }), 1).objective).toEqual({ kind: 'visit', areaId: 'f1-west', why: expect.stringMatching(/story/) })
+    expect(planMission(at({ level: 1, story: { ch: 'prologue', step: 1 } }), 1).objective).toMatchObject({ kind: 'hunt', areaId: 'f1-west' }) // 5 boars
+    expect(planMission(at({ level: 8, story: { ch: 'ch2', step: 2 } }), 1).objective).toMatchObject({ kind: 'boss', floor: 1 })
+    const questsOnly = planMission(at({ story: { ch: 'ch2', step: 2 }, quests: { 'f1-nepenthes-bounty': 1 } }), 1, { skipStory: true })
+    expect(questsOnly.objective).toMatchObject({ kind: 'hunt', areaId: 'f1-horunka', why: expect.stringMatching(/1\/4/) })
+    expect(planMission(at({ quests: { 'f1-nepenthes-bounty': 4 } }), 1).objective).toMatchObject({ kind: 'turnIn' })
+    expect(planMission(at({}), 1).objective).toBeNull()
+    expect(planMission(at({ story: { ch: 'yui', step: 4 } }), 1).skipped.join()).toMatch(/needs you \(clear in f1-ug\)/)
   })
 
-  test('gear upgrades: same family, usable level, best first; rare pieces untouched', () => {
-    const forSale = ['weapon-t5', 'rapier-t5', 'weapon-t9', 'light-t5', 'mid-t5', 'potion-1']
-    expect(gearUpgrades('weapon-t1', 11, forSale)).toEqual(['weapon-t9', 'weapon-t5']) // a sword stays a sword
-    expect(gearUpgrades('weapon-t1', 10, forSale)).toEqual(['weapon-t5']) // t9 needs Lv11
-    expect(gearUpgrades('light-t1', 10, forSale)).toEqual(['light-t5'])
-    expect(gearUpgrades('weapon-t9', 20, forSale)).toEqual([])
-    expect(gearUpgrades('Elucidator', 99, forSale)).toEqual([])
-    expect(bestGearOf('light', 0, 6, forSale)).toEqual(['light-t5']) // an empty armour slot gets light armour
+  test('stats follow the game client formula (checked against the live game)', () => {
+    // alanchiu2 at Lv7 after its refit: the game reported max HP 1,209
+    const stats = characterStats(7, { weapon: 'weapon-t1', armor: 'light-t1', head: 'head-t1', feet: 'feet-t1' })
+    expect(stats.maxHp).toBe(1209)
+    expect(stats.isEstimated).toBe(false)
+    expect(characterStats(1, {}).maxHp).toBe(200)
+    expect(characterStats(7, { weapon: 'some-enhanced-ref' }).isEstimated).toBe(true)
+    expect(stats.critDmg).toBeCloseTo(1.6 + 0.205) // sword t1 adds crit damage
+    // Enhanced pieces live in player.gear; live check: both characters at Lv13 showed max HP 2,188
+    const gear = { 1: { base: 'weapon-t1', plus: 1, enh: { sharp: 1 } }, 2: { base: 'light-t1', plus: 2, enh: { hard: 2 } }, 3: { base: 'acc-t1', plus: 1, enh: { vital: 1 } } }
+    const enhanced = characterStats(13, { weapon: 'g:1', armor: 'g:2', head: 'head-t1', feet: 'feet-t1', accessory: 'g:3' }, null, gear)
+    expect(enhanced.isEstimated).toBe(false)
+    expect(enhanced.maxHp).toBe(2188)
+  })
+
+  test('stock levels scale with level: 10% at Lv1, the full amounts at Lv30', () => {
+    const lv30 = { autoDrinkMin: 50, autoDrinkTarget: 100, instantMin: 30, instantTarget: 100, crystalHealMin: 10, crystalHealTarget: 30, teleportMin: 3, teleportTarget: 10, maxSpendPct: 50 }
+    expect(stockLevelsFor(lv30, 1)).toEqual({ ...lv30, autoDrinkMin: 5, autoDrinkTarget: 10, instantMin: 3, instantTarget: 10, crystalHealMin: 1, crystalHealTarget: 3, teleportMin: 1, teleportTarget: 1 })
+    expect(stockLevelsFor(lv30, 30)).toEqual(lv30)
+    expect(stockLevelsFor(lv30, 80)).toEqual(lv30)
   })
 
   test('generated passwords are strong', () => {
@@ -179,12 +198,18 @@ describe('against the practice server', () => {
     tank.activity = { type: 'idle' }
   })
 
-  test('boss uses the real command; stopping a boss fight is unsupported', async () => {
+  test('王戰: refuses a boss above its level; otherwise refits, walks to the boss room and challenges', async () => {
     const session = sessionNamed('tank_one')
-    expect(await runAccountAction(session, { action: 'startBoss' })).toMatchObject({ ok: true })
-    expect(await waitUntil(() => session.player?.activity?.type === 'boss' || session.busyLabel != null)).toBe(true)
+    const player = mock.accountsByName.get('tank_one').player // Lv34, floors 1–24 cleared → next boss: floor 25, Lv37
+    expect(await runAccountAction(session, { action: 'startBoss' })).toMatchObject({ error: expect.stringMatching(/needs Lv38/) })
+    player.level = 40
+    await waitUntil(() => session.player?.level === 40)
+    expect(await session.challengeBoss()).toMatchObject({ ok: true })
+    expect(player.areaId).toBe('f25-bossroom')
+    expect(player.activity.type).toBe('boss')
     expect(await runAccountAction(session, { action: 'stopBoss' })).toMatchObject({ error: expect.stringMatching(/unsupported|busy/) })
-    mock.accountsByName.get('tank_one').player.activity = { type: 'idle' }
+    player.activity = { type: 'idle' }
+    player.level = 34
     await waitUntil(() => session.busyLabel == null)
   })
 
@@ -252,6 +277,24 @@ describe('against the practice server', () => {
     // f5 sells weapon/light/head t5 but no feet or ring: those slots stay empty
     expect(player.equipment).toEqual({ weapon: 'weapon-t5', armor: 'light-t5', head: 'head-t5' })
     expect(player.inventory['weapon-t1']).toBe(1) // the old piece is back in the bag
+  })
+
+  test('練功 challenges the next floor boss once strong enough', async () => {
+    const session = sessionNamed('fresh_alt')
+    const player = mock.accountsByName.get('fresh_alt').player // floors 1–24 cleared: next boss is floor 25, Lv37
+    await waitUntil(() => session.busyLabel == null)
+    player.level = 40
+    player.inventory['potion-1'] = 200
+    await waitUntil(() => session.player?.level === 40)
+    session.setAutoFarm({ untilLevel: null })
+    await session.keepFarming()
+    expect(player.areaId).toBe('f25-bossroom')
+    expect(player.activity.type).toBe('boss')
+    expect(session.autoFarm).not.toBeNull() // farming carries on after the fight
+    session.setAutoFarm(null)
+    player.activity = { type: 'idle' }
+    player.level = 31
+    await waitUntil(() => session.player?.level === 31)
   })
 
   test('keep farming: goes out to hunt, then stops at the target level and asks what next', async () => {

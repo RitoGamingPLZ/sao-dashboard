@@ -1,5 +1,6 @@
 <script setup lang="ts">
 // One compact card per character; shared by the Characters list and party member lists.
+import { stockLevelsFor } from '#shared/game-rules'
 import type { AccountSummary } from '#shared/types'
 
 // showActions=false is the compact party-member card: no stats, potions or solo buttons.
@@ -40,6 +41,9 @@ async function removeAccount() {
 }
 
 const consumables = computed(() => player.value?.consumables)
+const stockNow = computed(() => stockLevelsFor(props.account.safety.restock, player.value?.level ?? 1)) // scaled by level
+const formatPct = (value: number | null | undefined) => (value == null ? '—' : `${Math.round(value * 100)}%`)
+const statsTitle = computed(() => (player.value?.stats?.isEstimated ? t('statsEstimated') : ''))
 </script>
 
 <template>
@@ -71,17 +75,21 @@ const consumables = computed(() => player.value?.consumables)
       </div>
     </div>
     <div v-if="showActions" class="row-stats">
-      <span class="field"><b>ATK</b> {{ formatNumber(player?.attack) }}</span>
+      <span class="field" :title="statsTitle"><b>ATK</b> {{ formatNumber(player?.attack) }}</span>
+      <span class="field" :title="statsTitle"><b>DEF</b> {{ formatNumber(player?.stats?.def) }}</span>
+      <span class="field" :title="t('speedHint')"><b>SPD</b> {{ formatNumber(player?.stats?.speed) }}</span>
       <span class="field"><b>摳</b> {{ formatCompact(player?.gold) }}</span>
+      <span class="field" :title="statsTitle"><b>CRIT</b> {{ formatPct(player?.stats?.crit) }}</span>
+      <span class="field" :title="t('critDmgHint')"><b>CDMG</b> {{ formatPct(player?.stats?.critDmg) }}</span>
       <span class="field"><b>EXP/m</b> {{ formatNumber(account.rates?.expPerMin) }}</span>
     </div>
     <div v-if="player && showActions" class="row-potion">
       <b>{{ t('potion') }}</b>
       <span>{{ consumables?.autoDrink?.name ?? '—' }}</span>
-      <span :class="{ alert: (consumables?.autoDrink?.quantity ?? 0) < account.safety.restock.autoDrinkMin }">×{{ consumables?.autoDrink?.quantity ?? 0 }}</span>
+      <span :class="{ alert: (consumables?.autoDrink?.quantity ?? 0) < stockNow.autoDrinkMin }">×{{ consumables?.autoDrink?.quantity ?? 0 }}</span>
       <span class="muted">·</span>
       <span>{{ consumables?.instant.name }}</span>
-      <span :class="{ alert: (consumables?.instant.quantity ?? 0) < account.safety.restock.instantMin }">×{{ consumables?.instant.quantity ?? 0 }}</span>
+      <span :class="{ alert: (consumables?.instant.quantity ?? 0) < stockNow.instantMin }">×{{ consumables?.instant.quantity ?? 0 }}</span>
     </div>
     <div class="row-bottom">
       <div class="row-alerts">
@@ -92,7 +100,7 @@ const consumables = computed(() => player.value?.consumables)
         <div v-if="showActions" class="solo-actions">
           <button class="button small" :class="{ primary: account.autoFarm }" :aria-pressed="Boolean(account.autoFarm)" :disabled="!player || isInParty" @click="toggleFarm">{{ farmLabel }}</button>
           <button class="button small" :class="{ primary: mode === 'boss' }" :disabled="!player || isInParty" @click="toggleBoss">{{ t('boss') }}</button>
-          <button class="button small" :disabled="!player || isInParty" @click="doMission">{{ t('mission') }}</button>
+          <button class="button small" :class="{ primary: account.isOnMission }" :aria-pressed="account.isOnMission" :disabled="!player || isInParty" @click="doMission">{{ t('mission') }}</button>
           <button class="button small" :disabled="!player || isInParty || account.busyLabel === 'refit'" @click="refit">{{ t('partyMode_rest') }}</button>
         </div>
         <slot name="trailing" />

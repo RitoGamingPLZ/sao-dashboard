@@ -1,5 +1,5 @@
 // EN / 中文 strings. `lang` is a module-level ref so every component shares it.
-import { ITEMS, WORLD_AREAS } from '#shared/game-rules'
+import { GEAR, ITEMS, SKILLS, WORLD_AREAS } from '#shared/game-rules'
 import type { Alert } from '#shared/types'
 
 const MESSAGES = {
@@ -18,7 +18,7 @@ const MESSAGES = {
     partyStatus_waitMembers: 'Waiting for {names}', partyStatus_pulledBack: 'Too dangerous — pulled back to town', partyStatus_halted: 'Holding — {name} stopped itself',
     partyStatus_moving: 'Moving', partyStatus_rest: 'Refit', partyStatus_standby: 'Standing by', partyStatus_fight: 'Fighting', partyStatus_fightBoss: 'Boss fight',
     partyStatus_tankWaiting: 'Waiting for tank {name} to start', partyStatus_tankLow: 'Tank {name} low ({hp}%) — others wait', partyStatus_error: 'Error: {message}', partyStatus_lowPotions: '{name} is low on potions ({count}/{needed}) — no boss fight',
-    inParty: 'In party', refitting: 'Refitting', previousAccounts: 'Previously added', oneClickLogin: 'password saved — click to log in', needsPassword: 'click, then type the password', forget: 'Forget (also deletes its saved password)', addedAccount: '{name} added', deadMask: 'Dead', confirmRemoveAccount: 'Remove {name} from the dashboard? The game account itself is not deleted.', removedAccount: '{name} removed', aggressive: 'aggressive', goTo: 'Go', partyState: 'Party state', partyMoving: 'Party on the way',
+    inParty: 'In party', activeSkill: 'In a skill slot', equipHint: 'Pick from what you own to wear it, or (empty) to take it off.', skillSlotsHint: 'Choose up to {count} skills for your current weapon.', 'weapon_one-handed-sword': 'One-handed sword', weapon_rapier: 'Rapier', 'weapon_dual-blades': 'Dual blades', weapon_spear: 'Spear', 'weapon_two-handed-sword': 'Two-handed sword', 'weapon_short-sword': 'Short sword', slot_weapon: 'Weapon', slot_offhand: 'Off-hand', slot_armor: 'Armour', slot_head: 'Head', slot_feet: 'Feet', slot_accessory: 'Accessory', slot_ring2: 'Accessory 2', slot_neck: 'Neck', skillPower: 'Power', skillCooldown: 'Cooldown', gearBonus: 'Bonus', emptySlot: '(empty)', restockScaleHint: 'These are Lv30 amounts. Lower levels keep less: at Lv{level} the bot keeps {pct}% of them.', speedHint: 'Attack speed (the game\'s own number: higher is faster)', critDmgHint: 'Damage of a critical hit', statsEstimated: 'Approximate: a worn piece is enhanced or rare', refitting: 'Refitting', previousAccounts: 'Previously added', oneClickLogin: 'password saved — click to log in', needsPassword: 'click, then type the password', forget: 'Forget (also deletes its saved password)', addedAccount: '{name} added', deadMask: 'Dead', confirmRemoveAccount: 'Remove {name} from the dashboard? The game account itself is not deleted.', removedAccount: '{name} removed', aggressive: 'aggressive', goTo: 'Go', partyState: 'Party state', partyMoving: 'Party on the way',
     partyMode_rest: 'Refit', partyMode_standby: 'Standby', partyMode_fight: 'Fight',
     // health & potions settings
     safetyOn: 'Safety loop on (heals and retreats by itself)', healMode: 'Who drinks potions',
@@ -66,7 +66,7 @@ const MESSAGES = {
     partyStatus_waitMembers: '等待 {names} 上線', partyStatus_pulledBack: '太危險，已撤回城鎮', partyStatus_halted: '暫停 — {name} 的機器人已自動停止',
     partyStatus_moving: '移動中', partyStatus_rest: '修整', partyStatus_standby: '待命', partyStatus_fight: '戰鬥中', partyStatus_fightBoss: '王戰中',
     partyStatus_tankWaiting: '等待坦 {name} 開打', partyStatus_tankLow: '坦 {name} 血量低（{hp}%）— 其他人等待', partyStatus_error: '錯誤：{message}', partyStatus_lowPotions: '{name} 藥水不足（{count}/{needed}），不開王戰',
-    inParty: '組隊中', refitting: '修整中', previousAccounts: '曾經加入的帳號', oneClickLogin: '已保存密碼 — 點一下即可登入', needsPassword: '點一下後輸入密碼', forget: '忘記（同時刪除保存的密碼）', addedAccount: '已加入 {name}', deadMask: '已死亡', confirmRemoveAccount: '要從儀表板移除 {name} 嗎？遊戲帳號本身不會被刪除。', removedAccount: '已移除 {name}', aggressive: '主動攻擊', goTo: '前往', partyState: '隊伍狀態', partyMoving: '隊伍出發',
+    inParty: '組隊中', activeSkill: '使用中的技能', equipHint: '從背包選擇要穿的裝備，選（空）就是卸下。', skillSlotsHint: '為目前的武器選擇最多 {count} 個技能。', 'weapon_one-handed-sword': '單手劍', weapon_rapier: '細劍', 'weapon_dual-blades': '二刀流', weapon_spear: '長槍', 'weapon_two-handed-sword': '雙手劍', 'weapon_short-sword': '短劍', slot_weapon: '武器', slot_offhand: '副手', slot_armor: '防具', slot_head: '頭部', slot_feet: '腳部', slot_accessory: '飾品', slot_ring2: '飾品 2', slot_neck: '項鍊', skillPower: '威力', skillCooldown: '冷卻', gearBonus: '加成', emptySlot: '（空）', restockScaleHint: '這些是 Lv30 的數量，等級較低時會少帶一些：目前 Lv{level} 只保持 {pct}%。', speedHint: '攻擊速度（遊戲內的數值，越高越快）', critDmgHint: '爆擊時的傷害', statsEstimated: '約略值：身上有強化過或稀有的裝備', refitting: '修整中', previousAccounts: '曾經加入的帳號', oneClickLogin: '已保存密碼 — 點一下即可登入', needsPassword: '點一下後輸入密碼', forget: '忘記（同時刪除保存的密碼）', addedAccount: '已加入 {name}', deadMask: '已死亡', confirmRemoveAccount: '要從儀表板移除 {name} 嗎？遊戲帳號本身不會被刪除。', removedAccount: '已移除 {name}', aggressive: '主動攻擊', goTo: '前往', partyState: '隊伍狀態', partyMoving: '隊伍出發',
     partyMode_rest: '修整', partyMode_standby: '待命', partyMode_fight: '戰鬥',
     // 血量與補藥設定
     safetyOn: '開啟安全保護（自動補血、撤退）', healMode: '由誰喝藥水',
@@ -142,5 +142,8 @@ export function useI18n() {
   }
   const partyStatusText = (status: { code: string, params?: Record<string, string | number>, text: string }) =>
     (`partyStatus_${status.code}` in MESSAGES.en ? t(`partyStatus_${status.code}`, status.params) : status.text)
-  return { lang, t, alertText, areaName, areaLabel, partyStatusText, toggleLang }
+  // Gear and skill names from the game, in the current language (ids only as a last resort).
+  const gearName = (itemId: string) => (lang.value === 'zh' && GEAR[itemId]?.nameZh) || GEAR[itemId]?.name || itemId
+  const skillName = (skillId: string) => (lang.value === 'zh' && SKILLS[skillId]?.nameZh) || SKILLS[skillId]?.name || skillId
+  return { lang, t, alertText, areaName, areaLabel, partyStatusText, gearName, skillName, toggleLang }
 }

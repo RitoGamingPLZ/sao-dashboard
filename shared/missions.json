@@ -1,0 +1,1331 @@
+{
+ "source": "dev-sao.potato-proxy.com client (main-1nL5gxyG.js), extracted 2026-10-26",
+ "quests": {
+  "f1-nepenthes-bounty": {
+   "floor": 1,
+   "type": "kill",
+   "target": "f1-nepenthes",
+   "qty": 4,
+   "reward": {
+    "exp": 360,
+    "col": 224
+   }
+  },
+  "f1-nepenthes-bloom-hunt": {
+   "floor": 1,
+   "type": "kill",
+   "target": "f1-nepenthes-bloom",
+   "qty": 1,
+   "reward": {
+    "exp": 235,
+    "col": 85
+   }
+  },
+  "f3-elf-hunt": {
+   "floor": 3,
+   "type": "kill",
+   "target": "f3-elf",
+   "qty": 1,
+   "reward": {
+    "exp": 385,
+    "col": 120
+   }
+  },
+  "f3-root-bounty": {
+   "floor": 3,
+   "type": "kill",
+   "target": "f3-root",
+   "qty": 4,
+   "reward": {
+    "exp": 864,
+    "col": 352
+   }
+  },
+  "f4-r-hunt": {
+   "floor": 4,
+   "type": "kill",
+   "target": "f4-r",
+   "qty": 1,
+   "reward": {
+    "exp": 645,
+    "col": 180
+   }
+  },
+  "f4-i-bounty": {
+   "floor": 4,
+   "type": "kill",
+   "target": "f4-i",
+   "qty": 4,
+   "reward": {
+    "exp": 984,
+    "col": 416
+   }
+  },
+  "f5-r-hunt": {
+   "floor": 5,
+   "type": "kill",
+   "target": "f5-r",
+   "qty": 1,
+   "reward": {
+    "exp": 730,
+    "col": 195
+   }
+  },
+  "f5-h-bounty": {
+   "floor": 5,
+   "type": "kill",
+   "target": "f5-h",
+   "qty": 4,
+   "reward": {
+    "exp": 984,
+    "col": 416
+   }
+  },
+  "f6-g-bounty": {
+   "floor": 6,
+   "type": "kill",
+   "target": "f6-g",
+   "qty": 4,
+   "reward": {
+    "exp": 1128,
+    "col": 448
+   }
+  },
+  "f6-r-hunt": {
+   "floor": 6,
+   "type": "kill",
+   "target": "f6-r",
+   "qty": 1,
+   "reward": {
+    "exp": 810,
+    "col": 210
+   }
+  },
+  "f7-f-bounty": {
+   "floor": 7,
+   "type": "kill",
+   "target": "f7-f",
+   "qty": 4,
+   "reward": {
+    "exp": 1416,
+    "col": 544
+   }
+  },
+  "f7-r-hunt": {
+   "floor": 7,
+   "type": "kill",
+   "target": "f7-r",
+   "qty": 1,
+   "reward": {
+    "exp": 985,
+    "col": 250
+   }
+  },
+  "f8-e-bounty": {
+   "floor": 8,
+   "type": "kill",
+   "target": "f8-e",
+   "qty": 4,
+   "reward": {
+    "exp": 1416,
+    "col": 544
+   }
+  },
+  "f8-r-hunt": {
+   "floor": 8,
+   "type": "kill",
+   "target": "f8-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1075,
+    "col": 265
+   }
+  },
+  "f9-r-hunt": {
+   "floor": 9,
+   "type": "kill",
+   "target": "f9-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1170,
+    "col": 280
+   }
+  },
+  "f9-d-bounty": {
+   "floor": 9,
+   "type": "kill",
+   "target": "f9-d",
+   "qty": 5,
+   "reward": {
+    "exp": 2580,
+    "col": 880
+   }
+  },
+  "f10-r-hunt": {
+   "floor": 10,
+   "type": "kill",
+   "target": "f10-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1260,
+    "col": 295
+   }
+  },
+  "f10-d-bounty": {
+   "floor": 10,
+   "type": "kill",
+   "target": "f10-d",
+   "qty": 5,
+   "reward": {
+    "exp": 2760,
+    "col": 920
+   }
+  },
+  "f11-r-hunt": {
+   "floor": 11,
+   "type": "kill",
+   "target": "f11-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1450,
+    "col": 330
+   }
+  },
+  "f11-c-bounty": {
+   "floor": 11,
+   "type": "kill",
+   "target": "f11-c",
+   "qty": 5,
+   "reward": {
+    "exp": 3000,
+    "col": 1000
+   }
+  },
+  "f12-b-bounty": {
+   "floor": 12,
+   "type": "kill",
+   "target": "f12-b",
+   "qty": 5,
+   "reward": {
+    "exp": 2760,
+    "col": 920
+   }
+  },
+  "f12-r-hunt": {
+   "floor": 12,
+   "type": "kill",
+   "target": "f12-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1545,
+    "col": 345
+   }
+  },
+  "f13-a-bounty": {
+   "floor": 13,
+   "type": "kill",
+   "target": "f13-a",
+   "qty": 5,
+   "reward": {
+    "exp": 2760,
+    "col": 920
+   }
+  },
+  "f13-r-hunt": {
+   "floor": 13,
+   "type": "kill",
+   "target": "f13-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1645,
+    "col": 360
+   }
+  },
+  "f14-r-hunt": {
+   "floor": 14,
+   "type": "kill",
+   "target": "f14-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1750,
+    "col": 375
+   }
+  },
+  "f15-r-hunt": {
+   "floor": 15,
+   "type": "kill",
+   "target": "f15-r",
+   "qty": 1,
+   "reward": {
+    "exp": 1950,
+    "col": 390
+   }
+  },
+  "f15-i-bounty": {
+   "floor": 15,
+   "type": "kill",
+   "target": "f15-i",
+   "qty": 5,
+   "reward": {
+    "exp": 4050,
+    "col": 1200
+   }
+  },
+  "f16-r-hunt": {
+   "floor": 16,
+   "type": "kill",
+   "target": "f16-r",
+   "qty": 1,
+   "reward": {
+    "exp": 2055,
+    "col": 400
+   }
+  },
+  "f16-h-bounty": {
+   "floor": 16,
+   "type": "kill",
+   "target": "f16-h",
+   "qty": 5,
+   "reward": {
+    "exp": 4050,
+    "col": 1160
+   }
+  },
+  "f17-g-bounty": {
+   "floor": 17,
+   "type": "kill",
+   "target": "f17-g",
+   "qty": 6,
+   "reward": {
+    "exp": 5148,
+    "col": 1488
+   }
+  },
+  "f17-r-hunt": {
+   "floor": 17,
+   "type": "kill",
+   "target": "f17-r",
+   "qty": 1,
+   "reward": {
+    "exp": 2160,
+    "col": 410
+   }
+  },
+  "f18-f-bounty": {
+   "floor": 18,
+   "type": "kill",
+   "target": "f18-f",
+   "qty": 6,
+   "reward": {
+    "exp": 5436,
+    "col": 1488
+   }
+  },
+  "f18-r-hunt": {
+   "floor": 18,
+   "type": "kill",
+   "target": "f18-r",
+   "qty": 1,
+   "reward": {
+    "exp": 2265,
+    "col": 420
+   }
+  },
+  "f19-e-bounty": {
+   "floor": 19,
+   "type": "kill",
+   "target": "f19-e",
+   "qty": 6,
+   "reward": {
+    "exp": 5688,
+    "col": 1536
+   }
+  },
+  "f19-r-hunt": {
+   "floor": 19,
+   "type": "kill",
+   "target": "f19-r",
+   "qty": 1,
+   "reward": {
+    "exp": 2475,
+    "col": 450
+   }
+  },
+  "f20-r-hunt": {
+   "floor": 20,
+   "type": "kill",
+   "target": "f20-r",
+   "qty": 1,
+   "reward": {
+    "exp": 2580,
+    "col": 460
+   }
+  },
+  "f20-c-bounty": {
+   "floor": 20,
+   "type": "kill",
+   "target": "f20-c",
+   "qty": 6,
+   "reward": {
+    "exp": 6552,
+    "col": 1728
+   }
+  },
+  "f21-b-bounty": {
+   "floor": 21,
+   "type": "kill",
+   "target": "f21-b",
+   "qty": 6,
+   "reward": {
+    "exp": 6264,
+    "col": 1632
+   }
+  },
+  "f21-r-hunt": {
+   "floor": 21,
+   "type": "kill",
+   "target": "f21-r",
+   "qty": 1,
+   "reward": {
+    "exp": 2695,
+    "col": 465
+   }
+  },
+  "f22-fish-hunter-hunt": {
+   "floor": 22,
+   "type": "kill",
+   "target": "f22-fish-hunter",
+   "qty": 1,
+   "reward": {
+    "exp": 2870,
+    "col": 495
+   }
+  },
+  "f23-r-hunt": {
+   "floor": 23,
+   "type": "kill",
+   "target": "f23-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3025,
+    "col": 500
+   }
+  },
+  "f24-r-hunt": {
+   "floor": 24,
+   "type": "kill",
+   "target": "f24-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3145,
+    "col": 510
+   }
+  },
+  "f24-i-bounty": {
+   "floor": 24,
+   "type": "kill",
+   "target": "f24-i",
+   "qty": 7,
+   "reward": {
+    "exp": 9324,
+    "col": 2240
+   }
+  },
+  "f25-r-hunt": {
+   "floor": 25,
+   "type": "kill",
+   "target": "f25-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3255,
+    "col": 515
+   }
+  },
+  "f25-h-bounty": {
+   "floor": 25,
+   "type": "kill",
+   "target": "f25-h",
+   "qty": 7,
+   "reward": {
+    "exp": 9324,
+    "col": 2184
+   }
+  },
+  "f26-g-bounty": {
+   "floor": 26,
+   "type": "kill",
+   "target": "f26-g",
+   "qty": 7,
+   "reward": {
+    "exp": 9660,
+    "col": 2240
+   }
+  },
+  "f26-r-hunt": {
+   "floor": 26,
+   "type": "kill",
+   "target": "f26-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3370,
+    "col": 525
+   }
+  },
+  "f27-f-bounty": {
+   "floor": 27,
+   "type": "kill",
+   "target": "f27-f",
+   "qty": 7,
+   "reward": {
+    "exp": 10374,
+    "col": 2296
+   }
+  },
+  "f27-r-hunt": {
+   "floor": 27,
+   "type": "kill",
+   "target": "f27-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3600,
+    "col": 550
+   }
+  },
+  "f28-e-bounty": {
+   "floor": 28,
+   "type": "kill",
+   "target": "f28-e",
+   "qty": 8,
+   "reward": {
+    "exp": 11856,
+    "col": 2624
+   }
+  },
+  "f28-r-hunt": {
+   "floor": 28,
+   "type": "kill",
+   "target": "f28-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3715,
+    "col": 555
+   }
+  },
+  "f29-r-hunt": {
+   "floor": 29,
+   "type": "kill",
+   "target": "f29-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3835,
+    "col": 560
+   }
+  },
+  "f29-d-bounty": {
+   "floor": 29,
+   "type": "kill",
+   "target": "f29-d",
+   "qty": 8,
+   "reward": {
+    "exp": 13488,
+    "col": 2880
+   }
+  },
+  "f30-b-bounty": {
+   "floor": 30,
+   "type": "kill",
+   "target": "f30-b",
+   "qty": 8,
+   "reward": {
+    "exp": 12672,
+    "col": 2688
+   }
+  },
+  "f30-r-hunt": {
+   "floor": 30,
+   "type": "kill",
+   "target": "f30-r",
+   "qty": 1,
+   "reward": {
+    "exp": 3955,
+    "col": 565
+   }
+  },
+  "f31-a-bounty": {
+   "floor": 31,
+   "type": "kill",
+   "target": "f31-a",
+   "qty": 8,
+   "reward": {
+    "exp": 13056,
+    "col": 2752
+   }
+  },
+  "f31-r-hunt": {
+   "floor": 31,
+   "type": "kill",
+   "target": "f31-r",
+   "qty": 1,
+   "reward": {
+    "exp": 4195,
+    "col": 595
+   }
+  },
+  "f32-r-hunt": {
+   "floor": 32,
+   "type": "kill",
+   "target": "f32-r",
+   "qty": 1,
+   "reward": {
+    "exp": 4315,
+    "col": 605
+   }
+  },
+  "f33-r-hunt": {
+   "floor": 33,
+   "type": "kill",
+   "target": "f33-r",
+   "qty": 1,
+   "reward": {
+    "exp": 4435,
+    "col": 620
+   }
+  },
+  "f33-i-bounty": {
+   "floor": 33,
+   "type": "kill",
+   "target": "f33-i",
+   "qty": 8,
+   "reward": {
+    "exp": 15168,
+    "col": 3072
+   }
+  },
+  "f34-r-hunt": {
+   "floor": 34,
+   "type": "kill",
+   "target": "f34-r",
+   "qty": 1,
+   "reward": {
+    "exp": 4555,
+    "col": 630
+   }
+  },
+  "f34-h-bounty": {
+   "floor": 34,
+   "type": "kill",
+   "target": "f34-h",
+   "qty": 8,
+   "reward": {
+    "exp": 15168,
+    "col": 3072
+   }
+  },
+  "f35-skeleton-bounty": {
+   "floor": 35,
+   "type": "kill",
+   "target": "f35-skeleton",
+   "qty": 8,
+   "reward": {
+    "exp": 16464,
+    "col": 3264
+   }
+  },
+  "f36-f-bounty": {
+   "floor": 36,
+   "type": "kill",
+   "target": "f36-f",
+   "qty": 8,
+   "reward": {
+    "exp": 16464,
+    "col": 3264
+   }
+  },
+  "f36-r-hunt": {
+   "floor": 36,
+   "type": "kill",
+   "target": "f36-r",
+   "qty": 1,
+   "reward": {
+    "exp": 4920,
+    "col": 670
+   }
+  },
+  "f37-e-bounty": {
+   "floor": 37,
+   "type": "kill",
+   "target": "f37-e",
+   "qty": 8,
+   "reward": {
+    "exp": 16464,
+    "col": 3264
+   }
+  },
+  "f37-r-hunt": {
+   "floor": 37,
+   "type": "kill",
+   "target": "f37-r",
+   "qty": 1,
+   "reward": {
+    "exp": 5050,
+    "col": 685
+   }
+  },
+  "f38-r-hunt": {
+   "floor": 38,
+   "type": "kill",
+   "target": "f38-r",
+   "qty": 1,
+   "reward": {
+    "exp": 5170,
+    "col": 695
+   }
+  },
+  "f38-d-bounty": {
+   "floor": 38,
+   "type": "kill",
+   "target": "f38-d",
+   "qty": 8,
+   "reward": {
+    "exp": 18192,
+    "col": 3584
+   }
+  },
+  "f39-r-hunt": {
+   "floor": 39,
+   "type": "kill",
+   "target": "f39-r",
+   "qty": 1,
+   "reward": {
+    "exp": 5425,
+    "col": 725
+   }
+  },
+  "f39-c-bounty": {
+   "floor": 39,
+   "type": "kill",
+   "target": "f39-c",
+   "qty": 8,
+   "reward": {
+    "exp": 18624,
+    "col": 3648
+   }
+  },
+  "f40-a-bounty": {
+   "floor": 40,
+   "type": "kill",
+   "target": "f40-a",
+   "qty": 8,
+   "reward": {
+    "exp": 17760,
+    "col": 3520
+   }
+  },
+  "f40-r-hunt": {
+   "floor": 40,
+   "type": "kill",
+   "target": "f40-r",
+   "qty": 1,
+   "reward": {
+    "exp": 5550,
+    "col": 740
+   }
+  }
+ },
+ "story": {
+  "prologue": {
+   "floor": 1,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f1-west"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f1-boar",
+     "qty": 5
+    },
+    {
+     "kind": "visit",
+     "areaId": "f1-town"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f1-horunka"
+    }
+   ]
+  },
+  "ch1": {
+   "floor": 1,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "collect",
+     "itemId": "story-ovule",
+     "qty": 1,
+     "from": "f1-nepenthes-bloom",
+     "chance": 1
+    }
+   ]
+  },
+  "ch2": {
+   "floor": 1,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "level",
+     "level": 5
+    },
+    {
+     "kind": "visit",
+     "areaId": "f1-labyrinth"
+    },
+    {
+     "kind": "boss",
+     "floor": 1
+    }
+   ]
+  },
+  "ch3": {
+   "floor": 2,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f2-depths"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f2-i",
+     "qty": 30
+    },
+    {
+     "kind": "level",
+     "level": 9
+    },
+    {
+     "kind": "visit",
+     "areaId": "f2-depths"
+    }
+   ]
+  },
+  "ch4": {
+   "floor": 2,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f2-town"
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-swapped",
+     "qty": 1,
+     "from": "f2-taurus-striker",
+     "chance": 0.25
+    },
+    {
+     "kind": "visit",
+     "areaId": "f2-town"
+    }
+   ]
+  },
+  "elf1": {
+   "floor": 3,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f3-mist-forest"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f3-elf",
+     "qty": 1
+    },
+    {
+     "kind": "visit",
+     "areaId": "f3-depths"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f3-i",
+     "qty": 25
+    },
+    {
+     "kind": "boss",
+     "floor": 3
+    }
+   ]
+  },
+  "canal": {
+   "floor": 4,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f4-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f4-a",
+     "qty": 20
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-jelly",
+     "qty": 3,
+     "from": "f4-g",
+     "chance": 0.35
+    },
+    {
+     "kind": "visit",
+     "areaId": "f4-town"
+    }
+   ]
+  },
+  "elf2": {
+   "floor": 4,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f4-depths"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f4-i",
+     "qty": 25
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-key1",
+     "qty": 1,
+     "from": "f4-c",
+     "chance": 0.2
+    },
+    {
+     "kind": "boss",
+     "floor": 4
+    },
+    {
+     "kind": "visit",
+     "areaId": "f5-wilds"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f5-g",
+     "qty": 25
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-key2",
+     "qty": 1,
+     "from": "f5-d",
+     "chance": 0.2
+    },
+    {
+     "kind": "boss",
+     "floor": 5
+    }
+   ]
+  },
+  "ruins": {
+   "floor": 5,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f5-field"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f5-a",
+     "qty": 25
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-flag",
+     "qty": 1,
+     "from": "f5-b",
+     "chance": 0.25
+    },
+    {
+     "kind": "visit",
+     "areaId": "f5-town"
+    }
+   ]
+  },
+  "puzzle": {
+   "floor": 6,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f6-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f6-a",
+     "qty": 30
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-piece",
+     "qty": 1,
+     "from": "f6-e",
+     "chance": 0.25
+    },
+    {
+     "kind": "visit",
+     "areaId": "f6-town"
+    }
+   ]
+  },
+  "casino": {
+   "floor": 7,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f7-town"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f7-wilds"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f7-i",
+     "qty": 30
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-feed",
+     "qty": 1,
+     "from": "f7-c",
+     "chance": 0.25
+    },
+    {
+     "kind": "visit",
+     "areaId": "f7-town"
+    }
+   ]
+  },
+  "elf3": {
+   "floor": 8,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f8-wilds"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f8-r",
+     "qty": 1
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f8-i",
+     "qty": 30
+    },
+    {
+     "kind": "boss",
+     "floor": 8
+    },
+    {
+     "kind": "visit",
+     "areaId": "f9-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f9-a",
+     "qty": 30
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f9-e",
+     "qty": 30
+    },
+    {
+     "kind": "boss",
+     "floor": 9
+    }
+   ]
+  },
+  "samurai": {
+   "floor": 10,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f10-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f10-b",
+     "qty": 30
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f10-i",
+     "qty": 30
+    },
+    {
+     "kind": "boss",
+     "floor": 10
+    }
+   ]
+  },
+  "kuro1": {
+   "floor": 11,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f11-field"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f11-b",
+     "qty": 15
+    },
+    {
+     "kind": "visit",
+     "areaId": "f11-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f11-f",
+     "qty": 25
+    },
+    {
+     "kind": "visit",
+     "areaId": "f11-depths"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f11-town"
+    }
+   ]
+  },
+  "yui": {
+   "floor": 22,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f22-lake"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f22-depths"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f22-town"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f1-town"
+    },
+    {
+     "kind": "clear",
+     "areaId": "f1-ug",
+     "qty": 5
+    },
+    {
+     "kind": "clear",
+     "areaId": "f1-ug2",
+     "qty": 5
+    },
+    {
+     "kind": "clear",
+     "areaId": "f1-ug3",
+     "qty": 5
+    },
+    {
+     "kind": "clear",
+     "areaId": "f1-ug4",
+     "qty": 5
+    },
+    {
+     "kind": "clear",
+     "areaId": "f1-ug5",
+     "qty": 5
+    },
+    {
+     "kind": "clear",
+     "areaId": "f1-ug6",
+     "qty": 5
+    },
+    {
+     "kind": "reaper",
+     "areaId": "f1-ug-room"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f1-ug-safe"
+    },
+    {
+     "kind": "console",
+     "areaId": "f1-ug-safe"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f1-town"
+    }
+   ]
+  },
+  "lake": {
+   "floor": 22,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f22-lake"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f22-fish-hunter",
+     "qty": 1
+    },
+    {
+     "kind": "visit",
+     "areaId": "f22-town"
+    }
+   ]
+  },
+  "quarter": {
+   "floor": 25,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f25-town"
+    },
+    {
+     "kind": "visit",
+     "areaId": "f25-labyrinth"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f25-c",
+     "qty": 30
+    },
+    {
+     "kind": "boss",
+     "floor": 25
+    },
+    {
+     "kind": "visit",
+     "areaId": "f25-town"
+    },
+    {
+     "kind": "collect",
+     "itemId": "story-heartwood",
+     "qty": 4,
+     "from": "f25-g",
+     "chance": 0.04
+    }
+   ]
+  },
+  "kuro2": {
+   "floor": 27,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f27-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f27-a",
+     "qty": 30
+    },
+    {
+     "kind": "visit",
+     "areaId": "f27-labyrinth"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f27-c",
+     "qty": 30
+    },
+    {
+     "kind": "boss",
+     "floor": 27
+    }
+   ]
+  },
+  "silica": {
+   "floor": 35,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f35-wandering"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f35-ape-boss",
+     "qty": 3
+    },
+    {
+     "kind": "visit",
+     "areaId": "f35-town"
+    },
+    {
+     "kind": "kill",
+     "monsterId": "f35-ape",
+     "qty": 40
+    },
+    {
+     "kind": "boss",
+     "floor": 35
+    }
+   ]
+  },
+  "nicholas": {
+   "floor": 35,
+   "title": "...",
+   "titleZh": "...",
+   "goals": [
+    {
+     "kind": "visit",
+     "areaId": "f35-town"
+    },
+    {
+     "kind": "level",
+     "level": 50
+    },
+    {
+     "kind": "fight",
+     "areaId": "f35-depths",
+     "monsterId": "f35-nicholas"
+    }
+   ]
+  }
+ }
+}

@@ -11,22 +11,27 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
   const player = session.player
   const busyError = { error: `Account busy: ${session.busyLabel}` }
   switch (body.action) {
-    case 'startHunt':
-    case 'startBoss': {
+    case 'startHunt': {
       if (session.busyLabel) return busyError
       if (!player) return { error: 'disconnected' }
-      // There's no manual "go to" for Farm/Boss: auto-travel to a safe area first if in town.
-      if (parseArea(player.areaId)?.kind === 'town') {
-        const targetAreaId = safeAreaFor(player.level, body.action === 'startBoss' ? 'bossroom' : 'field', frontierFloor(player.clearedFloors))
-        if (!targetAreaId) return { error: 'noSafeArea' }
-        session.withLock(`go to ${targetAreaId}`, () => session.goTo(targetAreaId))
-          .then(async (result) => {
-            if (result?.error) return session.log('error', `Travel: ${result.error}`)
-            await session.command(body.action as 'startHunt' | 'startBoss', {}, 'dashboard')
-          })
-        return { ok: true, isStarted: true }
-      }
-      return session.command(body.action, {}, 'dashboard')
+      // Out of town: hunt right here. In town: walk to the best safe field first.
+      if (parseArea(player.areaId)?.kind !== 'town') return session.command('startHunt', {}, 'dashboard')
+      const targetAreaId = safeAreaFor(player.level, 'field', frontierFloor(player.clearedFloors))
+      if (!targetAreaId) return { error: 'noSafeArea' }
+      session.withLock(`go to ${targetAreaId}`, () => session.goTo(targetAreaId))
+        .then(async (result) => {
+          if (result?.error) return session.log('error', `Travel: ${result.error}`)
+          await session.command('startHunt', {}, 'dashboard')
+        })
+      return { ok: true, isStarted: true }
+    }
+    case 'startBoss': { // 王戰: refit, then the highest boss this character can reach
+      if (session.busyLabel) return busyError
+      if (!player) return { error: 'disconnected' }
+      const floor = frontierFloor(player.clearedFloors)
+      if (!isAreaSafeFor(`f${floor}-bossroom`, player.level)) return session.challengeBoss(floor) // returns the level error at once
+      session.challengeBoss(floor).then((result) => result?.error && session.log('error', `Boss: ${result.error}`))
+      return { ok: true, isStarted: true }
     }
     case 'farm': {
       const untilLevel = body.untilLevel == null ? null : Math.floor(Number(body.untilLevel))
@@ -38,13 +43,14 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
     case 'stopHunt':
     case 'stopBoss':
       if (session.autoFarm) session.setAutoFarm(null)
+      if (session.mission) session.stopMissions()
       if (session.busyLabel) return busyError
       return session.command(body.action, {}, 'dashboard')
-    case 'completeMission': {
-      if (session.busyLabel) return busyError
-      const weapon = session.preferredWeapon
-      return session.command('completeMission', weapon ? { questType: 'uniqueWeapon', weapon } : {}, 'dashboard')
-    }
+    case 'completeMission': // 任務: start a mission run, or stop the one in progress
+      if (session.mission) { session.stopMissions(); return { ok: true } }
+      if (!player) return { error: 'disconnected' }
+      session.startMissions()
+      return { ok: true, isStarted: true }
     case 'town': // emergency teleport crystal; skips the lock on purpose
       if (session.autoFarm) session.setAutoFarm(null)
       if (!((player?.inventory?.['crystal-teleport'] ?? 0) > 0)) return { error: 'No teleport crystals' }

@@ -6,12 +6,16 @@ const { t } = useI18n()
 const dialog = ref<HTMLDialogElement>()
 const accountId = ref('')
 const accountName = ref('')
+const level = ref(1)
+// Stock levels are Lv30 amounts; this is the share kept at the character's level.
+const stockSharePct = computed(() => Math.round((0.1 + 0.9 * Math.min(1, Math.max(0, level.value - 1) / 29)) * 100))
 const form = ref<Safety | null>(null)
 const errorText = ref('')
 
 function open(account: AccountSummary) {
   accountId.value = account.id
   accountName.value = account.name
+  level.value = account.player?.level ?? 1
   form.value = structuredClone(toRaw(account.safety))
   errorText.value = ''
   dialog.value?.showModal()
@@ -68,6 +72,7 @@ async function save() {
       <label class="checkbox"><input v-model="form.isAutoRestockOn" type="checkbox"> {{ t('autoRestock') }}</label>
       <fieldset class="threshold-grid">
         <legend>{{ t('restockTitle') }}</legend>
+        <p class="hint" style="grid-column: 1 / -1">{{ t('restockScaleHint', { level, pct: stockSharePct }) }}</p>
         <span /><span>{{ t('restockBelow') }}</span><span>{{ t('restockUpTo') }}</span>
         <template v-for="row in restockRows" :key="row.min">
           <span>{{ t(row.label) }}</span>

@@ -3,11 +3,12 @@
 // never touches another.
 
 import { EventEmitter } from 'node:events'
-import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS, expToNextLevel, gearUpgrades, bestGearOf, EMPTY_SLOT_FAMILIES } from '#shared/game-rules'
+import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS, expToNextLevel, gearUpgrades, bestGearOf, EMPTY_SLOT_FAMILIES, characterStats, stockLevelsFor, GEAR, SKILLS, resolveGear, skillSlotCount, type GearInstance } from '#shared/game-rules'
 import type { AccountSummary, Alert, AutoFarm, LogChoice, LogEvent, PartyRole, Safety } from '#shared/types'
 import type { SaoProtocol, CommandKey } from '../sao/protocol'
 import type { CommandResult, GameCommand, GameLogEntry, GameSocket, SaoConnector } from '../sao/connector'
 import { decideSafety, planRestock, DEFAULT_SAFETY } from './safety'
+import { planMission, QUESTS, STORY, type Objective } from './missions'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const EVENT_LIMIT = 150 // per character
@@ -19,6 +20,7 @@ const METRICS_WINDOW_MS = 15 * 60 * 1000
 const MAX_BUY_PER_CALL = 500
 const QUEST_VISIT_MS = 10 * 60 * 1000
 const ENHANCE_TRIES_PER_REFIT = 3
+const BOSS_RETRY_MS = 30 * 60 * 1000 // keep-farming's wait after a boss try that didn't happen or didn't win
 
 // Game log params look like {a:{a:'f1-west'}} (area), {m:{m:'f1-boar'}} (monster), {st:'prologue'}.
 function describeGameValue(value: unknown): string {
@@ -63,6 +65,9 @@ export class Session extends EventEmitter<SessionEvents> {
   private lastQuestVisitAt = 0
   private isStopped = false
   lastRefitAt = 0
+  private lastBossAttemptAt = 0
+  // 任務 run in progress: what we started from (for the report), and which story step failed.
+  mission: { startedAt: number, startQuestsDone: number, failedStoryKey: string | null, notes: Set<string> } | null = null
   private samples: Array<{ takenAt: number, gold: number, exp: number, level: number }> = []
   private timers: Array<ReturnType<typeof setInterval>> = []
 
@@ -236,9 +241,49 @@ export class Session extends EventEmitter<SessionEvents> {
   get isHunting() { return this.activityType === 'hunting' }
   get isInBossFight() { return this.activityType === 'boss' }
 
+  // Wearable gear in the bag: plain items by id, enhanced pieces (player.gear) by g:N.
+  ownedGear() {
+    const player = this.player
+    if (!player) return []
+    const worn = new Set(Object.values(player.equipment ?? {}))
+    const instances = (player.gear ?? {}) as Record<string, GearInstance>
+    const plain = Object.entries(player.inventory ?? {})
+      .filter(([itemId, quantity]) => quantity > 0 && GEAR[itemId])
+      .map(([itemId]) => ({ ref: itemId, itemId, plus: 0, slot: GEAR[itemId]!.slot }))
+    const enhanced = Object.entries(instances)
+      .filter(([number, instance]) => !worn.has(`g:${number}`) && GEAR[instance.base])
+      .map(([number, instance]) => ({ ref: `g:${number}`, itemId: instance.base, plus: instance.plus ?? 0, slot: GEAR[instance.base]!.slot }))
+    return [...enhanced, ...plain]
+  }
+
+  // Active skills and the ones that fit the weapon in hand.
+  skillSummary() {
+    const player = this.player
+    const weaponType = player?.equipment?.weapon ? resolveGear(player.equipment.weapon, player.gear as Record<string, GearInstance> | undefined)?.weaponType : undefined
+    const learned = (player?.learnedSkills ?? []) as string[]
+    const hasUnique = Boolean((player?.unlocks as { unique?: unknown[] } | undefined)?.unique?.length)
+    return {
+      skillSlots: (player?.skillSlots ?? []) as string[],
+      skillSlotCount: player ? skillSlotCount(player.level, hasUnique) : 0,
+      skillChoices: learned.filter((skillId) => SKILLS[skillId]?.style === weaponType),
+    }
+  }
+
+  // Level + gear stats, as the game client computes them.
+  stats() {
+    const player = this.player
+    return player ? characterStats(player.level, player.equipment, player.perks as { atk?: number, hp?: number } | undefined, player.gear as Record<string, GearInstance> | undefined) : null
+  }
+
+  // Max HP from the stat formula; the highest HP seen is only a fallback for unknown gear.
+  maxHp(): { value: number | null, isEstimated: boolean } {
+    const stats = this.stats()
+    return stats && !stats.isEstimated ? { value: stats.maxHp, isEstimated: false } : this.client.maxHp()
+  }
+
   hpPct(): number | null {
     const player = this.player
-    const maxHp = this.client.maxHp().value
+    const maxHp = this.maxHp().value
     if (!player || !maxHp) return null
     return Math.max(0, Math.min(100, Math.round((player.hp / maxHp) * 100)))
   }
@@ -370,7 +415,8 @@ export class Session extends EventEmitter<SessionEvents> {
   async runMainTick() {
     if (!this.isConnected || !this.player) return
     await this.checkRestock()
-    await this.keepFarming()
+    if (this.mission) await this.keepMissions()
+    else await this.keepFarming()
   }
 
   private async checkRestock() {
@@ -415,7 +461,18 @@ export class Session extends EventEmitter<SessionEvents> {
       })
       return
     }
-    const bestAreaId = safeAreaFor(player.level, 'field', frontierFloor(player.clearedFloors))
+    // Strong enough for the next floor's boss? Beat it to unlock the floor (王戰 flow:
+    // refit, potion check, then fight). After a failed try, wait before the next one.
+    const frontier = frontierFloor(player.clearedFloors)
+    const bossRoomId = `f${frontier}-bossroom`
+    if (WORLD_AREAS[bossRoomId] && isAreaSafeFor(bossRoomId, player.level) && Date.now() - this.lastBossAttemptAt > BOSS_RETRY_MS) {
+      this.lastBossAttemptAt = Date.now()
+      this.log('mode', `Farm: strong enough for the floor ${frontier} boss — challenging it to unlock floor ${frontier + 1}`)
+      const result = await this.challengeBoss(frontier)
+      if (result.error) this.log('alert', `Farm: boss not fought — ${result.error}`)
+      return
+    }
+    const bestAreaId = safeAreaFor(player.level, 'field', frontier)
     if (!bestAreaId) { this.raiseAlert('farm', 'noFarmArea', 'No safe area to farm at this level'); return }
     this.clearAlert('farm')
     const isInGoodArea = parseArea(player.areaId)?.kind === 'field' && isAreaSafeFor(player.areaId, player.level)
@@ -476,10 +533,13 @@ export class Session extends EventEmitter<SessionEvents> {
   // gear of the same kind, and enhance what's worn. Runs under the 'refit' lock,
   // which the UI shows as a "refitting" mask.
   async refit() {
-    return this.withLock('refit', async (): Promise<CommandResult> => {
+    return this.withLock('refit', () => this.refitIn(townOf(parseArea(this.player?.areaId)?.floor ?? 1)))
+  }
+
+  // The refit itself, in a given town. Caller holds the lock.
+  private async refitIn(townId: string): Promise<CommandResult> {
       const player = this.player
       if (!player) return { error: 'disconnected' }
-      const townId = townOf(parseArea(player.areaId)?.floor ?? 1)
       if (this.isHunting) await this.command('stopHunt')
       const travelResult = await this.goTo(townId)
       if (travelResult.error) return travelResult
@@ -491,7 +551,128 @@ export class Session extends EventEmitter<SessionEvents> {
       this.lastRefitAt = Date.now()
       this.log('mode', `Refit done${swaps.length ? ` — new gear: ${swaps.join(', ')}` : ''}${enhanced ? ` — ${enhanced} enhanced` : ''}`)
       return { ok: true, swaps }
+  }
+
+  // Recovery potions short of this character's "restock when below" level, or null.
+  potionShortfall(): { count: number, needed: number } | null {
+    const player = this.player
+    if (!player) return null
+    const potionItem = player.settings?.potionItem
+    const count = potionItem ? player.inventory?.[potionItem] ?? 0 : totalPotions(player.inventory)
+    const needed = stockLevelsFor(this.safety.restock, player.level).autoDrinkMin
+    return count < needed ? { count, needed } : null
+  }
+
+  // 王戰: the highest boss this character can reach (the first uncleared floor, or
+  // a given one). Refit in that floor's town first, check level and potions,
+  // then walk to the boss room and challenge.
+  async challengeBoss(floor?: number): Promise<CommandResult> {
+    const player = this.player
+    if (!player) return { error: 'disconnected' }
+    const frontier = frontierFloor(player.clearedFloors)
+    const bossFloor = floor ?? frontier
+    const bossRoomId = `f${bossFloor}-bossroom`
+    if (bossFloor > frontier) return { error: `Floor ${bossFloor} is locked` }
+    if (!isAreaSafeFor(bossRoomId, player.level)) {
+      const bossLevel = areaLevel(bossRoomId)
+      return { error: `The floor ${bossFloor} boss is Lv${bossLevel} — needs Lv${(bossLevel ?? 0) + 1}`, code: 'needLevel', needLevel: (bossLevel ?? 0) + 1 }
+    }
+    return this.withLock(`boss: floor ${bossFloor}`, async (): Promise<CommandResult> => {
+      const refitResult = await this.refitIn(townOf(bossFloor))
+      if (refitResult.error) return refitResult
+      const shortfall = this.potionShortfall()
+      if (shortfall) return { error: `Only ${shortfall.count} potions (needs ${shortfall.needed}) — not fighting the boss` }
+      const travelResult = await this.goTo(bossRoomId, { maxSteps: 30 })
+      if (travelResult.error) return travelResult
+      const result = await this.command('startBoss', {}, 'boss')
+      if (result.ok) this.log('mode', `Challenging the floor ${bossFloor} boss`)
+      return result
     })
+  }
+
+  // ---- 任務 -----------------------------------------------------------------
+
+  startMissions() {
+    if (this.autoFarm) this.setAutoFarm(null)
+    this.mission = { startedAt: Date.now(), startQuestsDone: this.player?.questsDone?.length ?? 0, failedStoryKey: null, notes: new Set() }
+    this.log('mode', 'Missions: taking quests and working through them')
+    this.keepMissions().catch((error: Error) => this.log('error', error.message))
+  }
+
+  stopMissions(reason = 'Missions stopped') {
+    if (!this.mission) return
+    this.mission = null
+    this.log('mode', reason)
+  }
+
+  // One step of the 任務 run (every main tick): take quests in town, then hunt
+  // / visit / fight the boss for whatever is next, turn in, and report at the end.
+  async keepMissions() {
+    const mission = this.mission
+    const player = this.player
+    if (!mission || !player || this.haltReason || this.busyLabel || this.partyRole?.isActive || this.isInBossFight) return
+    const maxFloor = frontierFloor(player.clearedFloors)
+    const storyKey = `${player.story?.ch}/${player.story?.step}`
+    if (!Object.keys(player.quests ?? {}).length && !mission.notes.has('accepted')) { // first: pick up quests in town
+      mission.notes.add('accepted')
+      await this.withLock('missions: take quests', async () => { await this.goTo(townOf(parseArea(player.areaId)?.floor ?? 1)); await this.handleQuests() })
+      return
+    }
+    const plan = planMission(player, maxFloor, { skipStory: mission.failedStoryKey === storyKey })
+    for (const note of plan.skipped) if (!mission.notes.has(note)) { mission.notes.add(note); this.log('alert', `Missions: skipped ${note}`) }
+    const objective = plan.objective
+    if (!objective) return this.finishMissions()
+    await this.actOn(objective, storyKey)
+  }
+
+  private async actOn(objective: Objective, storyKey: string) {
+    const player = this.player!
+    if (objective.kind === 'boss') {
+      const result = await this.challengeBoss(objective.floor)
+      if (result.error) { this.mission!.failedStoryKey = storyKey; this.log('alert', `Missions: ${objective.why} — ${result.error}`) }
+      return
+    }
+    if (objective.kind === 'turnIn') {
+      await this.withLock('missions: turn in', async () => { await this.goTo(townOf(parseArea(player.areaId)?.floor ?? 1)); await this.handleQuests() })
+      return
+    }
+    const isThere = player.areaId === objective.areaId
+    if (objective.kind === 'visit' && isThere) return // the game moves the story on by itself
+    if (objective.kind === 'hunt' && isThere && this.isHunting) return
+    await this.withLock(`missions: ${objective.why}`, async (): Promise<CommandResult> => {
+      if (!isThere) {
+        const travelResult = await this.goTo(objective.areaId, { maxSteps: 30 })
+        if (travelResult.error) { this.log('error', `Missions: couldn't reach ${objective.areaId} (${travelResult.error})`); return travelResult }
+      }
+      return objective.kind === 'hunt' && !this.isHunting ? this.command('startHunt', {}, 'missions') : { ok: true }
+    })
+  }
+
+  // Nothing left to do: turn in, then report what this run achieved.
+  private async finishMissions() {
+    const mission = this.mission!
+    const player = this.player!
+    await this.withLock('missions: turn in', async () => {
+      if (this.isHunting) await this.command('stopHunt')
+      await this.goTo(townOf(parseArea(player.areaId)?.floor ?? 1))
+      await this.handleQuests()
+    })
+    const questsDone = (this.player?.questsDone ?? []).slice(mission.startQuestsDone)
+    const exp = questsDone.reduce((sum, questId) => sum + (QUESTS[questId]?.reward.exp ?? 0), 0)
+    const col = questsDone.reduce((sum, questId) => sum + (QUESTS[questId]?.reward.col ?? 0), 0)
+    const minutes = Math.round((Date.now() - mission.startedAt) / 60000)
+    const stillOpen = Object.keys(this.player?.quests ?? {}).length
+    const story = this.player?.story
+    const storyText = story?.ch ? `story: ${STORY[story.ch]?.title ?? story.ch} step ${(story.step ?? 0) + 1}` : 'no story chapter active'
+    // Nothing more here: say where the next quests are (often behind the next floor boss).
+    const frontier = frontierFloor(this.player?.clearedFloors)
+    const doneIds = new Set(this.player?.questsDone ?? [])
+    const nextQuestFloor = Math.min(...Object.entries(QUESTS).filter(([questId, quest]) => !doneIds.has(questId) && quest.floor > frontier).map(([, quest]) => quest.floor))
+    const nextHint = !questsDone.length && !stillOpen && Number.isFinite(nextQuestFloor)
+      ? `; next quests are on floor ${nextQuestFloor} — beat the floor ${frontier} boss (王戰) to get there` : ''
+    this.log('report', `Missions report (${minutes} min): turned in ${questsDone.length} quest${questsDone.length === 1 ? '' : 's'}${questsDone.length ? ` (+${exp} EXP, +${col} gold)` : ''}`
+      + `${stillOpen ? `; ${stillOpen} still open (skipped)` : ''}; ${storyText}${nextHint}`)
+    this.mission = null
   }
 
   // Slot by slot: equip the best same-family piece this town sells (or the bag
@@ -571,7 +752,8 @@ export class Session extends EventEmitter<SessionEvents> {
 
   summary(): AccountSummary {
     const player = this.player
-    const maxHp = this.client.maxHp()
+    const maxHp = this.maxHp()
+    const stats = this.stats()
     const expNeeded = this.client.expNeeded() ?? (player ? expToNextLevel(player.level) : null)
     const inventory = player?.inventory || {}
     const kit = recommendedKit(player?.level ?? 1)
@@ -587,6 +769,7 @@ export class Session extends EventEmitter<SessionEvents> {
       partyRole: this.partyRole,
       preferredWeapon: this.preferredWeapon,
       autoFarm: this.autoFarm,
+      isOnMission: this.mission != null,
       alerts: [...this.alertsByKey.values()],
       safety: this.safety,
       player: player && {
@@ -599,8 +782,15 @@ export class Session extends EventEmitter<SessionEvents> {
         maxHp: maxHp.value,
         isMaxHpEstimated: maxHp.isEstimated,
         hpPct: this.hpPct(),
-        attack: this.client.attack(),
+        attack: this.client.attack() ?? stats?.atk ?? null,
+        stats: stats && { def: stats.def, speed: stats.speed, crit: stats.crit, critDmg: stats.critDmg, isEstimated: stats.isEstimated },
         equipment: player.equipment || null,
+        ownedGear: this.ownedGear(),
+        ...this.skillSummary(),
+        gear: Object.entries(player.equipment ?? {}).map(([slot, itemId]) => {
+          const instance = itemId.startsWith('g:') ? (player.gear as Record<string, GearInstance> | undefined)?.[itemId.slice(2)] : undefined
+          return { slot, itemId: instance?.base ?? itemId, plus: instance?.plus ?? 0 }
+        }),
         skills: player.learnedSkills || (player.skills as string[] | undefined) || null,
         gold: player.col,
         areaId: player.areaId,

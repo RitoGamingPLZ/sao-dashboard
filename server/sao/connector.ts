@@ -96,6 +96,9 @@ export interface GamePlayer {
   miasmaSince?: number | null
   miasmaMs?: number | null
   dead?: unknown
+  story?: { ch?: string, step?: number, n?: number } | null
+  quests?: Record<string, number>
+  questsDone?: string[]
   [key: string]: unknown
 }
 export interface GameState { time?: number, player?: GamePlayer, [key: string]: unknown }

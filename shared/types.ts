@@ -64,7 +64,17 @@ export interface PlayerSummary {
   isMaxHpEstimated: boolean
   hpPct: number | null
   attack: number | null
+  // From the game client's stat formula (level + gear); isEstimated when a worn piece isn't in our table.
+  stats: { def: number, speed: number, crit: number, critDmg: number, isEstimated: boolean } | null
   equipment: Record<string, string> | null
+  // Worn pieces with gear references resolved: g:1 → { itemId: 'weapon-t1', plus: 1 }.
+  gear: Array<{ slot: string, itemId: string, plus: number }>
+  // Gear in the bag that could be worn: ref is what `equip` takes (an item id, or g:N for an enhanced piece).
+  ownedGear: Array<{ ref: string, itemId: string, plus: number, slot: string }>
+  // Active skills, how many may be active, and the learned skills usable with the current weapon.
+  skillSlots: string[]
+  skillSlotCount: number
+  skillChoices: string[]
   skills: string[] | null
   gold: number
   areaId: string
@@ -92,6 +102,7 @@ export interface AccountSummary {
   partyRole: PartyRole | null
   preferredWeapon: string | null
   autoFarm: AutoFarm | null
+  isOnMission: boolean
   alerts: Alert[]
   safety: Safety
   player: PlayerSummary | null

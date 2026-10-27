@@ -9,7 +9,7 @@
 //   (invite / accept / promote / leave). The game has no tank role.
 
 import { randomUUID } from 'node:crypto'
-import { areaLevel, isAreaSafeFor, parseArea, totalPotions, townOf } from '#shared/game-rules'
+import { areaLevel, isAreaSafeFor, parseArea, townOf } from '#shared/game-rules'
 import type { Party, PartyGoal, PartyMode, PartyStatus, PartySummary } from '#shared/types'
 import type { PartyOpKey, CommandKey } from '../sao/protocol'
 import type { Session } from './session'
@@ -69,12 +69,8 @@ export function validateParty(party: Party, parties: Pick<Party, 'id' | 'name' |
 // recovery potions: at least the "restock when below" amount from its settings.
 export function lowPotionMember(sessions: Session[]): { name: string, count: number, needed: number } | null {
   for (const session of sessions) {
-    const player = session.player
-    if (!player) continue
-    const potionItem = player.settings?.potionItem
-    const count = potionItem ? player.inventory?.[potionItem] ?? 0 : totalPotions(player.inventory)
-    const needed = Math.max(1, session.safety.restock.autoDrinkMin)
-    if (count < needed) return { name: session.name, count, needed }
+    const shortfall = session.potionShortfall()
+    if (shortfall) return { name: session.name, ...shortfall }
   }
   return null
 }

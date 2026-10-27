@@ -38,7 +38,11 @@
    ],
    "minLevel": 1,
    "maxLevel": 2,
-   "nameZh": "稀飯原野"
+   "nameZh": "稀飯原野",
+   "spawns": [
+    "f1-boar",
+    "f1-wolf"
+   ]
   },
   "f1-horunka": {
    "floor": 1,
@@ -50,7 +54,12 @@
    ],
    "minLevel": 3,
    "maxLevel": 4,
-   "nameZh": "火爐咖村森林"
+   "nameZh": "火爐咖村森林",
+   "spawns": [
+    "f1-nepenthes",
+    "f1-nepenthes-bloom",
+    "f1-direwolf"
+   ]
   },
   "f1-outskirts": {
    "floor": 1,
@@ -61,7 +70,11 @@
    ],
    "minLevel": 1,
    "maxLevel": 2,
-   "nameZh": "稀飯原野外圍"
+   "nameZh": "稀飯原野外圍",
+   "spawns": [
+    "f1-j",
+    "f1-k"
+   ]
   },
   "f1-secret": {
    "floor": 1,
@@ -74,7 +87,11 @@
    "maxLevel": 12,
    "aggressive": true,
    "secret": true,
-   "nameZh": "火爐咖村森林秘境"
+   "nameZh": "火爐咖村森林秘境",
+   "spawns": [
+    "f1-s",
+    "f1-t"
+   ]
   },
   "f1-depths": {
    "floor": 1,
@@ -86,7 +103,11 @@
    ],
    "minLevel": 3,
    "maxLevel": 4,
-   "nameZh": "火爐咖村森林深處"
+   "nameZh": "火爐咖村森林深處",
+   "spawns": [
+    "f1-h",
+    "f1-i"
+   ]
   },
   "f1-labyrinth": {
    "floor": 1,
@@ -99,7 +120,11 @@
    "minLevel": 5,
    "maxLevel": 6,
    "aggressive": true,
-   "nameZh": "第1層 謎宮區"
+   "nameZh": "第1層 謎宮區",
+   "spawns": [
+    "f1-kobold-trooper",
+    "f1-kobold-sentinel"
+   ]
   },
   "f1-bossroom": {
    "floor": 1,
@@ -139,7 +164,11 @@
    ],
    "minLevel": 2,
    "maxLevel": 3,
-   "nameZh": "污兒巴士台地"
+   "nameZh": "污兒巴士台地",
+   "spawns": [
+    "f2-cow",
+    "f2-wasp"
+   ]
   },
   "f2-outskirts": {
    "floor": 2,
@@ -150,7 +179,11 @@
    ],
    "minLevel": 2,
    "maxLevel": 3,
-   "nameZh": "污兒巴士台地外圍"
+   "nameZh": "污兒巴士台地外圍",
+   "spawns": [
+    "f2-j",
+    "f2-k"
+   ]
   },
   "f2-secret": {
    "floor": 2,
@@ -163,7 +196,11 @@
    "maxLevel": 13,
    "aggressive": true,
    "secret": true,
-   "nameZh": "污兒巴士台地秘境"
+   "nameZh": "污兒巴士台地秘境",
+   "spawns": [
+    "f2-s",
+    "f2-t"
+   ]
   },
   "f2-depths": {
    "floor": 2,
@@ -175,7 +212,11 @@
    ],
    "minLevel": 4,
    "maxLevel": 5,
-   "nameZh": "污兒巴士台地深處"
+   "nameZh": "污兒巴士台地深處",
+   "spawns": [
+    "f2-h",
+    "f2-i"
+   ]
   },
   "f2-labyrinth": {
    "floor": 2,
@@ -188,7 +229,11 @@
    "minLevel": 5,
    "maxLevel": 6,
    "aggressive": true,
-   "nameZh": "第2層 謎宮區"
+   "nameZh": "第2層 謎宮區",
+   "spawns": [
+    "f2-lesser-taurus",
+    "f2-taurus-striker"
+   ]
   },
   "f2-bossroom": {
    "floor": 2,
@@ -230,7 +275,12 @@
    ],
    "minLevel": 4,
    "maxLevel": 6,
-   "nameZh": "米霧森林"
+   "nameZh": "米霧森林",
+   "spawns": [
+    "f3-spider",
+    "f3-treant",
+    "f3-elf"
+   ]
   },
   "f3-outskirts": {
    "floor": 3,
@@ -241,7 +291,11 @@
    ],
    "minLevel": 4,
    "maxLevel": 5,
-   "nameZh": "米霧森林外圍"
+   "nameZh": "米霧森林外圍",
+   "spawns": [
+    "f3-j",
+    "f3-k"
+   ]
   },
   "f3-secret": {
    "floor": 3,
@@ -254,7 +308,11 @@
    "maxLevel": 15,
    "aggressive": true,
    "secret": true,
-   "nameZh": "米霧森林秘境"
+   "nameZh": "米霧森林秘境",
+   "spawns": [
+    "f3-s",
+    "f3-t"
+   ]
   },
   "f3-depths": {
    "floor": 3,
@@ -266,7 +324,11 @@
    ],
    "minLevel": 6,
    "maxLevel": 7,
-   "nameZh": "米霧森林深處"
+   "nameZh": "米霧森林深處",
+   "spawns": [
+    "f3-h",
+    "f3-i"
+   ]
   },
   "f3-labyrinth": {
    "floor": 3,
@@ -279,7 +341,11 @@
    "minLevel": 7,
    "maxLevel": 8,
    "aggressive": true,
-   "nameZh": "第3層 謎宮區"
+   "nameZh": "第3層 謎宮區",
+   "spawns": [
+    "f3-root",
+    "f3-thorn"
+   ]
   },
   "f3-bossroom": {
    "floor": 3,
@@ -319,7 +385,11 @@
    ],
    "minLevel": 5,
    "maxLevel": 6,
-   "nameZh": "第4層 運河岸"
+   "nameZh": "第4層 運河岸",
+   "spawns": [
+    "f4-a",
+    "f4-b"
+   ]
   },
   "f4-wilds": {
    "floor": 4,
@@ -331,7 +401,13 @@
    ],
    "minLevel": 6,
    "maxLevel": 9,
-   "nameZh": "第4層 蘆葦沼"
+   "nameZh": "第4層 蘆葦沼",
+   "spawns": [
+    "f4-e",
+    "f4-f",
+    "f4-g",
+    "f4-r"
+   ]
   },
   "f4-outskirts": {
    "floor": 4,
@@ -342,7 +418,11 @@
    ],
    "minLevel": 5,
    "maxLevel": 6,
-   "nameZh": "第4層 運河岸外圍"
+   "nameZh": "第4層 運河岸外圍",
+   "spawns": [
+    "f4-j",
+    "f4-k"
+   ]
   },
   "f4-secret": {
    "floor": 4,
@@ -355,7 +435,11 @@
    "maxLevel": 16,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第4層 蘆葦沼秘境"
+   "nameZh": "第4層 蘆葦沼秘境",
+   "spawns": [
+    "f4-s",
+    "f4-t"
+   ]
   },
   "f4-depths": {
    "floor": 4,
@@ -367,7 +451,11 @@
    ],
    "minLevel": 7,
    "maxLevel": 8,
-   "nameZh": "第4層 蘆葦沼深處"
+   "nameZh": "第4層 蘆葦沼深處",
+   "spawns": [
+    "f4-h",
+    "f4-i"
+   ]
   },
   "f4-labyrinth": {
    "floor": 4,
@@ -380,7 +468,11 @@
    "minLevel": 8,
    "maxLevel": 9,
    "aggressive": true,
-   "nameZh": "第4層 謎宮區"
+   "nameZh": "第4層 謎宮區",
+   "spawns": [
+    "f4-c",
+    "f4-d"
+   ]
   },
   "f4-bossroom": {
    "floor": 4,
@@ -429,7 +521,11 @@
    ],
    "minLevel": 6,
    "maxLevel": 7,
-   "nameZh": "第5層 遺跡古道"
+   "nameZh": "第5層 遺跡古道",
+   "spawns": [
+    "f5-a",
+    "f5-b"
+   ]
   },
   "f5-wilds": {
    "floor": 5,
@@ -441,7 +537,13 @@
    ],
    "minLevel": 7,
    "maxLevel": 10,
-   "nameZh": "第5層 沙塵遺跡"
+   "nameZh": "第5層 沙塵遺跡",
+   "spawns": [
+    "f5-e",
+    "f5-f",
+    "f5-g",
+    "f5-r"
+   ]
   },
   "f5-outskirts": {
    "floor": 5,
@@ -452,7 +554,11 @@
    ],
    "minLevel": 6,
    "maxLevel": 7,
-   "nameZh": "第5層 遺跡古道外圍"
+   "nameZh": "第5層 遺跡古道外圍",
+   "spawns": [
+    "f5-j",
+    "f5-k"
+   ]
   },
   "f5-secret": {
    "floor": 5,
@@ -465,7 +571,11 @@
    "maxLevel": 17,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第5層 沙塵遺跡秘境"
+   "nameZh": "第5層 沙塵遺跡秘境",
+   "spawns": [
+    "f5-s",
+    "f5-t"
+   ]
   },
   "f5-depths": {
    "floor": 5,
@@ -477,7 +587,11 @@
    ],
    "minLevel": 8,
    "maxLevel": 9,
-   "nameZh": "第5層 沙塵遺跡深處"
+   "nameZh": "第5層 沙塵遺跡深處",
+   "spawns": [
+    "f5-h",
+    "f5-i"
+   ]
   },
   "f5-labyrinth": {
    "floor": 5,
@@ -490,7 +604,11 @@
    "minLevel": 9,
    "maxLevel": 10,
    "aggressive": true,
-   "nameZh": "第5層 謎宮區"
+   "nameZh": "第5層 謎宮區",
+   "spawns": [
+    "f5-c",
+    "f5-d"
+   ]
   },
   "f5-bossroom": {
    "floor": 5,
@@ -533,7 +651,11 @@
    ],
    "minLevel": 7,
    "maxLevel": 8,
-   "nameZh": "第6層 方塊原野"
+   "nameZh": "第6層 方塊原野",
+   "spawns": [
+    "f6-a",
+    "f6-b"
+   ]
   },
   "f6-wilds": {
    "floor": 6,
@@ -545,7 +667,13 @@
    ],
    "minLevel": 8,
    "maxLevel": 11,
-   "nameZh": "第6層 機關庭園"
+   "nameZh": "第6層 機關庭園",
+   "spawns": [
+    "f6-e",
+    "f6-f",
+    "f6-g",
+    "f6-r"
+   ]
   },
   "f6-outskirts": {
    "floor": 6,
@@ -556,7 +684,11 @@
    ],
    "minLevel": 7,
    "maxLevel": 8,
-   "nameZh": "第6層 方塊原野外圍"
+   "nameZh": "第6層 方塊原野外圍",
+   "spawns": [
+    "f6-j",
+    "f6-k"
+   ]
   },
   "f6-secret": {
    "floor": 6,
@@ -569,7 +701,11 @@
    "maxLevel": 18,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第6層 機關庭園秘境"
+   "nameZh": "第6層 機關庭園秘境",
+   "spawns": [
+    "f6-s",
+    "f6-t"
+   ]
   },
   "f6-depths": {
    "floor": 6,
@@ -581,7 +717,11 @@
    ],
    "minLevel": 9,
    "maxLevel": 10,
-   "nameZh": "第6層 機關庭園深處"
+   "nameZh": "第6層 機關庭園深處",
+   "spawns": [
+    "f6-h",
+    "f6-i"
+   ]
   },
   "f6-labyrinth": {
    "floor": 6,
@@ -594,7 +734,11 @@
    "minLevel": 10,
    "maxLevel": 11,
    "aggressive": true,
-   "nameZh": "第6層 謎宮區"
+   "nameZh": "第6層 謎宮區",
+   "spawns": [
+    "f6-c",
+    "f6-d"
+   ]
   },
   "f6-bossroom": {
    "floor": 6,
@@ -635,7 +779,11 @@
    ],
    "minLevel": 9,
    "maxLevel": 10,
-   "nameZh": "第7層 賭場外圍"
+   "nameZh": "第7層 賭場外圍",
+   "spawns": [
+    "f7-a",
+    "f7-b"
+   ]
   },
   "f7-wilds": {
    "floor": 7,
@@ -647,7 +795,13 @@
    ],
    "minLevel": 10,
    "maxLevel": 13,
-   "nameZh": "第7層 競技場後台"
+   "nameZh": "第7層 競技場後台",
+   "spawns": [
+    "f7-e",
+    "f7-f",
+    "f7-g",
+    "f7-r"
+   ]
   },
   "f7-outskirts": {
    "floor": 7,
@@ -658,7 +812,11 @@
    ],
    "minLevel": 9,
    "maxLevel": 10,
-   "nameZh": "第7層 賭場外圍外圍"
+   "nameZh": "第7層 賭場外圍外圍",
+   "spawns": [
+    "f7-j",
+    "f7-k"
+   ]
   },
   "f7-secret": {
    "floor": 7,
@@ -671,7 +829,11 @@
    "maxLevel": 20,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第7層 競技場後台秘境"
+   "nameZh": "第7層 競技場後台秘境",
+   "spawns": [
+    "f7-s",
+    "f7-t"
+   ]
   },
   "f7-depths": {
    "floor": 7,
@@ -683,7 +845,11 @@
    ],
    "minLevel": 11,
    "maxLevel": 12,
-   "nameZh": "第7層 競技場後台深處"
+   "nameZh": "第7層 競技場後台深處",
+   "spawns": [
+    "f7-h",
+    "f7-i"
+   ]
   },
   "f7-labyrinth": {
    "floor": 7,
@@ -696,7 +862,11 @@
    "minLevel": 12,
    "maxLevel": 13,
    "aggressive": true,
-   "nameZh": "第7層 謎宮區"
+   "nameZh": "第7層 謎宮區",
+   "spawns": [
+    "f7-c",
+    "f7-d"
+   ]
   },
   "f7-bossroom": {
    "floor": 7,
@@ -738,7 +908,11 @@
    ],
    "minLevel": 10,
    "maxLevel": 11,
-   "nameZh": "第8層 叢林"
+   "nameZh": "第8層 叢林",
+   "spawns": [
+    "f8-a",
+    "f8-b"
+   ]
   },
   "f8-wilds": {
    "floor": 8,
@@ -750,7 +924,13 @@
    ],
    "minLevel": 11,
    "maxLevel": 14,
-   "nameZh": "第8層 驚靈前線"
+   "nameZh": "第8層 驚靈前線",
+   "spawns": [
+    "f8-e",
+    "f8-f",
+    "f8-g",
+    "f8-r"
+   ]
   },
   "f8-outskirts": {
    "floor": 8,
@@ -761,7 +941,11 @@
    ],
    "minLevel": 10,
    "maxLevel": 11,
-   "nameZh": "第8層 叢林外圍"
+   "nameZh": "第8層 叢林外圍",
+   "spawns": [
+    "f8-j",
+    "f8-k"
+   ]
   },
   "f8-secret": {
    "floor": 8,
@@ -774,7 +958,11 @@
    "maxLevel": 21,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第8層 驚靈前線秘境"
+   "nameZh": "第8層 驚靈前線秘境",
+   "spawns": [
+    "f8-s",
+    "f8-t"
+   ]
   },
   "f8-depths": {
    "floor": 8,
@@ -786,7 +974,11 @@
    ],
    "minLevel": 12,
    "maxLevel": 13,
-   "nameZh": "第8層 驚靈前線深處"
+   "nameZh": "第8層 驚靈前線深處",
+   "spawns": [
+    "f8-h",
+    "f8-i"
+   ]
   },
   "f8-labyrinth": {
    "floor": 8,
@@ -799,7 +991,11 @@
    "minLevel": 13,
    "maxLevel": 14,
    "aggressive": true,
-   "nameZh": "第8層 謎宮區"
+   "nameZh": "第8層 謎宮區",
+   "spawns": [
+    "f8-c",
+    "f8-d"
+   ]
   },
   "f8-bossroom": {
    "floor": 8,
@@ -840,7 +1036,11 @@
    ],
    "minLevel": 11,
    "maxLevel": 12,
-   "nameZh": "第9層 要塞外圍"
+   "nameZh": "第9層 要塞外圍",
+   "spawns": [
+    "f9-a",
+    "f9-b"
+   ]
   },
   "f9-wilds": {
    "floor": 9,
@@ -852,7 +1052,13 @@
    ],
    "minLevel": 12,
    "maxLevel": 15,
-   "nameZh": "第9層 驚靈戰場"
+   "nameZh": "第9層 驚靈戰場",
+   "spawns": [
+    "f9-e",
+    "f9-f",
+    "f9-g",
+    "f9-r"
+   ]
   },
   "f9-outskirts": {
    "floor": 9,
@@ -863,7 +1069,11 @@
    ],
    "minLevel": 11,
    "maxLevel": 12,
-   "nameZh": "第9層 要塞外圍外圍"
+   "nameZh": "第9層 要塞外圍外圍",
+   "spawns": [
+    "f9-j",
+    "f9-k"
+   ]
   },
   "f9-secret": {
    "floor": 9,
@@ -876,7 +1086,11 @@
    "maxLevel": 22,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第9層 驚靈戰場秘境"
+   "nameZh": "第9層 驚靈戰場秘境",
+   "spawns": [
+    "f9-s",
+    "f9-t"
+   ]
   },
   "f9-depths": {
    "floor": 9,
@@ -888,7 +1102,11 @@
    ],
    "minLevel": 13,
    "maxLevel": 14,
-   "nameZh": "第9層 驚靈戰場深處"
+   "nameZh": "第9層 驚靈戰場深處",
+   "spawns": [
+    "f9-h",
+    "f9-i"
+   ]
   },
   "f9-labyrinth": {
    "floor": 9,
@@ -901,7 +1119,11 @@
    "minLevel": 14,
    "maxLevel": 15,
    "aggressive": true,
-   "nameZh": "第9層 謎宮區"
+   "nameZh": "第9層 謎宮區",
+   "spawns": [
+    "f9-c",
+    "f9-d"
+   ]
   },
   "f9-bossroom": {
    "floor": 9,
@@ -951,7 +1173,11 @@
    ],
    "minLevel": 12,
    "maxLevel": 13,
-   "nameZh": "第10層 竹林"
+   "nameZh": "第10層 竹林",
+   "spawns": [
+    "f10-a",
+    "f10-b"
+   ]
   },
   "f10-wilds": {
    "floor": 10,
@@ -963,7 +1189,13 @@
    ],
    "minLevel": 13,
    "maxLevel": 16,
-   "nameZh": "第10層 鬼之山"
+   "nameZh": "第10層 鬼之山",
+   "spawns": [
+    "f10-e",
+    "f10-f",
+    "f10-g",
+    "f10-r"
+   ]
   },
   "f10-outskirts": {
    "floor": 10,
@@ -974,7 +1206,11 @@
    ],
    "minLevel": 12,
    "maxLevel": 13,
-   "nameZh": "第10層 竹林外圍"
+   "nameZh": "第10層 竹林外圍",
+   "spawns": [
+    "f10-j",
+    "f10-k"
+   ]
   },
   "f10-secret": {
    "floor": 10,
@@ -987,7 +1223,11 @@
    "maxLevel": 23,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第10層 鬼之山秘境"
+   "nameZh": "第10層 鬼之山秘境",
+   "spawns": [
+    "f10-s",
+    "f10-t"
+   ]
   },
   "f10-depths": {
    "floor": 10,
@@ -1000,7 +1240,11 @@
    "minLevel": 14,
    "maxLevel": 15,
    "aggressive": true,
-   "nameZh": "第10層 鬼之山深處"
+   "nameZh": "第10層 鬼之山深處",
+   "spawns": [
+    "f10-h",
+    "f10-i"
+   ]
   },
   "f10-labyrinth": {
    "floor": 10,
@@ -1013,7 +1257,11 @@
    "minLevel": 15,
    "maxLevel": 16,
    "aggressive": true,
-   "nameZh": "第10層 謎宮區"
+   "nameZh": "第10層 謎宮區",
+   "spawns": [
+    "f10-c",
+    "f10-d"
+   ]
   },
   "f10-bossroom": {
    "floor": 10,
@@ -1055,7 +1303,11 @@
    ],
    "minLevel": 14,
    "maxLevel": 15,
-   "nameZh": "第11層 月夜森林"
+   "nameZh": "第11層 月夜森林",
+   "spawns": [
+    "f11-a",
+    "f11-b"
+   ]
   },
   "f11-wilds": {
    "floor": 11,
@@ -1067,7 +1319,13 @@
    ],
    "minLevel": 15,
    "maxLevel": 18,
-   "nameZh": "第11層 螢火谷"
+   "nameZh": "第11層 螢火谷",
+   "spawns": [
+    "f11-e",
+    "f11-f",
+    "f11-g",
+    "f11-r"
+   ]
   },
   "f11-outskirts": {
    "floor": 11,
@@ -1078,7 +1336,11 @@
    ],
    "minLevel": 14,
    "maxLevel": 15,
-   "nameZh": "第11層 月夜森林外圍"
+   "nameZh": "第11層 月夜森林外圍",
+   "spawns": [
+    "f11-j",
+    "f11-k"
+   ]
   },
   "f11-secret": {
    "floor": 11,
@@ -1091,7 +1353,11 @@
    "maxLevel": 25,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第11層 螢火谷秘境"
+   "nameZh": "第11層 螢火谷秘境",
+   "spawns": [
+    "f11-s",
+    "f11-t"
+   ]
   },
   "f11-depths": {
    "floor": 11,
@@ -1104,7 +1370,11 @@
    "minLevel": 16,
    "maxLevel": 17,
    "aggressive": true,
-   "nameZh": "第11層 螢火谷深處"
+   "nameZh": "第11層 螢火谷深處",
+   "spawns": [
+    "f11-h",
+    "f11-i"
+   ]
   },
   "f11-labyrinth": {
    "floor": 11,
@@ -1117,7 +1387,11 @@
    "minLevel": 17,
    "maxLevel": 18,
    "aggressive": true,
-   "nameZh": "第11層 謎宮區"
+   "nameZh": "第11層 謎宮區",
+   "spawns": [
+    "f11-c",
+    "f11-d"
+   ]
   },
   "f11-bossroom": {
    "floor": 11,
@@ -1158,7 +1432,11 @@
    ],
    "minLevel": 15,
    "maxLevel": 16,
-   "nameZh": "第12層 泥濘小徑"
+   "nameZh": "第12層 泥濘小徑",
+   "spawns": [
+    "f12-a",
+    "f12-b"
+   ]
   },
   "f12-wilds": {
    "floor": 12,
@@ -1170,7 +1448,13 @@
    ],
    "minLevel": 16,
    "maxLevel": 19,
-   "nameZh": "第12層 深沼"
+   "nameZh": "第12層 深沼",
+   "spawns": [
+    "f12-e",
+    "f12-f",
+    "f12-g",
+    "f12-r"
+   ]
   },
   "f12-outskirts": {
    "floor": 12,
@@ -1181,7 +1465,11 @@
    ],
    "minLevel": 15,
    "maxLevel": 16,
-   "nameZh": "第12層 泥濘小徑外圍"
+   "nameZh": "第12層 泥濘小徑外圍",
+   "spawns": [
+    "f12-j",
+    "f12-k"
+   ]
   },
   "f12-secret": {
    "floor": 12,
@@ -1194,7 +1482,11 @@
    "maxLevel": 26,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第12層 深沼秘境"
+   "nameZh": "第12層 深沼秘境",
+   "spawns": [
+    "f12-s",
+    "f12-t"
+   ]
   },
   "f12-depths": {
    "floor": 12,
@@ -1207,7 +1499,11 @@
    "minLevel": 17,
    "maxLevel": 18,
    "aggressive": true,
-   "nameZh": "第12層 深沼深處"
+   "nameZh": "第12層 深沼深處",
+   "spawns": [
+    "f12-h",
+    "f12-i"
+   ]
   },
   "f12-labyrinth": {
    "floor": 12,
@@ -1220,7 +1516,11 @@
    "minLevel": 18,
    "maxLevel": 19,
    "aggressive": true,
-   "nameZh": "第12層 謎宮區"
+   "nameZh": "第12層 謎宮區",
+   "spawns": [
+    "f12-c",
+    "f12-d"
+   ]
   },
   "f12-bossroom": {
    "floor": 12,
@@ -1262,7 +1562,11 @@
    ],
    "minLevel": 16,
    "maxLevel": 17,
-   "nameZh": "第13層 泥濘小徑"
+   "nameZh": "第13層 泥濘小徑",
+   "spawns": [
+    "f13-a",
+    "f13-b"
+   ]
   },
   "f13-wilds": {
    "floor": 13,
@@ -1274,7 +1578,13 @@
    ],
    "minLevel": 17,
    "maxLevel": 20,
-   "nameZh": "第13層 深沼"
+   "nameZh": "第13層 深沼",
+   "spawns": [
+    "f13-e",
+    "f13-f",
+    "f13-g",
+    "f13-r"
+   ]
   },
   "f13-outskirts": {
    "floor": 13,
@@ -1285,7 +1595,11 @@
    ],
    "minLevel": 16,
    "maxLevel": 17,
-   "nameZh": "第13層 泥濘小徑外圍"
+   "nameZh": "第13層 泥濘小徑外圍",
+   "spawns": [
+    "f13-j",
+    "f13-k"
+   ]
   },
   "f13-secret": {
    "floor": 13,
@@ -1298,7 +1612,11 @@
    "maxLevel": 27,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第13層 深沼秘境"
+   "nameZh": "第13層 深沼秘境",
+   "spawns": [
+    "f13-s",
+    "f13-t"
+   ]
   },
   "f13-depths": {
    "floor": 13,
@@ -1311,7 +1629,11 @@
    "minLevel": 18,
    "maxLevel": 19,
    "aggressive": true,
-   "nameZh": "第13層 深沼深處"
+   "nameZh": "第13層 深沼深處",
+   "spawns": [
+    "f13-h",
+    "f13-i"
+   ]
   },
   "f13-labyrinth": {
    "floor": 13,
@@ -1324,7 +1646,11 @@
    "minLevel": 19,
    "maxLevel": 20,
    "aggressive": true,
-   "nameZh": "第13層 謎宮區"
+   "nameZh": "第13層 謎宮區",
+   "spawns": [
+    "f13-c",
+    "f13-d"
+   ]
   },
   "f13-bossroom": {
    "floor": 13,
@@ -1365,7 +1691,11 @@
    ],
    "minLevel": 17,
    "maxLevel": 18,
-   "nameZh": "第14層 礦坑入口"
+   "nameZh": "第14層 礦坑入口",
+   "spawns": [
+    "f14-a",
+    "f14-b"
+   ]
   },
   "f14-wilds": {
    "floor": 14,
@@ -1377,7 +1707,13 @@
    ],
    "minLevel": 18,
    "maxLevel": 21,
-   "nameZh": "第14層 深層礦坑"
+   "nameZh": "第14層 深層礦坑",
+   "spawns": [
+    "f14-e",
+    "f14-f",
+    "f14-g",
+    "f14-r"
+   ]
   },
   "f14-outskirts": {
    "floor": 14,
@@ -1388,7 +1724,11 @@
    ],
    "minLevel": 17,
    "maxLevel": 18,
-   "nameZh": "第14層 礦坑入口外圍"
+   "nameZh": "第14層 礦坑入口外圍",
+   "spawns": [
+    "f14-j",
+    "f14-k"
+   ]
   },
   "f14-secret": {
    "floor": 14,
@@ -1401,7 +1741,11 @@
    "maxLevel": 28,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第14層 深層礦坑秘境"
+   "nameZh": "第14層 深層礦坑秘境",
+   "spawns": [
+    "f14-s",
+    "f14-t"
+   ]
   },
   "f14-depths": {
    "floor": 14,
@@ -1414,7 +1758,11 @@
    "minLevel": 19,
    "maxLevel": 20,
    "aggressive": true,
-   "nameZh": "第14層 深層礦坑深處"
+   "nameZh": "第14層 深層礦坑深處",
+   "spawns": [
+    "f14-h",
+    "f14-i"
+   ]
   },
   "f14-labyrinth": {
    "floor": 14,
@@ -1427,7 +1775,11 @@
    "minLevel": 20,
    "maxLevel": 21,
    "aggressive": true,
-   "nameZh": "第14層 謎宮區"
+   "nameZh": "第14層 謎宮區",
+   "spawns": [
+    "f14-c",
+    "f14-d"
+   ]
   },
   "f14-bossroom": {
    "floor": 14,
@@ -1477,7 +1829,11 @@
    ],
    "minLevel": 19,
    "maxLevel": 20,
-   "nameZh": "第15層 礦坑入口"
+   "nameZh": "第15層 礦坑入口",
+   "spawns": [
+    "f15-a",
+    "f15-b"
+   ]
   },
   "f15-wilds": {
    "floor": 15,
@@ -1489,7 +1845,13 @@
    ],
    "minLevel": 20,
    "maxLevel": 23,
-   "nameZh": "第15層 深層礦坑"
+   "nameZh": "第15層 深層礦坑",
+   "spawns": [
+    "f15-e",
+    "f15-f",
+    "f15-g",
+    "f15-r"
+   ]
   },
   "f15-outskirts": {
    "floor": 15,
@@ -1500,7 +1862,11 @@
    ],
    "minLevel": 19,
    "maxLevel": 20,
-   "nameZh": "第15層 礦坑入口外圍"
+   "nameZh": "第15層 礦坑入口外圍",
+   "spawns": [
+    "f15-j",
+    "f15-k"
+   ]
   },
   "f15-secret": {
    "floor": 15,
@@ -1513,7 +1879,11 @@
    "maxLevel": 30,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第15層 深層礦坑秘境"
+   "nameZh": "第15層 深層礦坑秘境",
+   "spawns": [
+    "f15-s",
+    "f15-t"
+   ]
   },
   "f15-depths": {
    "floor": 15,
@@ -1526,7 +1896,11 @@
    "minLevel": 21,
    "maxLevel": 22,
    "aggressive": true,
-   "nameZh": "第15層 深層礦坑深處"
+   "nameZh": "第15層 深層礦坑深處",
+   "spawns": [
+    "f15-h",
+    "f15-i"
+   ]
   },
   "f15-labyrinth": {
    "floor": 15,
@@ -1539,7 +1913,11 @@
    "minLevel": 22,
    "maxLevel": 23,
    "aggressive": true,
-   "nameZh": "第15層 謎宮區"
+   "nameZh": "第15層 謎宮區",
+   "spawns": [
+    "f15-c",
+    "f15-d"
+   ]
   },
   "f15-bossroom": {
    "floor": 15,
@@ -1583,7 +1961,11 @@
    ],
    "minLevel": 20,
    "maxLevel": 21,
-   "nameZh": "第16層 沙丘"
+   "nameZh": "第16層 沙丘",
+   "spawns": [
+    "f16-a",
+    "f16-b"
+   ]
   },
   "f16-wilds": {
    "floor": 16,
@@ -1595,7 +1977,13 @@
    ],
    "minLevel": 21,
    "maxLevel": 24,
-   "nameZh": "第16層 流沙地"
+   "nameZh": "第16層 流沙地",
+   "spawns": [
+    "f16-e",
+    "f16-f",
+    "f16-g",
+    "f16-r"
+   ]
   },
   "f16-outskirts": {
    "floor": 16,
@@ -1606,7 +1994,11 @@
    ],
    "minLevel": 20,
    "maxLevel": 21,
-   "nameZh": "第16層 沙丘外圍"
+   "nameZh": "第16層 沙丘外圍",
+   "spawns": [
+    "f16-j",
+    "f16-k"
+   ]
   },
   "f16-secret": {
    "floor": 16,
@@ -1619,7 +2011,11 @@
    "maxLevel": 31,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第16層 流沙地秘境"
+   "nameZh": "第16層 流沙地秘境",
+   "spawns": [
+    "f16-s",
+    "f16-t"
+   ]
   },
   "f16-depths": {
    "floor": 16,
@@ -1632,7 +2028,11 @@
    "minLevel": 22,
    "maxLevel": 23,
    "aggressive": true,
-   "nameZh": "第16層 流沙地深處"
+   "nameZh": "第16層 流沙地深處",
+   "spawns": [
+    "f16-h",
+    "f16-i"
+   ]
   },
   "f16-labyrinth": {
    "floor": 16,
@@ -1645,7 +2045,11 @@
    "minLevel": 23,
    "maxLevel": 24,
    "aggressive": true,
-   "nameZh": "第16層 謎宮區"
+   "nameZh": "第16層 謎宮區",
+   "spawns": [
+    "f16-c",
+    "f16-d"
+   ]
   },
   "f16-bossroom": {
    "floor": 16,
@@ -1687,7 +2091,11 @@
    ],
    "minLevel": 21,
    "maxLevel": 22,
-   "nameZh": "第17層 沙丘"
+   "nameZh": "第17層 沙丘",
+   "spawns": [
+    "f17-a",
+    "f17-b"
+   ]
   },
   "f17-wilds": {
    "floor": 17,
@@ -1699,7 +2107,13 @@
    ],
    "minLevel": 22,
    "maxLevel": 25,
-   "nameZh": "第17層 流沙地"
+   "nameZh": "第17層 流沙地",
+   "spawns": [
+    "f17-e",
+    "f17-f",
+    "f17-g",
+    "f17-r"
+   ]
   },
   "f17-outskirts": {
    "floor": 17,
@@ -1710,7 +2124,11 @@
    ],
    "minLevel": 21,
    "maxLevel": 22,
-   "nameZh": "第17層 沙丘外圍"
+   "nameZh": "第17層 沙丘外圍",
+   "spawns": [
+    "f17-j",
+    "f17-k"
+   ]
   },
   "f17-secret": {
    "floor": 17,
@@ -1723,7 +2141,11 @@
    "maxLevel": 32,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第17層 流沙地秘境"
+   "nameZh": "第17層 流沙地秘境",
+   "spawns": [
+    "f17-s",
+    "f17-t"
+   ]
   },
   "f17-depths": {
    "floor": 17,
@@ -1736,7 +2158,11 @@
    "minLevel": 23,
    "maxLevel": 24,
    "aggressive": true,
-   "nameZh": "第17層 流沙地深處"
+   "nameZh": "第17層 流沙地深處",
+   "spawns": [
+    "f17-h",
+    "f17-i"
+   ]
   },
   "f17-labyrinth": {
    "floor": 17,
@@ -1749,7 +2175,11 @@
    "minLevel": 24,
    "maxLevel": 25,
    "aggressive": true,
-   "nameZh": "第17層 謎宮區"
+   "nameZh": "第17層 謎宮區",
+   "spawns": [
+    "f17-c",
+    "f17-d"
+   ]
   },
   "f17-bossroom": {
    "floor": 17,
@@ -1792,7 +2222,11 @@
    ],
    "minLevel": 22,
    "maxLevel": 23,
-   "nameZh": "第18層 雪原"
+   "nameZh": "第18層 雪原",
+   "spawns": [
+    "f18-a",
+    "f18-b"
+   ]
   },
   "f18-wilds": {
    "floor": 18,
@@ -1804,7 +2238,13 @@
    ],
    "minLevel": 23,
    "maxLevel": 26,
-   "nameZh": "第18層 冰河"
+   "nameZh": "第18層 冰河",
+   "spawns": [
+    "f18-e",
+    "f18-f",
+    "f18-g",
+    "f18-r"
+   ]
   },
   "f18-outskirts": {
    "floor": 18,
@@ -1815,7 +2255,11 @@
    ],
    "minLevel": 22,
    "maxLevel": 23,
-   "nameZh": "第18層 雪原外圍"
+   "nameZh": "第18層 雪原外圍",
+   "spawns": [
+    "f18-j",
+    "f18-k"
+   ]
   },
   "f18-secret": {
    "floor": 18,
@@ -1828,7 +2272,11 @@
    "maxLevel": 33,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第18層 冰河秘境"
+   "nameZh": "第18層 冰河秘境",
+   "spawns": [
+    "f18-s",
+    "f18-t"
+   ]
   },
   "f18-depths": {
    "floor": 18,
@@ -1841,7 +2289,11 @@
    "minLevel": 24,
    "maxLevel": 25,
    "aggressive": true,
-   "nameZh": "第18層 冰河深處"
+   "nameZh": "第18層 冰河深處",
+   "spawns": [
+    "f18-h",
+    "f18-i"
+   ]
   },
   "f18-labyrinth": {
    "floor": 18,
@@ -1854,7 +2306,11 @@
    "minLevel": 25,
    "maxLevel": 26,
    "aggressive": true,
-   "nameZh": "第18層 謎宮區"
+   "nameZh": "第18層 謎宮區",
+   "spawns": [
+    "f18-c",
+    "f18-d"
+   ]
   },
   "f18-bossroom": {
    "floor": 18,
@@ -1896,7 +2352,11 @@
    ],
    "minLevel": 24,
    "maxLevel": 25,
-   "nameZh": "第19層 雪原"
+   "nameZh": "第19層 雪原",
+   "spawns": [
+    "f19-a",
+    "f19-b"
+   ]
   },
   "f19-wilds": {
    "floor": 19,
@@ -1908,7 +2368,13 @@
    ],
    "minLevel": 25,
    "maxLevel": 28,
-   "nameZh": "第19層 冰河"
+   "nameZh": "第19層 冰河",
+   "spawns": [
+    "f19-e",
+    "f19-f",
+    "f19-g",
+    "f19-r"
+   ]
   },
   "f19-outskirts": {
    "floor": 19,
@@ -1919,7 +2385,11 @@
    ],
    "minLevel": 24,
    "maxLevel": 25,
-   "nameZh": "第19層 雪原外圍"
+   "nameZh": "第19層 雪原外圍",
+   "spawns": [
+    "f19-j",
+    "f19-k"
+   ]
   },
   "f19-secret": {
    "floor": 19,
@@ -1932,7 +2402,11 @@
    "maxLevel": 35,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第19層 冰河秘境"
+   "nameZh": "第19層 冰河秘境",
+   "spawns": [
+    "f19-s",
+    "f19-t"
+   ]
   },
   "f19-depths": {
    "floor": 19,
@@ -1945,7 +2419,11 @@
    "minLevel": 26,
    "maxLevel": 27,
    "aggressive": true,
-   "nameZh": "第19層 冰河深處"
+   "nameZh": "第19層 冰河深處",
+   "spawns": [
+    "f19-h",
+    "f19-i"
+   ]
   },
   "f19-labyrinth": {
    "floor": 19,
@@ -1958,7 +2436,11 @@
    "minLevel": 27,
    "maxLevel": 28,
    "aggressive": true,
-   "nameZh": "第19層 謎宮區"
+   "nameZh": "第19層 謎宮區",
+   "spawns": [
+    "f19-c",
+    "f19-d"
+   ]
   },
   "f19-bossroom": {
    "floor": 19,
@@ -2009,7 +2491,11 @@
    ],
    "minLevel": 25,
    "maxLevel": 26,
-   "nameZh": "第20層 熔岩原"
+   "nameZh": "第20層 熔岩原",
+   "spawns": [
+    "f20-a",
+    "f20-b"
+   ]
   },
   "f20-wilds": {
    "floor": 20,
@@ -2021,7 +2507,13 @@
    ],
    "minLevel": 26,
    "maxLevel": 29,
-   "nameZh": "第20層 火山口"
+   "nameZh": "第20層 火山口",
+   "spawns": [
+    "f20-e",
+    "f20-f",
+    "f20-g",
+    "f20-r"
+   ]
   },
   "f20-outskirts": {
    "floor": 20,
@@ -2032,7 +2524,11 @@
    ],
    "minLevel": 25,
    "maxLevel": 26,
-   "nameZh": "第20層 熔岩原外圍"
+   "nameZh": "第20層 熔岩原外圍",
+   "spawns": [
+    "f20-j",
+    "f20-k"
+   ]
   },
   "f20-secret": {
    "floor": 20,
@@ -2045,7 +2541,11 @@
    "maxLevel": 36,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第20層 火山口秘境"
+   "nameZh": "第20層 火山口秘境",
+   "spawns": [
+    "f20-s",
+    "f20-t"
+   ]
   },
   "f20-depths": {
    "floor": 20,
@@ -2058,7 +2558,11 @@
    "minLevel": 27,
    "maxLevel": 28,
    "aggressive": true,
-   "nameZh": "第20層 火山口深處"
+   "nameZh": "第20層 火山口深處",
+   "spawns": [
+    "f20-h",
+    "f20-i"
+   ]
   },
   "f20-labyrinth": {
    "floor": 20,
@@ -2071,7 +2575,11 @@
    "minLevel": 28,
    "maxLevel": 29,
    "aggressive": true,
-   "nameZh": "第20層 謎宮區"
+   "nameZh": "第20層 謎宮區",
+   "spawns": [
+    "f20-c",
+    "f20-d"
+   ]
   },
   "f20-bossroom": {
    "floor": 20,
@@ -2113,7 +2621,11 @@
    ],
    "minLevel": 26,
    "maxLevel": 27,
-   "nameZh": "第21層 熔岩原"
+   "nameZh": "第21層 熔岩原",
+   "spawns": [
+    "f21-a",
+    "f21-b"
+   ]
   },
   "f21-wilds": {
    "floor": 21,
@@ -2125,7 +2637,13 @@
    ],
    "minLevel": 27,
    "maxLevel": 30,
-   "nameZh": "第21層 火山口"
+   "nameZh": "第21層 火山口",
+   "spawns": [
+    "f21-e",
+    "f21-f",
+    "f21-g",
+    "f21-r"
+   ]
   },
   "f21-outskirts": {
    "floor": 21,
@@ -2136,7 +2654,11 @@
    ],
    "minLevel": 26,
    "maxLevel": 27,
-   "nameZh": "第21層 熔岩原外圍"
+   "nameZh": "第21層 熔岩原外圍",
+   "spawns": [
+    "f21-j",
+    "f21-k"
+   ]
   },
   "f21-secret": {
    "floor": 21,
@@ -2149,7 +2671,11 @@
    "maxLevel": 37,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第21層 火山口秘境"
+   "nameZh": "第21層 火山口秘境",
+   "spawns": [
+    "f21-s",
+    "f21-t"
+   ]
   },
   "f21-depths": {
    "floor": 21,
@@ -2162,7 +2688,11 @@
    "minLevel": 28,
    "maxLevel": 29,
    "aggressive": true,
-   "nameZh": "第21層 火山口深處"
+   "nameZh": "第21層 火山口深處",
+   "spawns": [
+    "f21-h",
+    "f21-i"
+   ]
   },
   "f21-labyrinth": {
    "floor": 21,
@@ -2175,7 +2705,11 @@
    "minLevel": 29,
    "maxLevel": 30,
    "aggressive": true,
-   "nameZh": "第21層 謎宮區"
+   "nameZh": "第21層 謎宮區",
+   "spawns": [
+    "f21-c",
+    "f21-d"
+   ]
   },
   "f21-bossroom": {
    "floor": 21,
@@ -2219,7 +2753,11 @@
    ],
    "minLevel": 27,
    "maxLevel": 30,
-   "nameZh": "壺畔森林"
+   "nameZh": "壺畔森林",
+   "spawns": [
+    "f22-deer",
+    "f22-fish-hunter"
+   ]
   },
   "f22-outskirts": {
    "floor": 22,
@@ -2230,7 +2768,11 @@
    ],
    "minLevel": 27,
    "maxLevel": 28,
-   "nameZh": "壺畔森林外圍"
+   "nameZh": "壺畔森林外圍",
+   "spawns": [
+    "f22-j",
+    "f22-k"
+   ]
   },
   "f22-secret": {
    "floor": 22,
@@ -2243,7 +2785,11 @@
    "maxLevel": 38,
    "aggressive": true,
    "secret": true,
-   "nameZh": "壺畔森林秘境"
+   "nameZh": "壺畔森林秘境",
+   "spawns": [
+    "f22-s",
+    "f22-t"
+   ]
   },
   "f22-depths": {
    "floor": 22,
@@ -2256,7 +2802,11 @@
    "minLevel": 29,
    "maxLevel": 30,
    "aggressive": true,
-   "nameZh": "壺畔森林深處"
+   "nameZh": "壺畔森林深處",
+   "spawns": [
+    "f22-h",
+    "f22-i"
+   ]
   },
   "f22-labyrinth": {
    "floor": 22,
@@ -2269,7 +2819,10 @@
    "minLevel": 30,
    "maxLevel": 30,
    "aggressive": true,
-   "nameZh": "第22層 謎宮區"
+   "nameZh": "第22層 謎宮區",
+   "spawns": [
+    "f22-golem"
+   ]
   },
   "f22-bossroom": {
    "floor": 22,
@@ -2311,7 +2864,11 @@
    ],
    "minLevel": 29,
    "maxLevel": 30,
-   "nameZh": "第23層 古戰場"
+   "nameZh": "第23層 古戰場",
+   "spawns": [
+    "f23-a",
+    "f23-b"
+   ]
   },
   "f23-wilds": {
    "floor": 23,
@@ -2323,7 +2880,13 @@
    ],
    "minLevel": 30,
    "maxLevel": 33,
-   "nameZh": "第23層 墓園"
+   "nameZh": "第23層 墓園",
+   "spawns": [
+    "f23-e",
+    "f23-f",
+    "f23-g",
+    "f23-r"
+   ]
   },
   "f23-outskirts": {
    "floor": 23,
@@ -2334,7 +2897,11 @@
    ],
    "minLevel": 29,
    "maxLevel": 30,
-   "nameZh": "第23層 古戰場外圍"
+   "nameZh": "第23層 古戰場外圍",
+   "spawns": [
+    "f23-j",
+    "f23-k"
+   ]
   },
   "f23-secret": {
    "floor": 23,
@@ -2347,7 +2914,11 @@
    "maxLevel": 40,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第23層 墓園秘境"
+   "nameZh": "第23層 墓園秘境",
+   "spawns": [
+    "f23-s",
+    "f23-t"
+   ]
   },
   "f23-depths": {
    "floor": 23,
@@ -2360,7 +2931,11 @@
    "minLevel": 31,
    "maxLevel": 32,
    "aggressive": true,
-   "nameZh": "第23層 墓園深處"
+   "nameZh": "第23層 墓園深處",
+   "spawns": [
+    "f23-h",
+    "f23-i"
+   ]
   },
   "f23-labyrinth": {
    "floor": 23,
@@ -2373,7 +2948,11 @@
    "minLevel": 32,
    "maxLevel": 33,
    "aggressive": true,
-   "nameZh": "第23層 謎宮區"
+   "nameZh": "第23層 謎宮區",
+   "spawns": [
+    "f23-c",
+    "f23-d"
+   ]
   },
   "f23-bossroom": {
    "floor": 23,
@@ -2415,7 +2994,11 @@
    ],
    "minLevel": 30,
    "maxLevel": 31,
-   "nameZh": "第24層 古戰場"
+   "nameZh": "第24層 古戰場",
+   "spawns": [
+    "f24-a",
+    "f24-b"
+   ]
   },
   "f24-wilds": {
    "floor": 24,
@@ -2427,7 +3010,13 @@
    ],
    "minLevel": 31,
    "maxLevel": 34,
-   "nameZh": "第24層 墓園"
+   "nameZh": "第24層 墓園",
+   "spawns": [
+    "f24-e",
+    "f24-f",
+    "f24-g",
+    "f24-r"
+   ]
   },
   "f24-outskirts": {
    "floor": 24,
@@ -2438,7 +3027,11 @@
    ],
    "minLevel": 30,
    "maxLevel": 31,
-   "nameZh": "第24層 古戰場外圍"
+   "nameZh": "第24層 古戰場外圍",
+   "spawns": [
+    "f24-j",
+    "f24-k"
+   ]
   },
   "f24-secret": {
    "floor": 24,
@@ -2451,7 +3044,11 @@
    "maxLevel": 41,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第24層 墓園秘境"
+   "nameZh": "第24層 墓園秘境",
+   "spawns": [
+    "f24-s",
+    "f24-t"
+   ]
   },
   "f24-depths": {
    "floor": 24,
@@ -2464,7 +3061,11 @@
    "minLevel": 32,
    "maxLevel": 33,
    "aggressive": true,
-   "nameZh": "第24層 墓園深處"
+   "nameZh": "第24層 墓園深處",
+   "spawns": [
+    "f24-h",
+    "f24-i"
+   ]
   },
   "f24-labyrinth": {
    "floor": 24,
@@ -2477,7 +3078,11 @@
    "minLevel": 33,
    "maxLevel": 34,
    "aggressive": true,
-   "nameZh": "第24層 謎宮區"
+   "nameZh": "第24層 謎宮區",
+   "spawns": [
+    "f24-c",
+    "f24-d"
+   ]
   },
   "f24-bossroom": {
    "floor": 24,
@@ -2530,7 +3135,11 @@
    ],
    "minLevel": 31,
    "maxLevel": 32,
-   "nameZh": "第25層 巨人腳印"
+   "nameZh": "第25層 巨人腳印",
+   "spawns": [
+    "f25-a",
+    "f25-b"
+   ]
   },
   "f25-wilds": {
    "floor": 25,
@@ -2542,7 +3151,13 @@
    ],
    "minLevel": 32,
    "maxLevel": 35,
-   "nameZh": "第25層 巨木林"
+   "nameZh": "第25層 巨木林",
+   "spawns": [
+    "f25-e",
+    "f25-f",
+    "f25-g",
+    "f25-r"
+   ]
   },
   "f25-outskirts": {
    "floor": 25,
@@ -2553,7 +3168,11 @@
    ],
    "minLevel": 31,
    "maxLevel": 32,
-   "nameZh": "第25層 巨人腳印外圍"
+   "nameZh": "第25層 巨人腳印外圍",
+   "spawns": [
+    "f25-j",
+    "f25-k"
+   ]
   },
   "f25-secret": {
    "floor": 25,
@@ -2566,7 +3185,11 @@
    "maxLevel": 42,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第25層 巨木林秘境"
+   "nameZh": "第25層 巨木林秘境",
+   "spawns": [
+    "f25-s",
+    "f25-t"
+   ]
   },
   "f25-depths": {
    "floor": 25,
@@ -2579,7 +3202,11 @@
    "minLevel": 33,
    "maxLevel": 34,
    "aggressive": true,
-   "nameZh": "第25層 巨木林深處"
+   "nameZh": "第25層 巨木林深處",
+   "spawns": [
+    "f25-h",
+    "f25-i"
+   ]
   },
   "f25-labyrinth": {
    "floor": 25,
@@ -2592,7 +3219,11 @@
    "minLevel": 34,
    "maxLevel": 35,
    "aggressive": true,
-   "nameZh": "第25層 謎宮區"
+   "nameZh": "第25層 謎宮區",
+   "spawns": [
+    "f25-c",
+    "f25-d"
+   ]
   },
   "f25-bossroom": {
    "floor": 25,
@@ -2634,7 +3265,11 @@
    ],
    "minLevel": 32,
    "maxLevel": 33,
-   "nameZh": "第26層 雲海"
+   "nameZh": "第26層 雲海",
+   "spawns": [
+    "f26-a",
+    "f26-b"
+   ]
   },
   "f26-wilds": {
    "floor": 26,
@@ -2646,7 +3281,13 @@
    ],
    "minLevel": 33,
    "maxLevel": 36,
-   "nameZh": "第26層 雷雲"
+   "nameZh": "第26層 雷雲",
+   "spawns": [
+    "f26-e",
+    "f26-f",
+    "f26-g",
+    "f26-r"
+   ]
   },
   "f26-outskirts": {
    "floor": 26,
@@ -2657,7 +3298,11 @@
    ],
    "minLevel": 32,
    "maxLevel": 33,
-   "nameZh": "第26層 雲海外圍"
+   "nameZh": "第26層 雲海外圍",
+   "spawns": [
+    "f26-j",
+    "f26-k"
+   ]
   },
   "f26-secret": {
    "floor": 26,
@@ -2670,7 +3315,11 @@
    "maxLevel": 43,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第26層 雷雲秘境"
+   "nameZh": "第26層 雷雲秘境",
+   "spawns": [
+    "f26-s",
+    "f26-t"
+   ]
   },
   "f26-depths": {
    "floor": 26,
@@ -2683,7 +3332,11 @@
    "minLevel": 34,
    "maxLevel": 35,
    "aggressive": true,
-   "nameZh": "第26層 雷雲深處"
+   "nameZh": "第26層 雷雲深處",
+   "spawns": [
+    "f26-h",
+    "f26-i"
+   ]
   },
   "f26-labyrinth": {
    "floor": 26,
@@ -2696,7 +3349,11 @@
    "minLevel": 35,
    "maxLevel": 36,
    "aggressive": true,
-   "nameZh": "第26層 謎宮區"
+   "nameZh": "第26層 謎宮區",
+   "spawns": [
+    "f26-c",
+    "f26-d"
+   ]
   },
   "f26-bossroom": {
    "floor": 26,
@@ -2738,7 +3395,11 @@
    ],
    "minLevel": 34,
    "maxLevel": 35,
-   "nameZh": "第27層 廢墟"
+   "nameZh": "第27層 廢墟",
+   "spawns": [
+    "f27-a",
+    "f27-b"
+   ]
   },
   "f27-wilds": {
    "floor": 27,
@@ -2750,7 +3411,13 @@
    ],
    "minLevel": 35,
    "maxLevel": 38,
-   "nameZh": "第27層 陷阱迴廊"
+   "nameZh": "第27層 陷阱迴廊",
+   "spawns": [
+    "f27-e",
+    "f27-f",
+    "f27-g",
+    "f27-r"
+   ]
   },
   "f27-outskirts": {
    "floor": 27,
@@ -2761,7 +3428,11 @@
    ],
    "minLevel": 34,
    "maxLevel": 35,
-   "nameZh": "第27層 廢墟外圍"
+   "nameZh": "第27層 廢墟外圍",
+   "spawns": [
+    "f27-j",
+    "f27-k"
+   ]
   },
   "f27-secret": {
    "floor": 27,
@@ -2774,7 +3445,11 @@
    "maxLevel": 45,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第27層 陷阱迴廊秘境"
+   "nameZh": "第27層 陷阱迴廊秘境",
+   "spawns": [
+    "f27-s",
+    "f27-t"
+   ]
   },
   "f27-depths": {
    "floor": 27,
@@ -2787,7 +3462,11 @@
    "minLevel": 36,
    "maxLevel": 37,
    "aggressive": true,
-   "nameZh": "第27層 陷阱迴廊深處"
+   "nameZh": "第27層 陷阱迴廊深處",
+   "spawns": [
+    "f27-h",
+    "f27-i"
+   ]
   },
   "f27-labyrinth": {
    "floor": 27,
@@ -2800,7 +3479,11 @@
    "minLevel": 37,
    "maxLevel": 38,
    "aggressive": true,
-   "nameZh": "第27層 謎宮區"
+   "nameZh": "第27層 謎宮區",
+   "spawns": [
+    "f27-c",
+    "f27-d"
+   ]
   },
   "f27-bossroom": {
    "floor": 27,
@@ -2843,7 +3526,11 @@
    ],
    "minLevel": 35,
    "maxLevel": 36,
-   "nameZh": "第28層 瘴氣森林"
+   "nameZh": "第28層 瘴氣森林",
+   "spawns": [
+    "f28-a",
+    "f28-b"
+   ]
   },
   "f28-wilds": {
    "floor": 28,
@@ -2855,7 +3542,13 @@
    ],
    "minLevel": 36,
    "maxLevel": 39,
-   "nameZh": "第28層 毒沼"
+   "nameZh": "第28層 毒沼",
+   "spawns": [
+    "f28-e",
+    "f28-f",
+    "f28-g",
+    "f28-r"
+   ]
   },
   "f28-outskirts": {
    "floor": 28,
@@ -2866,7 +3559,11 @@
    ],
    "minLevel": 35,
    "maxLevel": 36,
-   "nameZh": "第28層 瘴氣森林外圍"
+   "nameZh": "第28層 瘴氣森林外圍",
+   "spawns": [
+    "f28-j",
+    "f28-k"
+   ]
   },
   "f28-secret": {
    "floor": 28,
@@ -2879,7 +3576,11 @@
    "maxLevel": 46,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第28層 毒沼秘境"
+   "nameZh": "第28層 毒沼秘境",
+   "spawns": [
+    "f28-s",
+    "f28-t"
+   ]
   },
   "f28-depths": {
    "floor": 28,
@@ -2892,7 +3593,11 @@
    "minLevel": 37,
    "maxLevel": 38,
    "aggressive": true,
-   "nameZh": "第28層 毒沼深處"
+   "nameZh": "第28層 毒沼深處",
+   "spawns": [
+    "f28-h",
+    "f28-i"
+   ]
   },
   "f28-labyrinth": {
    "floor": 28,
@@ -2905,7 +3610,11 @@
    "minLevel": 38,
    "maxLevel": 39,
    "aggressive": true,
-   "nameZh": "第28層 謎宮區"
+   "nameZh": "第28層 謎宮區",
+   "spawns": [
+    "f28-c",
+    "f28-d"
+   ]
   },
   "f28-bossroom": {
    "floor": 28,
@@ -2947,7 +3656,11 @@
    ],
    "minLevel": 36,
    "maxLevel": 37,
-   "nameZh": "第29層 瘴氣森林"
+   "nameZh": "第29層 瘴氣森林",
+   "spawns": [
+    "f29-a",
+    "f29-b"
+   ]
   },
   "f29-wilds": {
    "floor": 29,
@@ -2959,7 +3672,13 @@
    ],
    "minLevel": 37,
    "maxLevel": 40,
-   "nameZh": "第29層 毒沼"
+   "nameZh": "第29層 毒沼",
+   "spawns": [
+    "f29-e",
+    "f29-f",
+    "f29-g",
+    "f29-r"
+   ]
   },
   "f29-outskirts": {
    "floor": 29,
@@ -2970,7 +3689,11 @@
    ],
    "minLevel": 36,
    "maxLevel": 37,
-   "nameZh": "第29層 瘴氣森林外圍"
+   "nameZh": "第29層 瘴氣森林外圍",
+   "spawns": [
+    "f29-j",
+    "f29-k"
+   ]
   },
   "f29-secret": {
    "floor": 29,
@@ -2983,7 +3706,11 @@
    "maxLevel": 47,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第29層 毒沼秘境"
+   "nameZh": "第29層 毒沼秘境",
+   "spawns": [
+    "f29-s",
+    "f29-t"
+   ]
   },
   "f29-depths": {
    "floor": 29,
@@ -2996,7 +3723,11 @@
    "minLevel": 38,
    "maxLevel": 39,
    "aggressive": true,
-   "nameZh": "第29層 毒沼深處"
+   "nameZh": "第29層 毒沼深處",
+   "spawns": [
+    "f29-h",
+    "f29-i"
+   ]
   },
   "f29-labyrinth": {
    "floor": 29,
@@ -3009,7 +3740,11 @@
    "minLevel": 39,
    "maxLevel": 40,
    "aggressive": true,
-   "nameZh": "第29層 謎宮區"
+   "nameZh": "第29層 謎宮區",
+   "spawns": [
+    "f29-c",
+    "f29-d"
+   ]
   },
   "f29-bossroom": {
    "floor": 29,
@@ -3060,7 +3795,11 @@
    ],
    "minLevel": 37,
    "maxLevel": 38,
-   "nameZh": "第30層 龍谷"
+   "nameZh": "第30層 龍谷",
+   "spawns": [
+    "f30-a",
+    "f30-b"
+   ]
   },
   "f30-wilds": {
    "floor": 30,
@@ -3073,7 +3812,13 @@
    "minLevel": 38,
    "maxLevel": 41,
    "aggressive": true,
-   "nameZh": "第30層 龍巢"
+   "nameZh": "第30層 龍巢",
+   "spawns": [
+    "f30-e",
+    "f30-f",
+    "f30-g",
+    "f30-r"
+   ]
   },
   "f30-outskirts": {
    "floor": 30,
@@ -3084,7 +3829,11 @@
    ],
    "minLevel": 37,
    "maxLevel": 38,
-   "nameZh": "第30層 龍谷外圍"
+   "nameZh": "第30層 龍谷外圍",
+   "spawns": [
+    "f30-j",
+    "f30-k"
+   ]
   },
   "f30-secret": {
    "floor": 30,
@@ -3097,7 +3846,11 @@
    "maxLevel": 48,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第30層 龍巢秘境"
+   "nameZh": "第30層 龍巢秘境",
+   "spawns": [
+    "f30-s",
+    "f30-t"
+   ]
   },
   "f30-depths": {
    "floor": 30,
@@ -3110,7 +3863,11 @@
    "minLevel": 39,
    "maxLevel": 40,
    "aggressive": true,
-   "nameZh": "第30層 龍巢深處"
+   "nameZh": "第30層 龍巢深處",
+   "spawns": [
+    "f30-h",
+    "f30-i"
+   ]
   },
   "f30-labyrinth": {
    "floor": 30,
@@ -3123,7 +3880,11 @@
    "minLevel": 40,
    "maxLevel": 41,
    "aggressive": true,
-   "nameZh": "第30層 謎宮區"
+   "nameZh": "第30層 謎宮區",
+   "spawns": [
+    "f30-c",
+    "f30-d"
+   ]
   },
   "f30-bossroom": {
    "floor": 30,
@@ -3167,7 +3928,11 @@
    ],
    "minLevel": 39,
    "maxLevel": 40,
-   "nameZh": "第31層 濃霧高原"
+   "nameZh": "第31層 濃霧高原",
+   "spawns": [
+    "f31-a",
+    "f31-b"
+   ]
   },
   "f31-wilds": {
    "floor": 31,
@@ -3180,7 +3945,13 @@
    "minLevel": 40,
    "maxLevel": 43,
    "aggressive": true,
-   "nameZh": "第31層 迷霧峽谷"
+   "nameZh": "第31層 迷霧峽谷",
+   "spawns": [
+    "f31-e",
+    "f31-f",
+    "f31-g",
+    "f31-r"
+   ]
   },
   "f31-outskirts": {
    "floor": 31,
@@ -3191,7 +3962,11 @@
    ],
    "minLevel": 39,
    "maxLevel": 40,
-   "nameZh": "第31層 濃霧高原外圍"
+   "nameZh": "第31層 濃霧高原外圍",
+   "spawns": [
+    "f31-j",
+    "f31-k"
+   ]
   },
   "f31-secret": {
    "floor": 31,
@@ -3204,7 +3979,11 @@
    "maxLevel": 50,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第31層 迷霧峽谷秘境"
+   "nameZh": "第31層 迷霧峽谷秘境",
+   "spawns": [
+    "f31-s",
+    "f31-t"
+   ]
   },
   "f31-depths": {
    "floor": 31,
@@ -3217,7 +3996,11 @@
    "minLevel": 41,
    "maxLevel": 42,
    "aggressive": true,
-   "nameZh": "第31層 迷霧峽谷深處"
+   "nameZh": "第31層 迷霧峽谷深處",
+   "spawns": [
+    "f31-h",
+    "f31-i"
+   ]
   },
   "f31-labyrinth": {
    "floor": 31,
@@ -3230,7 +4013,11 @@
    "minLevel": 42,
    "maxLevel": 43,
    "aggressive": true,
-   "nameZh": "第31層 謎宮區"
+   "nameZh": "第31層 謎宮區",
+   "spawns": [
+    "f31-c",
+    "f31-d"
+   ]
   },
   "f31-bossroom": {
    "floor": 31,
@@ -3272,7 +4059,11 @@
    ],
    "minLevel": 40,
    "maxLevel": 41,
-   "nameZh": "第32層 水晶洞窟"
+   "nameZh": "第32層 水晶洞窟",
+   "spawns": [
+    "f32-a",
+    "f32-b"
+   ]
   },
   "f32-wilds": {
    "floor": 32,
@@ -3285,7 +4076,13 @@
    "minLevel": 41,
    "maxLevel": 44,
    "aggressive": true,
-   "nameZh": "第32層 深層礦脈"
+   "nameZh": "第32層 深層礦脈",
+   "spawns": [
+    "f32-e",
+    "f32-f",
+    "f32-g",
+    "f32-r"
+   ]
   },
   "f32-outskirts": {
    "floor": 32,
@@ -3296,7 +4093,11 @@
    ],
    "minLevel": 40,
    "maxLevel": 41,
-   "nameZh": "第32層 水晶洞窟外圍"
+   "nameZh": "第32層 水晶洞窟外圍",
+   "spawns": [
+    "f32-j",
+    "f32-k"
+   ]
   },
   "f32-secret": {
    "floor": 32,
@@ -3309,7 +4110,11 @@
    "maxLevel": 51,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第32層 深層礦脈秘境"
+   "nameZh": "第32層 深層礦脈秘境",
+   "spawns": [
+    "f32-s",
+    "f32-t"
+   ]
   },
   "f32-depths": {
    "floor": 32,
@@ -3322,7 +4127,11 @@
    "minLevel": 42,
    "maxLevel": 43,
    "aggressive": true,
-   "nameZh": "第32層 深層礦脈深處"
+   "nameZh": "第32層 深層礦脈深處",
+   "spawns": [
+    "f32-h",
+    "f32-i"
+   ]
   },
   "f32-labyrinth": {
    "floor": 32,
@@ -3335,7 +4144,11 @@
    "minLevel": 43,
    "maxLevel": 44,
    "aggressive": true,
-   "nameZh": "第32層 謎宮區"
+   "nameZh": "第32層 謎宮區",
+   "spawns": [
+    "f32-c",
+    "f32-d"
+   ]
   },
   "f32-bossroom": {
    "floor": 32,
@@ -3377,7 +4190,11 @@
    ],
    "minLevel": 41,
    "maxLevel": 42,
-   "nameZh": "第33層 天空浮島"
+   "nameZh": "第33層 天空浮島",
+   "spawns": [
+    "f33-a",
+    "f33-b"
+   ]
   },
   "f33-wilds": {
    "floor": 33,
@@ -3390,7 +4207,13 @@
    "minLevel": 42,
    "maxLevel": 45,
    "aggressive": true,
-   "nameZh": "第33層 狂風斷崖"
+   "nameZh": "第33層 狂風斷崖",
+   "spawns": [
+    "f33-e",
+    "f33-f",
+    "f33-g",
+    "f33-r"
+   ]
   },
   "f33-outskirts": {
    "floor": 33,
@@ -3401,7 +4224,11 @@
    ],
    "minLevel": 41,
    "maxLevel": 42,
-   "nameZh": "第33層 天空浮島外圍"
+   "nameZh": "第33層 天空浮島外圍",
+   "spawns": [
+    "f33-j",
+    "f33-k"
+   ]
   },
   "f33-secret": {
    "floor": 33,
@@ -3414,7 +4241,11 @@
    "maxLevel": 52,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第33層 狂風斷崖秘境"
+   "nameZh": "第33層 狂風斷崖秘境",
+   "spawns": [
+    "f33-s",
+    "f33-t"
+   ]
   },
   "f33-depths": {
    "floor": 33,
@@ -3427,7 +4258,11 @@
    "minLevel": 43,
    "maxLevel": 44,
    "aggressive": true,
-   "nameZh": "第33層 狂風斷崖深處"
+   "nameZh": "第33層 狂風斷崖深處",
+   "spawns": [
+    "f33-h",
+    "f33-i"
+   ]
   },
   "f33-labyrinth": {
    "floor": 33,
@@ -3440,7 +4275,11 @@
    "minLevel": 44,
    "maxLevel": 45,
    "aggressive": true,
-   "nameZh": "第33層 謎宮區"
+   "nameZh": "第33層 謎宮區",
+   "spawns": [
+    "f33-c",
+    "f33-d"
+   ]
   },
   "f33-bossroom": {
    "floor": 33,
@@ -3482,7 +4321,11 @@
    ],
    "minLevel": 42,
    "maxLevel": 43,
-   "nameZh": "第34層 發條街道"
+   "nameZh": "第34層 發條街道",
+   "spawns": [
+    "f34-a",
+    "f34-b"
+   ]
   },
   "f34-wilds": {
    "floor": 34,
@@ -3495,7 +4338,13 @@
    "minLevel": 43,
    "maxLevel": 46,
    "aggressive": true,
-   "nameZh": "第34層 蒸氣工廠"
+   "nameZh": "第34層 蒸氣工廠",
+   "spawns": [
+    "f34-e",
+    "f34-f",
+    "f34-g",
+    "f34-r"
+   ]
   },
   "f34-outskirts": {
    "floor": 34,
@@ -3506,7 +4355,11 @@
    ],
    "minLevel": 42,
    "maxLevel": 43,
-   "nameZh": "第34層 發條街道外圍"
+   "nameZh": "第34層 發條街道外圍",
+   "spawns": [
+    "f34-j",
+    "f34-k"
+   ]
   },
   "f34-secret": {
    "floor": 34,
@@ -3519,7 +4372,11 @@
    "maxLevel": 53,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第34層 蒸氣工廠秘境"
+   "nameZh": "第34層 蒸氣工廠秘境",
+   "spawns": [
+    "f34-s",
+    "f34-t"
+   ]
   },
   "f34-depths": {
    "floor": 34,
@@ -3532,7 +4389,11 @@
    "minLevel": 44,
    "maxLevel": 45,
    "aggressive": true,
-   "nameZh": "第34層 蒸氣工廠深處"
+   "nameZh": "第34層 蒸氣工廠深處",
+   "spawns": [
+    "f34-h",
+    "f34-i"
+   ]
   },
   "f34-labyrinth": {
    "floor": 34,
@@ -3545,7 +4406,11 @@
    "minLevel": 45,
    "maxLevel": 46,
    "aggressive": true,
-   "nameZh": "第34層 謎宮區"
+   "nameZh": "第34層 謎宮區",
+   "spawns": [
+    "f34-c",
+    "f34-d"
+   ]
   },
   "f34-bossroom": {
    "floor": 34,
@@ -3596,7 +4461,11 @@
    ],
    "minLevel": 44,
    "maxLevel": 46,
-   "nameZh": "迷兔森林"
+   "nameZh": "迷兔森林",
+   "spawns": [
+    "f35-ape",
+    "f35-ape-boss"
+   ]
   },
   "f35-outskirts": {
    "floor": 35,
@@ -3607,7 +4476,11 @@
    ],
    "minLevel": 44,
    "maxLevel": 45,
-   "nameZh": "迷兔森林外圍"
+   "nameZh": "迷兔森林外圍",
+   "spawns": [
+    "f35-j",
+    "f35-k"
+   ]
   },
   "f35-secret": {
    "floor": 35,
@@ -3620,7 +4493,11 @@
    "maxLevel": 55,
    "aggressive": true,
    "secret": true,
-   "nameZh": "迷兔森林秘境"
+   "nameZh": "迷兔森林秘境",
+   "spawns": [
+    "f35-s",
+    "f35-t"
+   ]
   },
   "f35-depths": {
    "floor": 35,
@@ -3633,7 +4510,11 @@
    "minLevel": 46,
    "maxLevel": 47,
    "aggressive": true,
-   "nameZh": "迷兔森林深處"
+   "nameZh": "迷兔森林深處",
+   "spawns": [
+    "f35-h",
+    "f35-i"
+   ]
   },
   "f35-labyrinth": {
    "floor": 35,
@@ -3646,7 +4527,11 @@
    "minLevel": 47,
    "maxLevel": 48,
    "aggressive": true,
-   "nameZh": "第35層 謎宮區"
+   "nameZh": "第35層 謎宮區",
+   "spawns": [
+    "f35-skeleton",
+    "f35-ghoul"
+   ]
   },
   "f35-bossroom": {
    "floor": 35,
@@ -3690,7 +4575,11 @@
    ],
    "minLevel": 45,
    "maxLevel": 46,
-   "nameZh": "第36層 王家之谷"
+   "nameZh": "第36層 王家之谷",
+   "spawns": [
+    "f36-a",
+    "f36-b"
+   ]
   },
   "f36-wilds": {
    "floor": 36,
@@ -3703,7 +4592,13 @@
    "minLevel": 46,
    "maxLevel": 49,
    "aggressive": true,
-   "nameZh": "第36層 地下墓室"
+   "nameZh": "第36層 地下墓室",
+   "spawns": [
+    "f36-e",
+    "f36-f",
+    "f36-g",
+    "f36-r"
+   ]
   },
   "f36-outskirts": {
    "floor": 36,
@@ -3714,7 +4609,11 @@
    ],
    "minLevel": 45,
    "maxLevel": 46,
-   "nameZh": "第36層 王家之谷外圍"
+   "nameZh": "第36層 王家之谷外圍",
+   "spawns": [
+    "f36-j",
+    "f36-k"
+   ]
   },
   "f36-secret": {
    "floor": 36,
@@ -3727,7 +4626,11 @@
    "maxLevel": 56,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第36層 地下墓室秘境"
+   "nameZh": "第36層 地下墓室秘境",
+   "spawns": [
+    "f36-s",
+    "f36-t"
+   ]
   },
   "f36-depths": {
    "floor": 36,
@@ -3740,7 +4643,11 @@
    "minLevel": 47,
    "maxLevel": 48,
    "aggressive": true,
-   "nameZh": "第36層 地下墓室深處"
+   "nameZh": "第36層 地下墓室深處",
+   "spawns": [
+    "f36-h",
+    "f36-i"
+   ]
   },
   "f36-labyrinth": {
    "floor": 36,
@@ -3753,7 +4660,11 @@
    "minLevel": 48,
    "maxLevel": 49,
    "aggressive": true,
-   "nameZh": "第36層 謎宮區"
+   "nameZh": "第36層 謎宮區",
+   "spawns": [
+    "f36-c",
+    "f36-d"
+   ]
   },
   "f36-bossroom": {
    "floor": 36,
@@ -3795,7 +4706,11 @@
    ],
    "minLevel": 46,
    "maxLevel": 47,
-   "nameZh": "第37層 珊瑚淺灘"
+   "nameZh": "第37層 珊瑚淺灘",
+   "spawns": [
+    "f37-a",
+    "f37-b"
+   ]
   },
   "f37-wilds": {
    "floor": 37,
@@ -3808,7 +4723,13 @@
    "minLevel": 47,
    "maxLevel": 50,
    "aggressive": true,
-   "nameZh": "第37層 沉船海域"
+   "nameZh": "第37層 沉船海域",
+   "spawns": [
+    "f37-e",
+    "f37-f",
+    "f37-g",
+    "f37-r"
+   ]
   },
   "f37-outskirts": {
    "floor": 37,
@@ -3819,7 +4740,11 @@
    ],
    "minLevel": 46,
    "maxLevel": 47,
-   "nameZh": "第37層 珊瑚淺灘外圍"
+   "nameZh": "第37層 珊瑚淺灘外圍",
+   "spawns": [
+    "f37-j",
+    "f37-k"
+   ]
   },
   "f37-secret": {
    "floor": 37,
@@ -3832,7 +4757,11 @@
    "maxLevel": 57,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第37層 沉船海域秘境"
+   "nameZh": "第37層 沉船海域秘境",
+   "spawns": [
+    "f37-s",
+    "f37-t"
+   ]
   },
   "f37-depths": {
    "floor": 37,
@@ -3845,7 +4774,11 @@
    "minLevel": 48,
    "maxLevel": 49,
    "aggressive": true,
-   "nameZh": "第37層 沉船海域深處"
+   "nameZh": "第37層 沉船海域深處",
+   "spawns": [
+    "f37-h",
+    "f37-i"
+   ]
   },
   "f37-labyrinth": {
    "floor": 37,
@@ -3858,7 +4791,11 @@
    "minLevel": 49,
    "maxLevel": 50,
    "aggressive": true,
-   "nameZh": "第37層 謎宮區"
+   "nameZh": "第37層 謎宮區",
+   "spawns": [
+    "f37-c",
+    "f37-d"
+   ]
   },
   "f37-bossroom": {
    "floor": 37,
@@ -3901,7 +4838,11 @@
    ],
    "minLevel": 47,
    "maxLevel": 48,
-   "nameZh": "第38層 黑森林"
+   "nameZh": "第38層 黑森林",
+   "spawns": [
+    "f38-a",
+    "f38-b"
+   ]
   },
   "f38-wilds": {
    "floor": 38,
@@ -3914,7 +4855,13 @@
    "minLevel": 48,
    "maxLevel": 51,
    "aggressive": true,
-   "nameZh": "第38層 廢棄古堡"
+   "nameZh": "第38層 廢棄古堡",
+   "spawns": [
+    "f38-e",
+    "f38-f",
+    "f38-g",
+    "f38-r"
+   ]
   },
   "f38-outskirts": {
    "floor": 38,
@@ -3925,7 +4872,11 @@
    ],
    "minLevel": 47,
    "maxLevel": 48,
-   "nameZh": "第38層 黑森林外圍"
+   "nameZh": "第38層 黑森林外圍",
+   "spawns": [
+    "f38-j",
+    "f38-k"
+   ]
   },
   "f38-secret": {
    "floor": 38,
@@ -3938,7 +4889,11 @@
    "maxLevel": 58,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第38層 廢棄古堡秘境"
+   "nameZh": "第38層 廢棄古堡秘境",
+   "spawns": [
+    "f38-s",
+    "f38-t"
+   ]
   },
   "f38-depths": {
    "floor": 38,
@@ -3951,7 +4906,11 @@
    "minLevel": 49,
    "maxLevel": 50,
    "aggressive": true,
-   "nameZh": "第38層 廢棄古堡深處"
+   "nameZh": "第38層 廢棄古堡深處",
+   "spawns": [
+    "f38-h",
+    "f38-i"
+   ]
   },
   "f38-labyrinth": {
    "floor": 38,
@@ -3964,7 +4923,11 @@
    "minLevel": 50,
    "maxLevel": 51,
    "aggressive": true,
-   "nameZh": "第38層 謎宮區"
+   "nameZh": "第38層 謎宮區",
+   "spawns": [
+    "f38-c",
+    "f38-d"
+   ]
   },
   "f38-bossroom": {
    "floor": 38,
@@ -4006,7 +4969,11 @@
    ],
    "minLevel": 49,
    "maxLevel": 50,
-   "nameZh": "第39層 荊棘森林"
+   "nameZh": "第39層 荊棘森林",
+   "spawns": [
+    "f39-a",
+    "f39-b"
+   ]
   },
   "f39-wilds": {
    "floor": 39,
@@ -4019,7 +4986,13 @@
    "minLevel": 50,
    "maxLevel": 53,
    "aggressive": true,
-   "nameZh": "第39層 毒蜂巢"
+   "nameZh": "第39層 毒蜂巢",
+   "spawns": [
+    "f39-e",
+    "f39-f",
+    "f39-g",
+    "f39-r"
+   ]
   },
   "f39-outskirts": {
    "floor": 39,
@@ -4030,7 +5003,11 @@
    ],
    "minLevel": 49,
    "maxLevel": 50,
-   "nameZh": "第39層 荊棘森林外圍"
+   "nameZh": "第39層 荊棘森林外圍",
+   "spawns": [
+    "f39-j",
+    "f39-k"
+   ]
   },
   "f39-secret": {
    "floor": 39,
@@ -4043,7 +5020,11 @@
    "maxLevel": 60,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第39層 毒蜂巢秘境"
+   "nameZh": "第39層 毒蜂巢秘境",
+   "spawns": [
+    "f39-s",
+    "f39-t"
+   ]
   },
   "f39-depths": {
    "floor": 39,
@@ -4056,7 +5037,11 @@
    "minLevel": 51,
    "maxLevel": 52,
    "aggressive": true,
-   "nameZh": "第39層 毒蜂巢深處"
+   "nameZh": "第39層 毒蜂巢深處",
+   "spawns": [
+    "f39-h",
+    "f39-i"
+   ]
   },
   "f39-labyrinth": {
    "floor": 39,
@@ -4069,7 +5054,11 @@
    "minLevel": 52,
    "maxLevel": 53,
    "aggressive": true,
-   "nameZh": "第39層 謎宮區"
+   "nameZh": "第39層 謎宮區",
+   "spawns": [
+    "f39-c",
+    "f39-d"
+   ]
   },
   "f39-bossroom": {
    "floor": 39,
@@ -4121,7 +5110,11 @@
    ],
    "minLevel": 50,
    "maxLevel": 51,
-   "nameZh": "第40層 焦土平原"
+   "nameZh": "第40層 焦土平原",
+   "spawns": [
+    "f40-a",
+    "f40-b"
+   ]
   },
   "f40-wilds": {
    "floor": 40,
@@ -4134,7 +5127,13 @@
    "minLevel": 51,
    "maxLevel": 54,
    "aggressive": true,
-   "nameZh": "第40層 魔王城外牆"
+   "nameZh": "第40層 魔王城外牆",
+   "spawns": [
+    "f40-e",
+    "f40-f",
+    "f40-g",
+    "f40-r"
+   ]
   },
   "f40-outskirts": {
    "floor": 40,
@@ -4145,7 +5144,11 @@
    ],
    "minLevel": 50,
    "maxLevel": 51,
-   "nameZh": "第40層 焦土平原外圍"
+   "nameZh": "第40層 焦土平原外圍",
+   "spawns": [
+    "f40-j",
+    "f40-k"
+   ]
   },
   "f40-secret": {
    "floor": 40,
@@ -4158,7 +5161,11 @@
    "maxLevel": 61,
    "aggressive": true,
    "secret": true,
-   "nameZh": "第40層 魔王城外牆秘境"
+   "nameZh": "第40層 魔王城外牆秘境",
+   "spawns": [
+    "f40-s",
+    "f40-t"
+   ]
   },
   "f40-depths": {
    "floor": 40,
@@ -4171,7 +5178,11 @@
    "minLevel": 52,
    "maxLevel": 53,
    "aggressive": true,
-   "nameZh": "第40層 魔王城外牆深處"
+   "nameZh": "第40層 魔王城外牆深處",
+   "spawns": [
+    "f40-h",
+    "f40-i"
+   ]
   },
   "f40-labyrinth": {
    "floor": 40,
@@ -4184,7 +5195,11 @@
    "minLevel": 53,
    "maxLevel": 54,
    "aggressive": true,
-   "nameZh": "第40層 謎宮區"
+   "nameZh": "第40層 謎宮區",
+   "spawns": [
+    "f40-c",
+    "f40-d"
+   ]
   },
   "f40-bossroom": {
    "floor": 40,

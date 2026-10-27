@@ -1,7 +1,7 @@
 // Health and potion rules (spec §6.2, §6.4). Pure decision functions — each
 // Session runs them every 500 ms and sends whatever they return.
 
-import { ITEMS, recommendedKit, shopFloorFor, totalPotions, isHealingItem, currentFloorOf } from '#shared/game-rules'
+import { ITEMS, recommendedKit, shopFloorFor, totalPotions, isHealingItem, currentFloorOf, stockLevelsFor } from '#shared/game-rules'
 import type { FightContext, Safety, Thresholds } from '#shared/types'
 import type { GameCommand, GamePlayer } from '../sao/connector'
 
@@ -22,10 +22,10 @@ export const DEFAULT_SAFETY: Safety = {
   isAutoRestockOn: true,
   instantItem: null,
   restock: {
-    autoDrinkMin: 100, autoDrinkTarget: 300,
-    instantMin: 3, instantTarget: 10,
+    autoDrinkMin: 50, autoDrinkTarget: 100, // restock when below the first number, up to the second
+    instantMin: 30, instantTarget: 100,
     crystalHealMin: 10, crystalHealTarget: 30,
-    teleportMin: 20, teleportTarget: 60,
+    teleportMin: 3, teleportTarget: 10,
     maxSpendPct: 50, // never spend more than this share of current gold on one restock
   },
   haltAfterCriticalCount: 3, // close calls within 5 minutes before the bot stops itself
@@ -122,7 +122,7 @@ export type RestockPlan = Purchase[] | { blockedReason: string, unaffordable: st
 export function planRestock(player: GamePlayer | null, safety: Safety, frontier: number): RestockPlan {
   if (!player) return []
   const inventory = player.inventory || {}
-  const limits = safety.restock
+  const limits = stockLevelsFor(safety.restock, player.level || 1) // scaled down below Lv30
   const kit = recommendedKit(player.level || 1)
   const autoDrinkItem = player.settings?.potionItem || kit.autoDrink
   const currentFloor = currentFloorOf(player.areaId)

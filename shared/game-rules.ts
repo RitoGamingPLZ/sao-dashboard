@@ -1,7 +1,7 @@
 // Game rules from the handoff spec §6 (read from the game bundle; the server
 // may differ). Pure functions only — shared by the server bots and the UI.
 
-import type { Kit } from './types'
+import type { Kit, RestockLimits } from './types'
 
 export const TOP_FLOOR = 40
 // How many characters one dashboard runs.
@@ -45,8 +45,9 @@ export const expToNextLevel = (level: number) => Math.floor(25 * level * level *
 export const WEAPON_TYPES = ['one-handed-sword', 'rapier', 'dual-blades', 'spear', 'two-handed-sword', 'short-sword'] as const
 
 import world from './world.json'
+import gearData from './gear.json'
 
-export interface WorldArea { floor: number, kind: string, name: string, nameZh?: string, links: string[], minLevel?: number, maxLevel?: number, aggressive?: boolean, secret?: boolean, shop?: string[] }
+export interface WorldArea { floor: number, kind: string, name: string, nameZh?: string, spawns?: string[], links: string[], minLevel?: number, maxLevel?: number, aggressive?: boolean, secret?: boolean, shop?: string[] }
 // Real map, copied from the game client (areas, links, monster levels).
 export const WORLD_AREAS: Record<string, WorldArea> = world.areas
 
@@ -124,6 +125,15 @@ export function frontierFloor(clearedFloors: number[] | null | undefined): numbe
   return Math.min(highestCleared + 1, TOP_FLOOR)
 }
 
+// Stock levels in the settings are for Lv30+. Lower levels carry less (they can't
+// afford it): 10% at Lv1, rising evenly to 100% at Lv30, rounded up, at least 1.
+// maxSpendPct isn't a count, so it isn't scaled.
+export function stockLevelsFor(restock: RestockLimits, level: number): RestockLimits {
+  const share = 0.1 + 0.9 * Math.min(1, Math.max(0, level - 1) / 29)
+  return Object.fromEntries(Object.entries(restock).map(([key, value]) =>
+    [key, key === 'maxSpendPct' ? value : Math.max(1, Math.ceil(value * share))])) as unknown as RestockLimits
+}
+
 export const isHealingItem = (itemId: string) => /^(potion|instant)-/.test(itemId)
 
 export function totalPotions(inventory: Record<string, number> | null | undefined): number {
@@ -141,4 +151,97 @@ export function safeAreaFor(playerLevel: number, kind = 'field', maxFloor = TOP_
     .filter(([areaId, area]) => area.kind === kind && area.floor <= maxFloor && isAreaSafeFor(areaId, playerLevel))
     .sort(([, a], [, b]) => (b.maxLevel! - a.maxLevel!) || (b.floor - a.floor))
   return candidates[0]?.[0] ?? null
+}
+
+// ---- character stats --------------------------------------------------------
+// The server never sends attack, defence, speed or crit: the game client works
+// them out from level + gear. This is the client's own formula (main-1nL5gxyG.js).
+// ponytail: skips unique-weapon style bonuses (all 0 in the current params),
+// buffs/debuffs and random affixes; pieces not in gear.json → isEstimated.
+
+interface GearInfo { name?: string, nameZh?: string | null, slot: string, weaponType?: string, speed?: number, shield?: boolean, slow?: number, reqLevel: number, price: number | null, bonus: Partial<Record<'maxHp' | 'atk' | 'def' | 'agi' | 'crit' | 'critDmg' | 'evade' | 'block', number>> }
+export const GEAR: Record<string, GearInfo> = gearData.gear as Record<string, GearInfo>
+export interface SkillInfo { name: string, nameZh: string | null, style: string | null, reqLevel: number, multiplier: number | null, hits: number, targets: number, cooldownMs: number | null }
+export const SKILLS: Record<string, SkillInfo> = gearData.skills as Record<string, SkillInfo>
+
+const HP_CURVE: Array<[level: number, hp: number]> = [[1, 200], [40, 6500], [48, 7700], [70, 9900], [78, 11255], [96, 14300], [120, 17800]]
+const GEAR_SLOTS = ['weapon', 'offhand', 'armor', 'head', 'feet', 'accessory', 'ring2', 'neck']
+
+function baseMaxHp(level: number) {
+  const index = HP_CURVE.findIndex(([curveLevel]) => curveLevel >= level)
+  if (index <= 0) return HP_CURVE[index < 0 ? HP_CURVE.length - 1 : 0]![1]
+  const [lowLevel, lowHp] = HP_CURVE[index - 1]!, [highLevel, highHp] = HP_CURVE[index]!
+  return lowHp + ((highHp - lowHp) * (level - lowLevel)) / (highLevel - lowLevel)
+}
+const growth = (level: number) => 1 + 0.007857 * Math.pow(Math.max(0, level - 1), 1.5)
+
+// A worn piece is an item id ("weapon-t1") or a gear instance ("g:1" → player.gear["1"]):
+// a base item plus enhancements, e.g. { base: 'weapon-t1', plus: 1, enh: { sharp: 1 } }.
+export interface GearInstance { base: string, plus?: number, enh?: Record<string, number> }
+
+export function resolveGear(itemId: string, gearInstances?: Record<string, GearInstance> | null): GearInfo | null {
+  if (!itemId.startsWith('g:')) return GEAR[itemId] ?? null
+  const instance = gearInstances?.[itemId.slice(2)]
+  const base = instance && GEAR[instance.base]
+  if (!instance || !base) return null
+  const enh = instance.enh ?? {}
+  const bonus = { ...base.bonus }
+  const level = base.reqLevel ?? 1
+  const percentOf = (stat: number | undefined, count: number) => Math.max(Math.round(count), Math.round((stat ?? 0) * 0.12 * count))
+  const hpStep = Math.max(10, Math.round(baseMaxHp(Math.max(1, level)) * 0.03))
+  const agiStep = Math.max(2, Math.round(2 + level * 0.08))
+  if (enh.sharp) bonus.atk = (bonus.atk ?? 0) + percentOf(bonus.atk, enh.sharp)
+  if (enh.acc) bonus.crit = (bonus.crit ?? 0) + 0.03 * enh.acc
+  if (enh.hard) bonus.def = (bonus.def ?? 0) + percentOf(bonus.def, enh.hard)
+  if (enh.thick) bonus.maxHp = (bonus.maxHp ?? 0) + Math.round(Math.max(Math.round((base.bonus.maxHp ?? 0) * 0.12), hpStep) * enh.thick)
+  if (enh.light) bonus.agi = (bonus.agi ?? 0) + Math.round(agiStep * enh.light)
+  if (enh.vital) bonus.maxHp = (bonus.maxHp ?? 0) + Math.round(hpStep * enh.vital)
+  if (enh.swift) bonus.agi = (bonus.agi ?? 0) + Math.round(agiStep * enh.swift)
+  if (enh.fatal) bonus.critDmg = (bonus.critDmg ?? 0) + 0.08 * enh.fatal
+  return { ...base, bonus, ...(enh.quick ? { speed: Math.round((base.speed ?? 100) + 4 * enh.quick) } : {}) }
+}
+
+// Skill slots: one at Lv1, another at Lv10 and Lv25, plus one with a unique skill (game client rule).
+export const skillSlotCount = (level: number, hasUniqueSkill: boolean) => [1, 10, 25].filter((needed) => level >= needed).length + (hasUniqueSkill ? 1 : 0)
+
+export interface CharacterStats { maxHp: number, atk: number, def: number, speed: number, crit: number, critDmg: number, isEstimated: boolean }
+
+export function characterStats(level: number, equipment: Record<string, string> | null | undefined, perks?: { atk?: number, hp?: number } | null, gearInstances?: Record<string, GearInstance> | null): CharacterStats {
+  const hp = baseMaxHp(level)
+  const stats = {
+    maxHp: Math.round(hp),
+    atk: Math.round((10 + 2.6 * (level - 1)) * growth(level)),
+    def: Math.round((4 + 1.3 * (level - 1)) * growth(level) * (hp / ((90 + 22 * (level - 1)) * growth(level)))),
+    agi: Math.round(10 + (level - 1)),
+    crit: 0.05, critDmg: 0, evade: 0,
+  }
+  let isEstimated = false
+  for (const slot of GEAR_SLOTS) {
+    const itemId = equipment?.[slot]
+    if (!itemId) continue
+    const item = resolveGear(itemId, gearInstances)
+    if (!item) { isEstimated = true; continue } // a piece we don't have numbers for
+    const share = slot === 'offhand' && !item.shield ? 0.6 : 1 // an off-hand weapon counts 60%
+    const bonus = item.bonus
+    stats.maxHp += Math.round((bonus.maxHp ?? 0) * share)
+    stats.atk += Math.round((bonus.atk ?? 0) * share)
+    stats.def += Math.round((bonus.def ?? 0) * share)
+    stats.agi += Math.round((bonus.agi ?? 0) * share)
+    stats.crit += (bonus.crit ?? 0) * share
+    stats.critDmg += (bonus.critDmg ?? 0) * share
+  }
+  const weapon = equipment?.weapon ? resolveGear(equipment.weapon, gearInstances) : null
+  const offhand = equipment?.offhand ? resolveGear(equipment.offhand, gearInstances) : null
+  let weaponSpeed = (weapon?.speed ?? 100) / 100
+  if (offhand?.slow && weapon?.weaponType !== 'mace') weaponSpeed *= 1 - offhand.slow
+  if (perks?.atk) stats.atk = Math.round(stats.atk * (1 + perks.atk))
+  if (perks?.hp) stats.maxHp = Math.round(stats.maxHp * (1 + perks.hp))
+  const agility = stats.agi <= 0 ? stats.agi : 250 * Math.tanh(stats.agi / 250)
+  const attackIntervalMs = Math.max(400, Math.round((2200 * (100 / (100 + agility * 1.5))) / weaponSpeed))
+  return {
+    maxHp: stats.maxHp, atk: stats.atk, def: stats.def,
+    speed: Math.round(200000 / attackIntervalMs), // the game's own "speed" number
+    crit: Math.min(0.9, stats.crit), critDmg: 1.6 + stats.critDmg, // crits hit for 160% + gear bonus
+    isEstimated,
+  }
 }
