@@ -3,24 +3,31 @@
 // never touches another.
 
 import { EventEmitter } from 'node:events'
-import { townOf, frontierFloor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS, expToNextLevel, gearUpgrades, bestGearOf, EMPTY_SLOT_FAMILIES, characterStats, stockLevelsFor, GEAR, SKILLS, resolveGear, skillSlotCount, type GearInstance } from '#shared/game-rules'
+import { townOf, frontierFloor, shopFloorFor, recommendedKit, areaLevel, totalPotions, parseArea, ITEMS, safeAreaFor, isAreaSafeFor, WORLD_AREAS, expToNextLevel, BOSS_LEVEL_MARGIN, EMPTY_SLOT_FAMILIES, characterStats, survivalDirection, enemyAttackFromHit, stockLevelsFor, GEAR, SKILLS, resolveGear, skillSlotCount, rankSkills, bossRequirement, slotUpgrades, MAX_BOSS_HP_BARS, type GearInstance } from '#shared/game-rules'
 import type { AccountSummary, Alert, AutoFarm, LogChoice, LogEvent, PartyRole, Safety } from '#shared/types'
 import type { SaoProtocol, CommandKey } from '../sao/protocol'
 import type { CommandResult, GameCommand, GameLogEntry, GameSocket, SaoConnector } from '../sao/connector'
-import { decideSafety, planRestock, DEFAULT_SAFETY } from './safety'
+import { decideDanger, decideSafety, planRestock, DEFAULT_SAFETY, type Threat } from './safety'
 import { planMission, QUESTS, STORY, type Objective } from './missions'
+import { Bestiary } from './bestiary'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 const EVENT_LIMIT = 150 // per character
-const CRITICAL_WINDOW_MS = 5 * 60 * 1000
 const SAFETY_COOLDOWN_MS = 1200 // let the last heal land before deciding again
+const DANGER_REPEAT_MS = 700 // a danger heal can follow another this soon (the state must catch up first)
 const STALE_AFTER_MS = 10000
 const MIASMA_STAGE_MS = 20 * 60 * 1000
 const METRICS_WINDOW_MS = 15 * 60 * 1000
 const MAX_BUY_PER_CALL = 500
 const QUEST_VISIT_MS = 10 * 60 * 1000
 const ENHANCE_TRIES_PER_REFIT = 3
-const BOSS_RETRY_MS = 30 * 60 * 1000 // keep-farming's wait after a boss try that didn't happen or didn't win
+const BOSS_FARM_WAIT_MS = 5 * 60 * 1000 // 王戰 mode's pause after a boss it couldn't fight
+const BOSS_RETRY_MS = 30 * 60 * 1000 // keep-farming's wait before trying the same floor's boss again
+const FIGHT_DONE_KEYS = new Set(['kill', 'bossReport', 'floorCleared']) // game log: a fight just ended
+const FARM_RECHECK_DELAY_MS = 500 // let the state settle first
+const DPS_HITS = 300 // our last hits kept for measuredDps
+const EQUIP_CHECK_MS = 60 * 1000 // 練功: wear owned upgrades at most once a minute
+const UPGRADE_REFIT_MS = 10 * 60 * 1000 // 練功: at most one gear-upgrade trip per 10 min
 
 // Game log params look like {a:{a:'f1-west'}} (area), {m:{m:'f1-boar'}} (monster), {st:'prologue'}.
 function describeGameValue(value: unknown): string {
@@ -35,7 +42,7 @@ function describeGameValue(value: unknown): string {
 const isFightingActivity = (activityType: string) => activityType === 'hunting' || activityType === 'boss'
 
 export interface SessionTiming { safetyMs: number, mainMs: number, sampleMs: number }
-export interface SessionSettings { safety?: Partial<Safety>, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean }
+export interface SessionSettings { safety?: Partial<Safety>, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean, isBossFarming?: boolean }
 
 interface SessionEvents { event: [event: LogEvent], answered: [event: LogEvent], halted: [reason: string], settingsChanged: [] }
 
@@ -49,6 +56,9 @@ export class Session extends EventEmitter<SessionEvents> {
   partyRole: PartyRole | null = null
   preferredWeapon: string | null
   autoFarm: AutoFarm | null
+  // 王戰 mode: keep fighting the highest boss this character can beat.
+  isBossFarming: boolean
+  private bossFarmWaitUntil = 0
   // Set by the account manager: is an invite from this character one the dashboard asked for?
   acceptsInviteFrom: (inviterName: string) => boolean = () => false
   // Logged in somewhere else (e.g. the player's browser): stay offline, even across restarts, until Reconnect.
@@ -59,13 +69,25 @@ export class Session extends EventEmitter<SessionEvents> {
   readonly protocol: SaoProtocol
   private timing: SessionTiming
   private alertsByKey = new Map<string, Alert>()
-  private criticalTimes: number[] = []
   private lastSafetyActionAt = 0
   private isRunningSafety = false
+  // Combat memory for decideDanger: recent hits, each charged attack's damage, the emergency heal size.
+  private recentHits: Array<{ at: number, dmg: number, isCharge?: boolean }> = []
+  private chargeDamageByKey = new Map<string, number>()
+  private emergencyHealAmount = 0
+  // Normal (non-charged) hits taken lately, for weighing defence when enhancing.
+  private ownHits: Array<{ t: number, dmg: number }> = [] // our hits, for measuredDps
+  private skillDamage = new Map<string, number[]>() // damage per use, for bestSkills
+  private bestiary: Bestiary
+  private lastDangerActionAt = 0
   private lastQuestVisitAt = 0
   private isStopped = false
   lastRefitAt = 0
-  private lastBossAttemptAt = 0
+  private lastUpgradeTripAt = 0
+  private lastEquipCheckAt = 0
+  private isFarmRecheckQueued = false
+  // The last boss keep-farming tried. Only a retry of the same floor waits; a win moves the frontier on.
+  private lastBossAttempt: { floor: number, at: number } | null = null
   // 任務 run in progress: what we started from (for the report), and which story step failed.
   mission: { startedAt: number, startQuestsDone: number, failedStoryKey: string | null, notes: Set<string> } | null = null
   private samples: Array<{ takenAt: number, gold: number, exp: number, level: number }> = []
@@ -82,6 +104,7 @@ export class Session extends EventEmitter<SessionEvents> {
     timing?: Partial<SessionTiming>
     // Get a fresh token when the game rejects the saved one; null if we can't.
     relink?: () => Promise<string | null>
+    bestiary?: Bestiary
   }) {
     super()
     this.id = options.id
@@ -93,8 +116,10 @@ export class Session extends EventEmitter<SessionEvents> {
     this.safety = structuredClone({ ...DEFAULT_SAFETY, ...savedSafety, restock: { ...DEFAULT_SAFETY.restock, ...savedSafety?.restock } } as Safety)
     this.preferredWeapon = options.settings?.preferredWeapon || null
     this.autoFarm = options.settings?.autoFarm ?? null
+    this.isBossFarming = options.settings?.isBossFarming ?? false
     this.isOnHold = options.settings?.isOnHold ?? false
     this.timing = { safetyMs: 500, mainMs: 10000, sampleMs: 10000, ...options.timing }
+    this.bestiary = options.bestiary ?? new Bestiary()
     this.client = options.connector.openSocket(options.token)
     this.wireClientEvents(options.relink)
   }
@@ -140,8 +165,9 @@ export class Session extends EventEmitter<SessionEvents> {
     let wasInScene = false
     client.on('patch', () => {
       const player = client.player
+      this.bestiary.recordEnemies(player?.enemies as Array<{ monsterId?: string, hp?: number, attackTimerMs?: number }> | undefined, (client.gameParty?.members?.length ?? 1) <= 1)
       const currentLevel = player?.level ?? null
-      if (previousLevel != null && currentLevel != null && currentLevel > previousLevel) this.log('levelUp', `Level ${currentLevel}`)
+      if (previousLevel != null && currentLevel != null && currentLevel > previousLevel) { this.log('levelUp', `Level ${currentLevel}`); this.onLevelUp() }
       previousLevel = currentLevel
       // Knocked down in battle / a story scene waiting: the game waits for the player.
       const isFallen = Boolean(player?.fallen)
@@ -158,9 +184,106 @@ export class Session extends EventEmitter<SessionEvents> {
 
   // The game's own log, minus the per-hit combat/loot chatter (and level-ups, logged above).
   private logGameEntry(entry: GameLogEntry) {
+    this.rememberCombat(entry)
+    if (FIGHT_DONE_KEYS.has(entry.key)) this.recheckFarmSoon()
+    const stats = this.stats()
+    this.bestiary.recordLog(entry, stats && { atk: this.client.attack() ?? stats.atk, def: stats.def }, { fighter: this.id, name: this.name, areaId: this.player?.areaId })
     if (['combat', 'loot', 'info', 'level'].includes(entry.kind)) return
     const params = Object.entries(entry.p || {}).map(([key, value]) => `${key}=${describeGameValue(value)}`).join(' ')
     this.log(entry.kind === 'danger' ? 'alert' : 'game', params ? `${entry.key} ${params}` : entry.key)
+  }
+
+  // Learn from hits taken: recent damage, and how hard each boss's charged attacks land.
+  private rememberCombat(entry: GameLogEntry) {
+    const params = (entry.p ?? {}) as { dmg?: number, m?: { m?: string }, k?: { k?: string }, i?: { i?: string }, heal?: number }
+    if (entry.key === 'enemyAttack' && typeof params.dmg === 'number') {
+      const now = Date.now()
+      this.recentHits.push({ at: now, dmg: params.dmg, isCharge: Boolean(params.k?.k) })
+      this.recentHits = this.recentHits.filter((hit) => now - hit.at < 20000)
+      if (params.k?.k) {
+        const key = `${params.m?.m}:${params.k.k}`
+        this.chargeDamageByKey.set(key, Math.max(this.chargeDamageByKey.get(key) ?? 0, params.dmg))
+      }
+    }
+    const skillId = (params as { s?: { s?: string } }).s?.s
+    if (entry.key === 'skillHit' && skillId && typeof params.dmg === 'number') this.skillDamage.set(skillId, [...(this.skillDamage.get(skillId) ?? []).slice(-29), params.dmg])
+    if ((entry.key === 'attack' || entry.key === 'skillHit') && typeof params.dmg === 'number' && typeof entry.t === 'number') {
+      this.ownHits.push({ t: entry.t, dmg: params.dmg })
+      if (this.ownHits.length > DPS_HITS) this.ownHits.shift()
+    }
+    if (entry.key === 'crystalUsed' && params.i?.i?.startsWith('instant-') && typeof params.heal === 'number') this.emergencyHealAmount = params.heal
+  }
+
+  // Our damage per second while fighting, from the last few hundred hits
+  // (gaps over 5 s are between fights and don't count). Null until 30 s of fighting.
+  measuredDps(): number | null {
+    let seconds = 0
+    let damage = 0
+    for (let index = 1; index < this.ownHits.length; index++) {
+      const gap = this.ownHits[index]!.t - this.ownHits[index - 1]!.t
+      if (gap > 0 && gap < 5000) { seconds += gap / 1000; damage += this.ownHits[index]!.dmg }
+    }
+    return seconds >= 30 ? damage / seconds : null
+  }
+
+  // Buy enough recovery potions to heal `missing` more HP, in the nearest town
+  // that sells them. Caller holds the lock.
+  private async buyHealing(missing: number, nearFloor: number) {
+    const player = this.player
+    if (!player) return
+    const itemId = player.settings?.potionItem || recommendedKit(player.level, frontierFloor(player.clearedFloors)).autoDrink
+    const heal = ITEMS[itemId]?.heal
+    const shopFloor = shopFloorFor(itemId, frontierFloor(player.clearedFloors), nearFloor)
+    if (!heal || !shopFloor) return
+    const quantity = Math.ceil(missing / heal)
+    if ((await this.goTo(townOf(shopFloor))).error) return
+    const result = await this.command('buy', { itemId, qty: Math.min(quantity, MAX_BUY_PER_CALL) })
+    this.log('mode', result.ok ? `Bought ${quantity}× ${itemId} for the boss fight` : `Couldn't buy ${quantity}× ${itemId} for the boss fight (${result.error ?? 'timeout'})`)
+  }
+
+  // Refit: move to the strongest potions on sale on unlocked floors, only ever
+  // stronger, and not where you've locked your choice (settings).
+  async useStrongestPotion() {
+    const player = this.player
+    if (!player) return
+    const kit = recommendedKit(player.level, frontierFloor(player.clearedFloors))
+    const heal = (itemId?: string | null) => (itemId ? ITEMS[itemId]?.heal ?? 0 : 0)
+    if (!this.safety.isInstantLocked && this.safety.instantItem && heal(this.safety.instantItem) < heal(kit.backup)) {
+      this.safety.instantItem = null // back to automatic: the strongest on sale
+      this.emit('settingsChanged')
+      this.log('mode', `Emergency potion: ${ITEMS[kit.backup]?.name ?? kit.backup}`)
+    }
+    const best = kit.autoDrink
+    const current = player.settings?.potionItem
+    if (!this.safety.isPotionLocked && (!current || heal(best) > heal(current))) {
+      const result = await this.sendCommand({ type: 'updateSettings', settings: { potionItem: best } }, 'refit')
+      if (result.ok) this.log('mode', `Auto-drink potion: ${ITEMS[best]?.name ?? best}`)
+    }
+  }
+
+  // Healing the potions we carry add up to (crystals not counted).
+  healingSupply(): number {
+    return Object.entries(this.player?.inventory ?? {}).reduce((total, [itemId, count]) => total + (ITEMS[itemId]?.heal ?? 0) * count, 0)
+  }
+
+  // How dangerous the fight is right now (see decideDanger).
+  threat(): Threat {
+    const now = Date.now()
+    const hits = this.recentHits.filter((hit) => now - hit.at < 15000)
+    let burst = 0
+    for (const hit of hits) burst = Math.max(burst, hits.filter((other) => other.at >= hit.at && other.at - hit.at < 1000).reduce((sum, other) => sum + other.dmg, 0))
+    let chargeDamage: number | null = null
+    for (const enemy of (this.player?.enemies ?? []) as Array<{ monsterId?: string, charge?: { k?: string } | null }>) {
+      if (!enemy.charge?.k) continue
+      // Seen by this character, else learned by any (as an attack, so it converts to our
+      // defence), else 3.5× the biggest normal hit (seen: 3.3–3.4×). Never 3.5× a charge: that snowballs.
+      const learnedAttack = enemy.monsterId ? this.bestiary.get(enemy.monsterId)?.charges?.[enemy.charge.k] : undefined
+      const def = Math.max(0, this.stats()?.def ?? 0)
+      const expected = this.chargeDamageByKey.get(`${enemy.monsterId}:${enemy.charge.k}`)
+        ?? (learnedAttack ? (learnedAttack * learnedAttack) / (learnedAttack + def) : Math.max(...hits.filter((hit) => !hit.isCharge).map((hit) => hit.dmg), 0) * 3.5)
+      chargeDamage = Math.max(chargeDamage ?? 0, expected)
+    }
+    return { burst, chargeDamage, emergencyHeal: this.emergencyHealAmount }
   }
 
   private logServerEvent(message: Record<string, any>) {
@@ -269,6 +392,21 @@ export class Session extends EventEmitter<SessionEvents> {
     }
   }
 
+  // The skills that do the most damage for the weapon in hand, best first, one per slot.
+  bestSkills(): string[] {
+    const { skillSlotCount: count, skillChoices } = this.skillSummary()
+    const measured = Object.fromEntries([...this.skillDamage].map(([skillId, damages]) => [skillId, [...damages].sort((a, b) => a - b)[Math.floor(damages.length / 2)]!]))
+    return rankSkills(skillChoices, measured).slice(0, count)
+  }
+
+  async useBestSkills() {
+    const best = this.bestSkills()
+    const current = (this.player?.skillSlots ?? []) as string[]
+    if (!best.length || best.join() === current.join()) return
+    const result = await this.sendCommand({ type: 'setSkillSlots', skillIds: best }, 'refit')
+    if (result.ok) this.log('mode', `Skills: ${best.join(', ')}`)
+  }
+
   // Level + gear stats, as the game client computes them.
   stats() {
     const player = this.player
@@ -369,33 +507,23 @@ export class Session extends EventEmitter<SessionEvents> {
     const hpPct = this.hpPct()
     if (hpPct != null && hpPct < 15 && isFightingActivity(this.activityType)) this.raiseAlert('nearDeath', 'nearDeath', `HP ${hpPct}%`, { hp: hpPct })
     else this.clearAlert('nearDeath')
-    if (Date.now() - this.lastSafetyActionAt < SAFETY_COOLDOWN_MS) return
-    const safetyAction = decideSafety(player, hpPct, this.safety)
+    // One hit or charge from death: act now, even inside the normal cooldown.
+    const dangerAction = this.safety.isEnabled ? decideDanger(player, this.threat()) : null
+    const isDangerReady = dangerAction && Date.now() - this.lastDangerActionAt > DANGER_REPEAT_MS
+    if (!isDangerReady && Date.now() - this.lastSafetyActionAt < SAFETY_COOLDOWN_MS) return
+    const safetyAction = isDangerReady ? dangerAction : decideSafety(player, hpPct, this.safety)
     if (!safetyAction) return
     this.isRunningSafety = true
     try {
       this.lastSafetyActionAt = Date.now()
+      if (safetyAction === dangerAction) this.lastDangerActionAt = Date.now()
       this.log('safety', safetyAction.reason)
       await this.sendCommand(safetyAction.command, 'safety')
-      if (safetyAction.isCritical) this.recordCloseCall(safetyAction.reason)
     } finally { this.isRunningSafety = false }
-  }
-
-  private recordCloseCall(reason: string) {
-    const currentTime = Date.now()
-    this.criticalTimes = this.criticalTimes.filter((happenedAt) => currentTime - happenedAt < CRITICAL_WINDOW_MS)
-    this.criticalTimes.push(currentTime)
-    if (this.criticalTimes.length < this.safety.haltAfterCriticalCount || this.haltReason) return
-    this.haltReason = `${this.criticalTimes.length} close calls in 5 min (last: ${reason})`
-    this.raiseAlert('halted', 'halted', `Bot stopped itself: ${this.haltReason}`, { count: this.criticalTimes.length })
-    this.log('alert', `Halted: ${this.haltReason}`, { choices: [{ label: 'Resume', request: { action: 'resume' }, until: 'resumed' }] })
-    this.emit('halted', this.haltReason)
-    if (this.isHunting) this.command('stopHunt', {}, 'safety')
   }
 
   resume() {
     this.haltReason = null
-    this.criticalTimes = []
     this.clearAlert('halted')
     this.log('mode', 'Resumed by user')
   }
@@ -416,6 +544,7 @@ export class Session extends EventEmitter<SessionEvents> {
     if (!this.isConnected || !this.player) return
     await this.checkRestock()
     if (this.mission) await this.keepMissions()
+    else if (this.isBossFarming) await this.keepBossFarming()
     else await this.keepFarming()
   }
 
@@ -429,6 +558,26 @@ export class Session extends EventEmitter<SessionEvents> {
     const isWorthTheTrip = plannedCount >= 5 || totalPotions(this.player?.inventory) === 0
     const canRestockNow = this.safety.isAutoRestockOn && !this.haltReason && !this.busyLabel && !this.isInBossFight
     if (canRestockNow && isWorthTheTrip) await this.restock()
+  }
+
+  // Stronger now: 練功 rechecks the boss, gear and farm area right away,
+  // without the waits a failed boss try or a gear trip set.
+  private onLevelUp() {
+    this.lastBossAttempt = null
+    this.lastUpgradeTripAt = 0
+    setTimeout(() => this.useBestSkills().catch((error: Error) => this.log('error', error.message)), 0) // a new level may bring a new skill
+    this.recheckFarmSoon()
+  }
+
+  // 練功: recheck boss, gear, potions and farm area now (after a fight or a level-up)
+  // instead of waiting for the next tick. One queued at a time.
+  private recheckFarmSoon() {
+    if (!this.autoFarm || this.isFarmRecheckQueued) return
+    this.isFarmRecheckQueued = true
+    setTimeout(() => {
+      this.isFarmRecheckQueued = false
+      this.keepFarming().catch((error: Error) => this.log('error', error.message))
+    }, FARM_RECHECK_DELAY_MS)
   }
 
   setAutoFarm(autoFarm: AutoFarm | null) {
@@ -465,11 +614,30 @@ export class Session extends EventEmitter<SessionEvents> {
     // refit, potion check, then fight). After a failed try, wait before the next one.
     const frontier = frontierFloor(player.clearedFloors)
     const bossRoomId = `f${frontier}-bossroom`
-    if (WORLD_AREAS[bossRoomId] && isAreaSafeFor(bossRoomId, player.level) && Date.now() - this.lastBossAttemptAt > BOSS_RETRY_MS) {
-      this.lastBossAttemptAt = Date.now()
+    const isRetryTooSoon = this.lastBossAttempt?.floor === frontier && Date.now() - this.lastBossAttempt.at < BOSS_RETRY_MS
+    if (WORLD_AREAS[bossRoomId] && !this.bossBlocker(frontier) && !isRetryTooSoon) {
+      this.lastBossAttempt = { floor: frontier, at: Date.now() }
       this.log('mode', `Farm: strong enough for the floor ${frontier} boss — challenging it to unlock floor ${frontier + 1}`)
       const result = await this.challengeBoss(frontier)
       if (result.error) this.log('alert', `Farm: boss not fought — ${result.error}`)
+      return
+    }
+    // Picked up something better (drops: accessories only come from monsters)? Wear it now.
+    if (Date.now() - this.lastEquipCheckAt > EQUIP_CHECK_MS && this.ownedUpgradeSlots().length) {
+      this.lastEquipCheckAt = Date.now()
+      await this.withLock('equip', async () => {
+        const swaps = await this.upgradeGear()
+        if (swaps.length) this.log('mode', `Farm: wearing better gear — ${swaps.join(', ')}`)
+        return { ok: true }
+      })
+      return
+    }
+    // A better piece sold in an unlocked town that we can afford? Go refit there.
+    const upgradeTown = Date.now() - this.lastUpgradeTripAt > UPGRADE_REFIT_MS ? this.affordableUpgradeTown() : null
+    if (upgradeTown) {
+      this.lastUpgradeTripAt = Date.now() // also if it fails: don't walk back and forth
+      this.log('mode', `Farm: better gear for sale in ${upgradeTown} — refitting`)
+      await this.withLock('refit', () => this.refitIn(upgradeTown))
       return
     }
     const bestAreaId = safeAreaFor(player.level, 'field', frontier)
@@ -497,7 +665,8 @@ export class Session extends EventEmitter<SessionEvents> {
       const homeAreaId = this.player!.areaId
       const wasHunting = this.isHunting
       const result = await this.buySupplies()
-      if (homeAreaId && this.player?.areaId !== homeAreaId) await this.goTo(homeAreaId)
+      // Go back only to a field it was hunting in — never into a boss room after a fight.
+      if (wasHunting && homeAreaId && this.player?.areaId !== homeAreaId) await this.goTo(homeAreaId)
       if (wasHunting && this.player?.areaId === homeAreaId) await this.command('startHunt')
       return result
     })
@@ -544,13 +713,39 @@ export class Session extends EventEmitter<SessionEvents> {
       const travelResult = await this.goTo(townId)
       if (travelResult.error) return travelResult
       await this.handleQuests()
+      await this.useStrongestPotion()
       await this.buySupplies()
       if (this.player?.areaId !== townId) await this.goTo(townId)
       const swaps = await this.upgradeGear()
+      // Higher tiers are sold on higher floors: also shop in the highest unlocked town with something better we can afford.
+      const betterTown = this.affordableUpgradeTown()
+      if (betterTown && betterTown !== this.player?.areaId && !(await this.goTo(betterTown)).error) swaps.push(...await this.upgradeGear())
       const enhanced = await this.enhanceGear()
+      await this.useBestSkills()
       this.lastRefitAt = Date.now()
       this.log('mode', `Refit done${swaps.length ? ` — new gear: ${swaps.join(', ')}` : ''}${enhanced ? ` — ${enhanced} enhanced` : ''}`)
       return { ok: true, swaps }
+  }
+
+  // Slots where something already in the bag beats what's worn.
+  ownedUpgradeSlots(): string[] {
+    const player = this.player
+    if (!player) return []
+    const ownedIds = Object.entries(player.inventory ?? {}).filter(([, quantity]) => quantity > 0).map(([itemId]) => itemId)
+    const slots = [...new Set([...Object.keys(player.equipment ?? {}), ...Object.keys(EMPTY_SLOT_FAMILIES)])]
+    return slots.filter((slot) => slotUpgrades(slot, player.level, player.equipment ?? {}, player.gear as Record<string, GearInstance> | undefined, ownedIds).length)
+  }
+
+  // The highest unlocked town selling a gear upgrade this character can afford now, or null.
+  affordableUpgradeTown(): string | null {
+    const player = this.player
+    if (!player) return null
+    const slots = [...new Set([...Object.keys(player.equipment ?? {}), ...Object.keys(EMPTY_SLOT_FAMILIES)])]
+    for (let floor = frontierFloor(player.clearedFloors); floor >= 1; floor--) {
+      const affordable = (WORLD_AREAS[townOf(floor)]?.shop ?? []).filter((itemId) => (GEAR[itemId]?.price ?? Infinity) <= (player.col ?? 0))
+      if (slots.some((slot) => slotUpgrades(slot, player.level, player.equipment ?? {}, player.gear as Record<string, GearInstance> | undefined, affordable).length)) return townOf(floor)
+    }
+    return null
   }
 
   // Recovery potions short of this character's "restock when below" level, or null.
@@ -566,22 +761,100 @@ export class Session extends EventEmitter<SessionEvents> {
   // 王戰: the highest boss this character can reach (the first uncleared floor, or
   // a given one). Refit in that floor's town first, check level and potions,
   // then walk to the boss room and challenge.
-  async challengeBoss(floor?: number): Promise<CommandResult> {
+  // Only one of 練功 / 王戰 / 任務 runs at a time; 修整 and Stop end them all.
+  stopModes() {
+    if (this.autoFarm) this.setAutoFarm(null)
+    if (this.mission) this.stopMissions()
+    if (this.isBossFarming) this.setBossFarming(false)
+  }
+
+  setBossFarming(isOn: boolean) {
+    this.isBossFarming = isOn
+    this.bossFarmWaitUntil = 0
+    this.log('mode', isOn ? 'Boss farming on' : 'Boss farming off')
+    this.emit('settingsChanged')
+  }
+
+  // The next uncleared floor's boss: what we know of it, and what beating it takes.
+  nextBoss() {
+    const player = this.player
+    const stats = this.stats()
+    if (!player || !stats) return null
+    const floor = frontierFloor(player.clearedFloors)
+    const boss = this.bestiary.get(`f${floor}-boss`)
+    return { floor, level: boss?.level ?? null, maxHp: boss?.maxHp ?? null, atk: boss?.atk ?? null, def: boss?.def ?? null, ...bossRequirement(boss, stats, this.measuredDps()) }
+  }
+
+  // Why this character can't fight a floor's boss yet, or null if it can.
+  // Boss met before: max HP must be 2× its worst 2 seconds, and once we know its
+  // damage rate and our own, the fight may cost at most MAX_BOSS_HP_BARS of HP.
+  // Otherwise: the level rule (boss level + BOSS_LEVEL_MARGIN).
+  bossBlocker(floor: number): CommandResult | null {
+    const player = this.player
+    const stats = this.stats()
+    if (!player || !stats) return { error: 'disconnected' }
+    const need = bossRequirement(this.bestiary.get(`f${floor}-boss`), stats, this.measuredDps())
+    if (need && stats.maxHp < need.hpNeeded) return { error: `The floor ${floor} boss can deal ${need.worstDamage} in 2 s — needs max HP ${need.hpNeeded}, has ${stats.maxHp}`, code: 'needHp' }
+    if (need?.hpBars != null) {
+      return need.hpBars <= MAX_BOSS_HP_BARS ? null : { error: `The floor ${floor} boss would take ~${need.fightSeconds} s to kill and cost ${need.hpBars} HP bars (max ${MAX_BOSS_HP_BARS})`, code: 'longFight' }
+    }
+    const bossRoomId = `f${floor}-bossroom`
+    if (isAreaSafeFor(bossRoomId, player.level)) return null
+    const bossLevel = areaLevel(bossRoomId)
+    const needLevel = (bossLevel ?? 0) + BOSS_LEVEL_MARGIN
+    return { error: `The floor ${floor} boss is Lv${bossLevel} — needs Lv${needLevel}`, code: 'needLevel', needLevel }
+  }
+
+  // The highest boss this character can fight, on an unlocked floor.
+  bestBossFloor(): number | null {
+    const player = this.player
+    if (!player) return null
+    for (let floor = frontierFloor(player.clearedFloors); floor >= 1; floor--) {
+      if (!this.bossBlocker(floor)) return floor
+    }
+    return null
+  }
+
+  // 王戰 mode, every main tick: fight the best boss again as soon as it respawns;
+  // refit only when potions run short.
+  async keepBossFarming() {
+    const player = this.player
+    if (!this.isBossFarming || !player || this.haltReason || this.busyLabel || this.partyRole?.isActive || this.isInBossFight) return
+    if (Date.now() < this.bossFarmWaitUntil) return
+    const floor = this.bestBossFloor()
+    if (!floor) { this.raiseAlert('bossFarm', 'noBossToFarm', 'No boss this character can beat yet'); return }
+    this.clearAlert('bossFarm')
+    const respawnMs = (player.bossCd as Record<string, number> | undefined)?.[String(floor)] ?? 0
+    if (respawnMs > 0) return // still respawning: wait where we are
+    const result = await this.challengeBoss(floor, { shouldRefit: this.potionShortfall() != null })
+    if (result.error) {
+      this.bossFarmWaitUntil = Date.now() + BOSS_FARM_WAIT_MS
+      this.log('alert', `Boss farming: ${result.error} — trying again in 5 min`)
+    }
+  }
+
+  async challengeBoss(floor?: number, { shouldRefit = true } = {}): Promise<CommandResult> {
     const player = this.player
     if (!player) return { error: 'disconnected' }
     const frontier = frontierFloor(player.clearedFloors)
     const bossFloor = floor ?? frontier
     const bossRoomId = `f${bossFloor}-bossroom`
     if (bossFloor > frontier) return { error: `Floor ${bossFloor} is locked` }
-    if (!isAreaSafeFor(bossRoomId, player.level)) {
-      const bossLevel = areaLevel(bossRoomId)
-      return { error: `The floor ${bossFloor} boss is Lv${bossLevel} — needs Lv${(bossLevel ?? 0) + 1}`, code: 'needLevel', needLevel: (bossLevel ?? 0) + 1 }
-    }
+    const blocker = this.bossBlocker(bossFloor)
+    if (blocker) return blocker
     return this.withLock(`boss: floor ${bossFloor}`, async (): Promise<CommandResult> => {
-      const refitResult = await this.refitIn(townOf(bossFloor))
-      if (refitResult.error) return refitResult
+      if (shouldRefit) {
+        const refitResult = await this.refitIn(townOf(bossFloor))
+        if (refitResult.error) return refitResult
+      }
       const shortfall = this.potionShortfall()
       if (shortfall) return { error: `Only ${shortfall.count} potions (needs ${shortfall.needed}) — not fighting the boss` }
+      // Enough potions to heal back every HP bar the fight costs beyond the first.
+      const stats = this.stats()
+      const need = stats && bossRequirement(this.bestiary.get(`f${bossFloor}-boss`), stats, this.measuredDps())
+      const healingNeeded = need?.hpBars && stats ? Math.round((need.hpBars - 1) * stats.maxHp) : 0
+      if (healingNeeded > this.healingSupply()) await this.buyHealing(healingNeeded - this.healingSupply(), bossFloor)
+      if (healingNeeded > this.healingSupply()) return { error: `Potions heal ${this.healingSupply()} — a ${need!.hpBars}-bar fight needs ${healingNeeded}`, code: 'needPotions' }
       const travelResult = await this.goTo(bossRoomId, { maxSteps: 30 })
       if (travelResult.error) return travelResult
       const result = await this.command('startBoss', {}, 'boss')
@@ -593,7 +866,7 @@ export class Session extends EventEmitter<SessionEvents> {
   // ---- 任務 -----------------------------------------------------------------
 
   startMissions() {
-    if (this.autoFarm) this.setAutoFarm(null)
+    this.stopModes()
     this.mission = { startedAt: Date.now(), startQuestsDone: this.player?.questsDone?.length ?? 0, failedStoryKey: null, notes: new Set() }
     this.log('mode', 'Missions: taking quests and working through them')
     this.keepMissions().catch((error: Error) => this.log('error', error.message))
@@ -687,7 +960,7 @@ export class Session extends EventEmitter<SessionEvents> {
       const equippedId = player.equipment?.[slot]
       const ownedIds = Object.entries(player.inventory ?? {}).filter(([, quantity]) => quantity > 0).map(([itemId]) => itemId)
       const availableIds = [...(WORLD_AREAS[player.areaId]?.shop ?? []), ...ownedIds]
-      const candidates = equippedId ? gearUpgrades(equippedId, player.level, availableIds) : bestGearOf(EMPTY_SLOT_FAMILIES[slot]!, 0, player.level, availableIds)
+      const candidates = slotUpgrades(slot, player.level, player.equipment ?? {}, player.gear as Record<string, GearInstance> | undefined, availableIds)
       for (const itemId of candidates) {
         if (!((this.player?.inventory?.[itemId] ?? 0) > 0)) {
           const buyResult = await this.sendCommand({ type: 'buy', itemId, qty: 1 }, 'refit')
@@ -701,13 +974,13 @@ export class Session extends EventEmitter<SessionEvents> {
   }
 
   // 強化: a few tries per worn piece while the game allows (materials, tries left).
-  // The forge opens after floor 1's boss. ponytail: fixed directions (attack /
-  // defence / HP); make them a setting if players want speed or crit builds.
+  // The forge opens after floor 1's boss. Weapons on attack, everything else on max HP.
   private async enhanceGear(): Promise<number> {
     if (!(this.player?.clearedFloors ?? []).includes(1)) return 0
     let successes = 0
     for (const slot of Object.keys(this.player?.equipment ?? {})) {
-      const dir = slot === 'weapon' ? 'sharp' : ['accessory', 'ring2', 'neck'].includes(slot) ? 'vital' : 'hard'
+      const player = this.player!
+      const dir = survivalDirection(slot)
       for (let attempt = 0; attempt < ENHANCE_TRIES_PER_REFIT; attempt++) {
         const result = await this.sendCommand({ type: 'enhance', slot, dir, mats: 1 }, 'refit')
         if (result.error || result.timeout) break // out of materials or tries: next slot
@@ -756,7 +1029,7 @@ export class Session extends EventEmitter<SessionEvents> {
     const stats = this.stats()
     const expNeeded = this.client.expNeeded() ?? (player ? expToNextLevel(player.level) : null)
     const inventory = player?.inventory || {}
-    const kit = recommendedKit(player?.level ?? 1)
+    const kit = recommendedKit(player?.level ?? 1, frontierFloor(player?.clearedFloors))
     const autoDrinkItem = player?.settings?.potionItem || kit.autoDrink
     return {
       id: this.id,
@@ -770,6 +1043,7 @@ export class Session extends EventEmitter<SessionEvents> {
       preferredWeapon: this.preferredWeapon,
       autoFarm: this.autoFarm,
       isOnMission: this.mission != null,
+      isBossFarming: this.isBossFarming,
       alerts: [...this.alertsByKey.values()],
       safety: this.safety,
       player: player && {
@@ -778,11 +1052,12 @@ export class Session extends EventEmitter<SessionEvents> {
         exp: player.exp,
         expNeeded,
         expPct: expNeeded ? Math.floor((player.exp / expNeeded) * 1000) / 10 : null,
-        hp: player.hp,
+        hp: Math.round(player.hp),
         maxHp: maxHp.value,
         isMaxHpEstimated: maxHp.isEstimated,
         hpPct: this.hpPct(),
         attack: this.client.attack() ?? stats?.atk ?? null,
+        nextBoss: this.nextBoss(),
         stats: stats && { def: stats.def, speed: stats.speed, crit: stats.crit, critDmg: stats.critDmg, isEstimated: stats.isEstimated },
         equipment: player.equipment || null,
         ownedGear: this.ownedGear(),

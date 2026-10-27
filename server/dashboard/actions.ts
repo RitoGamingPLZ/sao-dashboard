@@ -25,27 +25,29 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
         })
       return { ok: true, isStarted: true }
     }
-    case 'startBoss': { // 王戰: refit, then the highest boss this character can reach
-      if (session.busyLabel) return busyError
+    case 'startBoss': { // 王戰: boss farming on/off — the highest boss it can beat, again and again
+      if (session.isBossFarming) { session.setBossFarming(false); return { ok: true } }
       if (!player) return { error: 'disconnected' }
-      const floor = frontierFloor(player.clearedFloors)
-      if (!isAreaSafeFor(`f${floor}-bossroom`, player.level)) return session.challengeBoss(floor) // returns the level error at once
-      session.challengeBoss(floor).then((result) => result?.error && session.log('error', `Boss: ${result.error}`))
+      if (!session.bestBossFloor()) return { error: `No boss to farm yet — ${session.bossBlocker(1)?.error}` }
+      session.stopModes()
+      session.setBossFarming(true)
+      session.keepBossFarming().catch((error: Error) => session.log('error', error.message))
       return { ok: true, isStarted: true }
     }
     case 'farm': {
       const untilLevel = body.untilLevel == null ? null : Math.floor(Number(body.untilLevel))
       if (untilLevel != null && !(untilLevel > (player?.level ?? 0) && untilLevel <= 999)) return { error: 'untilLevel must be above the current level' }
+      if (session.mission) session.stopMissions()
+      if (session.isBossFarming) session.setBossFarming(false)
       session.setAutoFarm({ untilLevel })
       session.keepFarming().catch((error: Error) => session.log('error', error.message))
       return { ok: true, isStarted: true }
     }
     case 'stopHunt':
     case 'stopBoss':
-      if (session.autoFarm) session.setAutoFarm(null)
-      if (session.mission) session.stopMissions()
+      session.stopModes()
       if (session.busyLabel) return busyError
-      return session.command(body.action, {}, 'dashboard')
+      return session.command('stopHunt', {}, 'dashboard')
     case 'completeMission': // 任務: start a mission run, or stop the one in progress
       if (session.mission) { session.stopMissions(); return { ok: true } }
       if (!player) return { error: 'disconnected' }
@@ -67,7 +69,8 @@ export async function runAccountAction(session: Session, body: ActionRequest): P
         .then((result) => result?.error && session.log('error', `Travel: ${result.error}`))
       return { ok: true, isStarted: true }
     }
-    case 'refit':
+    case 'refit': // 修整: pause everything, refit in town, and stay there
+      session.stopModes()
       if (session.busyLabel) return busyError
       session.refit().then((result) => result?.error && session.log('error', `Refit: ${result.error}`))
       return { ok: true, isStarted: true }

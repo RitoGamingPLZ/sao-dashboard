@@ -21,6 +21,8 @@ export const DEFAULT_SAFETY: Safety = {
   boss: { ...HARD_MIN_THRESHOLDS.boss },
   isAutoRestockOn: true,
   instantItem: null,
+  isPotionLocked: false,
+  isInstantLocked: false,
   restock: {
     autoDrinkMin: 50, autoDrinkTarget: 100, // restock when below the first number, up to the second
     instantMin: 30, instantTarget: 100,
@@ -28,7 +30,6 @@ export const DEFAULT_SAFETY: Safety = {
     teleportMin: 3, teleportTarget: 10,
     maxSpendPct: 50, // never spend more than this share of current gold on one restock
   },
-  haltAfterCriticalCount: 3, // close calls within 5 minutes before the bot stops itself
 }
 
 const FIGHT_CONTEXTS: FightContext[] = ['normal', 'boss']
@@ -50,6 +51,8 @@ export function validateSafety(currentSafety: Safety, update: SafetyUpdate, { is
   }
   if (update.isEnabled != null) nextSafety.isEnabled = !!update.isEnabled
   if (update.isAutoRestockOn != null) nextSafety.isAutoRestockOn = !!update.isAutoRestockOn
+  if (update.isPotionLocked != null) nextSafety.isPotionLocked = !!update.isPotionLocked
+  if (update.isInstantLocked != null) nextSafety.isInstantLocked = !!update.isInstantLocked
   if (update.instantItem !== undefined) {
     if (update.instantItem !== null && ITEMS[update.instantItem]?.kind !== 'instant') return { error: 'instantItem must be an instant potion' }
     nextSafety.instantItem = update.instantItem
@@ -85,6 +88,33 @@ const hasItem = (inventory: Inventory, itemId: string) => (inventory[itemId] ?? 
 const hasAnyHealingItem = (inventory: Inventory) => Object.entries(inventory).some(([itemId, quantity]) => isHealingItem(itemId) && quantity > 0)
 
 export interface SafetyAction { command: GameCommand, reason: string, isCritical: boolean }
+
+// What the fight has been throwing at us, from the game's own combat log.
+export interface Threat {
+  burst: number // most damage taken within one second, lately
+  chargeDamage: number | null // a charged attack is coming: how hard it's expected to hit
+  emergencyHeal: number // what one emergency heal (瞬補) restored last time; 0 = not seen yet
+}
+
+// Percentages can't keep up with bosses: one hit can take 40% of max HP. So when
+// the next charge or two seconds of damage could kill, use the strongest heal
+// that's enough — not a potion. Runs before decideSafety and ignores its cooldown.
+export function decideDanger(player: GamePlayer | null, threat: Threat): SafetyAction | null {
+  if (!player || player.dead || !isFighting(player)) return null
+  const lethal = Math.max(threat.chargeDamage ? threat.chargeDamage * 1.15 : 0, threat.burst * 2)
+  if (lethal <= 0 || player.hp > lethal) return null
+  const inventory = player.inventory || {}
+  const hasInstant = Object.entries(inventory).some(([itemId, quantity]) => itemId.startsWith('instant-') && quantity > 0)
+  const isEmergencyReady = (player.instantCdMs ?? 0) <= 0 && hasInstant
+  const why = threat.chargeDamage ? `charged attack (~${Math.round(threat.chargeDamage)}) coming` : `taking ~${Math.round(threat.burst)}/s`
+  if (isEmergencyReady && player.hp + threat.emergencyHeal > lethal) {
+    return { command: { type: 'emergency' }, reason: `HP ${Math.round(player.hp)} — ${why}: emergency heal`, isCritical: false }
+  }
+  if (hasItem(inventory, 'crystal-heal')) return { command: { type: 'use', itemId: 'crystal-heal' }, reason: `HP ${Math.round(player.hp)} — ${why}: heal crystal`, isCritical: true }
+  if (isEmergencyReady) return { command: { type: 'emergency' }, reason: `HP ${Math.round(player.hp)} — ${why}: emergency heal (no heal crystal)`, isCritical: true }
+  if (hasItem(inventory, 'crystal-teleport')) return { command: { type: 'use', itemId: 'crystal-teleport' }, reason: `HP ${Math.round(player.hp)} — ${why}: teleport out`, isCritical: true }
+  return null
+}
 
 // What to do right now to keep the character alive, or null.
 export function decideSafety(player: GamePlayer | null, hpPct: number | null, safety: Safety): SafetyAction | null {
@@ -123,7 +153,7 @@ export function planRestock(player: GamePlayer | null, safety: Safety, frontier:
   if (!player) return []
   const inventory = player.inventory || {}
   const limits = stockLevelsFor(safety.restock, player.level || 1) // scaled down below Lv30
-  const kit = recommendedKit(player.level || 1)
+  const kit = recommendedKit(player.level || 1, frontier)
   const autoDrinkItem = player.settings?.potionItem || kit.autoDrink
   const currentFloor = currentFloorOf(player.areaId)
   const shortages: Array<{ itemId: string, quantity: number }> = []

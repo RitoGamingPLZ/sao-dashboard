@@ -12,9 +12,10 @@ import { SaoConnector, SaoApiError } from '../sao/connector'
 import { Session, type SessionTiming } from './session'
 import { Vault, generatePassword } from './vault'
 import { PartyManager } from './party'
+import { Bestiary } from './bestiary'
 import { validateSafety, type SafetyUpdate } from './safety'
 
-interface SavedAccount { id: string, account?: string, name: string, safety?: Safety, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean }
+interface SavedAccount { id: string, account?: string, name: string, safety?: Safety, preferredWeapon?: string | null, autoFarm?: AutoFarm | null, isOnHold?: boolean, isBossFarming?: boolean }
 // Accounts removed from the dashboard, kept so they can be added back in one click.
 export interface PreviousAccount { id: string, account: string, name: string }
 interface Settings { accounts: SavedAccount[], parties: Party[], previousAccounts?: PreviousAccount[] }
@@ -38,6 +39,8 @@ export class AccountManager {
   readonly answerListeners = new Set<(event: Session['events'][number]) => void>()
   private settingsFile: string
   private sessionTiming?: Partial<SessionTiming>
+  readonly bestiary: Bestiary
+  private bestiaryTimer: ReturnType<typeof setInterval>
 
   constructor({ protocol, dataDir, sessionTiming, partyTickMs }: {
     protocol: SaoProtocol
@@ -50,6 +53,9 @@ export class AccountManager {
     mkdirSync(dataDir, { recursive: true })
     this.vault = new Vault(join(dataDir, 'vault.enc'))
     this.settingsFile = join(dataDir, 'settings.json')
+    this.bestiary = new Bestiary(join(dataDir, 'monsters.json'))
+    this.bestiaryTimer = setInterval(() => this.bestiary.save(), 30000)
+    this.bestiaryTimer.unref?.()
     this.sessionTiming = sessionTiming
     this.partyManager = new PartyManager({
       getSession: (accountId) => this.sessionsById.get(accountId),
@@ -79,7 +85,7 @@ export class AccountManager {
   saveSettings() {
     const settings: Settings = {
       accounts: this.sessions.map((session) => ({
-        id: session.id, account: session.account, name: session.name, safety: session.safety, preferredWeapon: session.preferredWeapon, autoFarm: session.autoFarm, isOnHold: session.isOnHold,
+        id: session.id, account: session.account, name: session.name, safety: session.safety, preferredWeapon: session.preferredWeapon, autoFarm: session.autoFarm, isOnHold: session.isOnHold, isBossFarming: session.isBossFarming,
       })),
       parties: this.partyManager?.parties ?? [],
       previousAccounts: this.previousAccounts,
@@ -97,6 +103,7 @@ export class AccountManager {
       settings,
       timing: this.sessionTiming,
       relink: () => this.relink(accountId, account),
+      bestiary: this.bestiary,
     })
     session.on('event', (event) => { for (const listener of this.eventListeners) listener(event) })
     session.on('answered', (event) => { for (const listener of this.answerListeners) listener(event) })
@@ -146,9 +153,10 @@ export class AccountManager {
   // password. The password is returned once and kept encrypted in the vault.
   // (The game's /api/link creates the account when it doesn't exist yet.)
   async createAccount(account: unknown, name: unknown) {
-    const accountId = String(account || '').trim()
     const characterName = String(name || '').trim()
-    if (!accountId || !characterName) return { error: 'Account and character name are required' }
+    if (!characterName) return { error: 'A character name is required' }
+    // No username given: generate one (lowercase letters and digits).
+    const accountId = String(account || '').trim() || `sao${randomUUID().replaceAll('-', '').slice(0, 9)}`
     if (this.findByAccount(accountId)) return { error: `${accountId} is already on the dashboard` }
     if (this.sessions.length >= MAX_ACCOUNTS) return { error: `The dashboard runs at most ${MAX_ACCOUNTS} characters` }
     const password = generatePassword()
@@ -248,6 +256,8 @@ export class AccountManager {
   }
 
   shutdown() {
+    clearInterval(this.bestiaryTimer)
+    this.bestiary.save()
     this.partyManager.stop()
     for (const session of this.sessions) session.stop()
   }

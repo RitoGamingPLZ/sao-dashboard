@@ -21,8 +21,10 @@ export interface Safety {
   isAutoRestockOn: boolean
   // The instant potion (瞬補) to keep stocked; null = the one recommended for the level.
   instantItem: string | null
+  // Locked: refit keeps this potion instead of upgrading to the strongest on sale.
+  isPotionLocked: boolean
+  isInstantLocked: boolean
   restock: RestockLimits
-  haltAfterCriticalCount: number
 }
 export type FightContext = 'normal' | 'boss'
 
@@ -64,6 +66,8 @@ export interface PlayerSummary {
   isMaxHpEstimated: boolean
   hpPct: number | null
   attack: number | null
+  // Next uncleared floor's boss, from stats learned in fights (worstDamage: its most damage within 3 s, once its attack is known).
+  nextBoss: { fightSeconds?: number | null, hpBars?: number | null, floor: number, level: number | null, maxHp: number | null, atk: number | null, def: number | null, worstDamage?: number, hpNeeded?: number, normalHit?: number, chargeHit?: number, hp?: number } | null
   // From the game client's stat formula (level + gear); isEstimated when a worn piece isn't in our table.
   stats: { def: number, speed: number, crit: number, critDmg: number, isEstimated: boolean } | null
   equipment: Record<string, string> | null
@@ -103,6 +107,7 @@ export interface AccountSummary {
   preferredWeapon: string | null
   autoFarm: AutoFarm | null
   isOnMission: boolean
+  isBossFarming: boolean
   alerts: Alert[]
   safety: Safety
   player: PlayerSummary | null

@@ -4,8 +4,8 @@ const { t } = useI18n()
 const dialog = ref<HTMLDialogElement>()
 const tab = ref<'login' | 'create'>('login')
 const login = reactive({ account: '', password: '', shouldRememberPassword: true })
-const create = reactive({ account: '', name: '' })
-const created = ref<{ name: string, password: string } | null>(null)
+const create = reactive({ name: '' })
+const created = ref<{ account: string, name: string, password: string } | null>(null)
 const status = ref('')
 const isBusy = ref(false)
 // Accounts removed earlier: one click adds them back (if a password was saved) or fills the form.
@@ -15,7 +15,7 @@ const loadPrevious = async () => { previousAccounts.value = await callApi('GET',
 
 function open() {
   Object.assign(login, { account: '', password: '', shouldRememberPassword: true })
-  Object.assign(create, { account: '', name: '' })
+  create.name = ''
   created.value = null
   status.value = ''
   tab.value = 'login'
@@ -42,7 +42,7 @@ const submitLogin = () => submit('/api/accounts/login', login, (result) => {
 })
 const submitCreate = () => submit('/api/accounts/create', create, (result) => {
   status.value = ''
-  created.value = { name: result.name!, password: result.password! }
+  created.value = { account: result.account!, name: result.name!, password: result.password! }
   showToast(`${result.name} created — copy the password now`)
 })
 
@@ -95,10 +95,10 @@ async function copyPassword() {
     </form>
 
     <form v-else class="stack" @submit.prevent="submitCreate">
-      <label>{{ t('accountId') }} <input v-model.trim="create.account" required maxlength="32" autocomplete="off"></label>
       <label>{{ t('characterName') }} <input v-model.trim="create.name" required maxlength="16" autocomplete="off"></label>
       <p class="hint">{{ t('createHint') }}</p>
       <div v-if="created" class="password-reveal">
+        <span>{{ t('username') }}: <code>{{ created.account }}</code></span>
         <span>{{ t('passwordFor') }} <b>{{ created.name }}</b>:</span>
         <code>{{ created.password }}</code>
         <button type="button" class="button" @click="copyPassword">{{ t('copy') }}</button>

@@ -22,11 +22,11 @@ export interface CommandContext {
 export interface Suggestion { text: string, hint: string }
 
 export const COMMANDS: Suggestion[] = [
-  { text: 'farm ', hint: '練功: keep farming (farm 10 = until Lv10); fights the next boss when strong enough' },
-  { text: 'stop', hint: 'stop farming / missions' },
-  { text: 'boss', hint: '王戰: refit, then challenge the highest boss you can' },
-  { text: 'quests', hint: '任務: take quests, finish them (boss steps too), report' },
-  { text: 'refit', hint: '修整: town, quests, restock, best gear, enhance' },
+  { text: 'farm ', hint: '練功: level up and progress floors (farm 10 = until Lv10)' },
+  { text: 'stop', hint: 'stop 練功 / 王戰 / 任務' },
+  { text: 'boss', hint: '王戰: farm the highest boss you can beat (again to stop)' },
+  { text: 'quests', hint: '任務: missions only — quests and story, then report (again to stop)' },
+  { text: 'refit', hint: '修整: pause everything, refit in town and stay there' },
   { text: 'restock', hint: 'buy potions and crystals now' },
   { text: 'goto ', hint: 'walk to an area' },
   { text: 'town', hint: 'teleport crystal back to town' },

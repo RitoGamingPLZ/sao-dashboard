@@ -18,7 +18,9 @@ const MESSAGES = {
     partyStatus_waitMembers: 'Waiting for {names}', partyStatus_pulledBack: 'Too dangerous — pulled back to town', partyStatus_halted: 'Holding — {name} stopped itself',
     partyStatus_moving: 'Moving', partyStatus_rest: 'Refit', partyStatus_standby: 'Standing by', partyStatus_fight: 'Fighting', partyStatus_fightBoss: 'Boss fight',
     partyStatus_tankWaiting: 'Waiting for tank {name} to start', partyStatus_tankLow: 'Tank {name} low ({hp}%) — others wait', partyStatus_error: 'Error: {message}', partyStatus_lowPotions: '{name} is low on potions ({count}/{needed}) — no boss fight',
-    inParty: 'In party', activeSkill: 'In a skill slot', equipHint: 'Pick from what you own to wear it, or (empty) to take it off.', skillSlotsHint: 'Choose up to {count} skills for your current weapon.', 'weapon_one-handed-sword': 'One-handed sword', weapon_rapier: 'Rapier', 'weapon_dual-blades': 'Dual blades', weapon_spear: 'Spear', 'weapon_two-handed-sword': 'Two-handed sword', 'weapon_short-sword': 'Short sword', slot_weapon: 'Weapon', slot_offhand: 'Off-hand', slot_armor: 'Armour', slot_head: 'Head', slot_feet: 'Feet', slot_accessory: 'Accessory', slot_ring2: 'Accessory 2', slot_neck: 'Neck', skillPower: 'Power', skillCooldown: 'Cooldown', gearBonus: 'Bonus', emptySlot: '(empty)', restockScaleHint: 'These are Lv30 amounts. Lower levels keep less: at Lv{level} the bot keeps {pct}% of them.', speedHint: 'Attack speed (the game\'s own number: higher is faster)', critDmgHint: 'Damage of a critical hit', statsEstimated: 'Approximate: a worn piece is enhanced or rare', refitting: 'Refitting', previousAccounts: 'Previously added', oneClickLogin: 'password saved — click to log in', needsPassword: 'click, then type the password', forget: 'Forget (also deletes its saved password)', addedAccount: '{name} added', deadMask: 'Dead', confirmRemoveAccount: 'Remove {name} from the dashboard? The game account itself is not deleted.', removedAccount: '{name} removed', aggressive: 'aggressive', goTo: 'Go', partyState: 'Party state', partyMoving: 'Party on the way',
+    topFloor: 'Floor', topFloorHint: 'Highest floor this character can go to (its boss is the next one to beat)',
+    nextBoss: 'Boss F{floor}', bossNeed: 'max HP {hp} / needs {need}', bossCost: '~{seconds}s fight · costs {bars} HP bars (max 4)', bossUnknown: 'not met yet — stats are learned in the fight', bossNeedHint: 'Max HP needed for the next boss: twice the most damage it did within 2 seconds in earlier fights (boss, adds, crits and charged attacks, against your defence). 練功 fights it once max HP reaches this.',
+    inParty: 'In party', stopFarm: 'Stop farming', stopBossFarm: 'Stop boss farming', stopMission: 'Stop missions', busy_boss: 'Boss · floor {floor}', busy_farm: 'Farming at', busy_goto: 'Going to', busy_missions: 'Missions', busy_restock: 'Restocking', busy_refit: 'Refitting', activeSkill: 'In a skill slot', equipHint: 'Pick from what you own to wear it, or (empty) to take it off.', skillSlotsHint: 'Choose up to {count} skills for your current weapon.', 'weapon_one-handed-sword': 'One-handed sword', weapon_rapier: 'Rapier', 'weapon_dual-blades': 'Dual blades', weapon_spear: 'Spear', 'weapon_two-handed-sword': 'Two-handed sword', 'weapon_short-sword': 'Short sword', slot_weapon: 'Weapon', slot_offhand: 'Off-hand', slot_armor: 'Armour', slot_head: 'Head', slot_feet: 'Feet', slot_accessory: 'Accessory', slot_ring2: 'Accessory 2', slot_neck: 'Neck', skillPower: 'Power', skillCooldown: 'Cooldown', gearBonus: 'Bonus', emptySlot: '(empty)', restockScaleHint: 'These are Lv30 amounts. Lower levels keep less: at Lv{level} the bot keeps {pct}% of them.', speedHint: 'Attack speed (the game\'s own number: higher is faster)', critDmgHint: 'Damage of a critical hit', statsEstimated: 'Approximate: a worn piece is enhanced or rare', refitting: 'Refitting', previousAccounts: 'Previously added', oneClickLogin: 'password saved — click to log in', needsPassword: 'click, then type the password', forget: 'Forget (also deletes its saved password)', addedAccount: '{name} added', deadMask: 'Dead', confirmRemoveAccount: 'Remove {name} from the dashboard? The game account itself is not deleted.', removedAccount: '{name} removed', aggressive: 'aggressive', goTo: 'Go', partyState: 'Party state', partyMoving: 'Party on the way',
     partyMode_rest: 'Refit', partyMode_standby: 'Standby', partyMode_fight: 'Fight',
     // health & potions settings
     safetyOn: 'Safety loop on (heals and retreats by itself)', healMode: 'Who drinks potions',
@@ -30,7 +32,7 @@ const MESSAGES = {
     maxSpendPct: 'Spend at most (% of gold)', settingsSaved: 'Settings saved',
     unsafeConfirm: '{message}.\n\nLower thresholds make death more likely. Save anyway?',
     potionHint: 'Recovery potion: what the game auto-drinks. Instant potion: what the bot keeps stocked for emergency heals (瞬補). How many to keep is in Health & potions.',
-    recoveryPotion: 'Recovery potion', instantPotion: 'Instant potion (瞬補)',
+    recoveryPotion: 'Recovery potion', instantPotion: 'Instant potion (瞬補)', lockPotion: 'Lock', lockPotionHint: 'Locked: refit keeps this potion instead of switching to the strongest one on sale',
     // alerts
     alert_disconnected: 'Disconnected — reconnecting…', alert_queued: 'Server full — queued (#{pos})',
     alert_ended_unauthorized: 'Login rejected — re-add this account or save its password', alert_ended_replaced: 'Logged in somewhere else — press ⟳ to take over',
@@ -46,9 +48,9 @@ const MESSAGES = {
     noMembers: 'No members yet', untank: 'Untank', online: 'Online', totalGold: 'Total 摳',
     goldPerHour: '摳 / hour', activeParties: 'Active parties', alerts: 'Alerts',
     loginTab: 'Log in existing', createTab: 'Create new', accountId: 'Account', password: 'Password',
-    characterName: 'Character name', rememberPassword: 'Keep the password (encrypted) so the dashboard can log in again by itself',
+    characterName: 'Character name', username: 'Username', rememberPassword: 'Keep the password (encrypted) so the dashboard can log in again by itself',
     logIn: 'Log in', createAccount: 'Create account', copy: 'Copy',
-    createHint: 'A strong password is generated for you and shown once. It is also saved encrypted in the dashboard vault.',
+    createHint: 'Just pick a character name. The username and a strong password are generated, shown once, and saved encrypted in the dashboard vault.',
     passwordFor: 'Password for',
   },
   zh: {
@@ -66,7 +68,9 @@ const MESSAGES = {
     partyStatus_waitMembers: '等待 {names} 上線', partyStatus_pulledBack: '太危險，已撤回城鎮', partyStatus_halted: '暫停 — {name} 的機器人已自動停止',
     partyStatus_moving: '移動中', partyStatus_rest: '修整', partyStatus_standby: '待命', partyStatus_fight: '戰鬥中', partyStatus_fightBoss: '王戰中',
     partyStatus_tankWaiting: '等待坦 {name} 開打', partyStatus_tankLow: '坦 {name} 血量低（{hp}%）— 其他人等待', partyStatus_error: '錯誤：{message}', partyStatus_lowPotions: '{name} 藥水不足（{count}/{needed}），不開王戰',
-    inParty: '組隊中', activeSkill: '使用中的技能', equipHint: '從背包選擇要穿的裝備，選（空）就是卸下。', skillSlotsHint: '為目前的武器選擇最多 {count} 個技能。', 'weapon_one-handed-sword': '單手劍', weapon_rapier: '細劍', 'weapon_dual-blades': '二刀流', weapon_spear: '長槍', 'weapon_two-handed-sword': '雙手劍', 'weapon_short-sword': '短劍', slot_weapon: '武器', slot_offhand: '副手', slot_armor: '防具', slot_head: '頭部', slot_feet: '腳部', slot_accessory: '飾品', slot_ring2: '飾品 2', slot_neck: '項鍊', skillPower: '威力', skillCooldown: '冷卻', gearBonus: '加成', emptySlot: '（空）', restockScaleHint: '這些是 Lv30 的數量，等級較低時會少帶一些：目前 Lv{level} 只保持 {pct}%。', speedHint: '攻擊速度（遊戲內的數值，越高越快）', critDmgHint: '爆擊時的傷害', statsEstimated: '約略值：身上有強化過或稀有的裝備', refitting: '修整中', previousAccounts: '曾經加入的帳號', oneClickLogin: '已保存密碼 — 點一下即可登入', needsPassword: '點一下後輸入密碼', forget: '忘記（同時刪除保存的密碼）', addedAccount: '已加入 {name}', deadMask: '已死亡', confirmRemoveAccount: '要從儀表板移除 {name} 嗎？遊戲帳號本身不會被刪除。', removedAccount: '已移除 {name}', aggressive: '主動攻擊', goTo: '前往', partyState: '隊伍狀態', partyMoving: '隊伍出發',
+    topFloor: '樓層', topFloorHint: '這個角色能去的最高樓層（該層的王就是下一個要打倒的）',
+    nextBoss: '第{floor}層王', bossNeed: '最大HP {hp} / 需要 {need}', bossCost: '約 {seconds} 秒 · 消耗 {bars} 管血（上限 4）', bossUnknown: '尚未交手 — 數值會在戰鬥中記錄', bossNeedHint: '挑戰下一個王所需的最大HP：之前戰鬥中它 2 秒內最多造成傷害的兩倍（王、小怪、爆擊與蓄力攻擊，已計入你的防禦）。最大HP達標後，練功就會去挑戰。',
+    inParty: '組隊中', stopFarm: '停止練功', stopBossFarm: '停止王戰', stopMission: '停止任務', busy_boss: '王戰 · 第{floor}層', busy_farm: '前往練功', busy_goto: '前往', busy_missions: '任務中', busy_restock: '補貨中', busy_refit: '修整中', activeSkill: '使用中的技能', equipHint: '從背包選擇要穿的裝備，選（空）就是卸下。', skillSlotsHint: '為目前的武器選擇最多 {count} 個技能。', 'weapon_one-handed-sword': '單手劍', weapon_rapier: '細劍', 'weapon_dual-blades': '二刀流', weapon_spear: '長槍', 'weapon_two-handed-sword': '雙手劍', 'weapon_short-sword': '短劍', slot_weapon: '武器', slot_offhand: '副手', slot_armor: '防具', slot_head: '頭部', slot_feet: '腳部', slot_accessory: '飾品', slot_ring2: '飾品 2', slot_neck: '項鍊', skillPower: '威力', skillCooldown: '冷卻', gearBonus: '加成', emptySlot: '（空）', restockScaleHint: '這些是 Lv30 的數量，等級較低時會少帶一些：目前 Lv{level} 只保持 {pct}%。', speedHint: '攻擊速度（遊戲內的數值，越高越快）', critDmgHint: '爆擊時的傷害', statsEstimated: '約略值：身上有強化過或稀有的裝備', refitting: '修整中', previousAccounts: '曾經加入的帳號', oneClickLogin: '已保存密碼 — 點一下即可登入', needsPassword: '點一下後輸入密碼', forget: '忘記（同時刪除保存的密碼）', addedAccount: '已加入 {name}', deadMask: '已死亡', confirmRemoveAccount: '要從儀表板移除 {name} 嗎？遊戲帳號本身不會被刪除。', removedAccount: '已移除 {name}', aggressive: '主動攻擊', goTo: '前往', partyState: '隊伍狀態', partyMoving: '隊伍出發',
     partyMode_rest: '修整', partyMode_standby: '待命', partyMode_fight: '戰鬥',
     // 血量與補藥設定
     safetyOn: '開啟安全保護（自動補血、撤退）', healMode: '由誰喝藥水',
@@ -78,7 +82,7 @@ const MESSAGES = {
     maxSpendPct: '最多花費（金錢 %）', settingsSaved: '設定已儲存',
     unsafeConfirm: '{message}。\n\n門檻調低會更容易死亡，仍要儲存嗎？',
     potionHint: '回復藥水：遊戲自動喝的藥水。瞬補藥水：機器人緊急補血時用、並自動補貨的藥水。要保持幾瓶請到「血量與補藥」設定。',
-    recoveryPotion: '回復藥水', instantPotion: '瞬補藥水',
+    recoveryPotion: '回復藥水', instantPotion: '瞬補藥水', lockPotion: '鎖定', lockPotionHint: '鎖定後，修整不會自動換成商店最強的藥水',
     // 警示
     alert_disconnected: '連線中斷，正在重新連線…', alert_queued: '伺服器已滿，排隊中（第 {pos} 位）',
     alert_ended_unauthorized: '登入被拒 — 請重新加入此帳號，或保存密碼', alert_ended_replaced: '已在其他地方登入 — 按 ⟳ 接手',
@@ -94,9 +98,9 @@ const MESSAGES = {
     noMembers: '尚無隊員', untank: '解除坦', online: '上線', totalGold: '總摳',
     goldPerHour: '摳/時', activeParties: '啟用隊伍', alerts: '警示',
     loginTab: '登入既有帳號', createTab: '建立新帳號', accountId: '帳號', password: '密碼',
-    characterName: '角色名稱', rememberPassword: '保存密碼（加密），讓儀表板可自動重新登入',
+    characterName: '角色名稱', username: '使用者名稱', rememberPassword: '保存密碼（加密），讓儀表板可自動重新登入',
     logIn: '登入', createAccount: '建立帳號', copy: '複製',
-    createHint: '系統會產生高強度密碼並只顯示一次，同時加密保存在儀表板中。',
+    createHint: '只需輸入角色名稱。系統會自動產生使用者名稱及高強度密碼，只顯示一次，並加密保存在儀表板中。',
     passwordFor: '密碼：',
   },
 } as const

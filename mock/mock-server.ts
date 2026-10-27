@@ -190,14 +190,8 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
         if (player.areaId.endsWith('-town')) return { error: 'noBossInTown' };
         player.activity = { type: 'boss' };
         return { ok: true };
-      case 'completeAllQuests': {
-        const floor = floorOf(player.areaId);
-        if (player.clearedFloors.includes(floor)) return { error: 'nothingToTurnIn' };
-        player.clearedFloors.push(floor);
-        player.exp += 300;
-        player.col += 1000;
-        return { ok: true, reward: `floor-${floor}-cleared` };
-      }
+      case 'completeAllQuests': // like the game: no quest is ever ready here (floors clear only by beating their boss)
+        return { error: 'questNotReady' };
       case 'drink': {
         const potionId = Object.keys(inventory).find((itemId: string) => /^(potion|instant)-/.test(itemId) && inventory[itemId] > 0);
         if (!potionId) return { error: 'noPotion' };
@@ -215,6 +209,9 @@ export function startMockServer({ port = 8787, host = '127.0.0.1', damagePerTick
         inventory[command.itemId]--;
         if (command.itemId === 'crystal-heal') player.hp = player.maxHp;
         if (command.itemId === 'crystal-teleport') { player.areaId = `f${floorOf(player.areaId)}-town`; player.activity = { type: 'idle' }; }
+        return { ok: true };
+      case 'updateSettings':
+        player.settings = { ...player.settings, ...command.settings };
         return { ok: true };
       case 'equip': { // like the game: the worn piece goes back to the bag
         if (!(inventory[command.itemId] > 0)) return { error: 'noItem' };

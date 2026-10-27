@@ -66,6 +66,10 @@ const setRecoveryPotion = (itemId: string) =>
 const setInstantPotion = (itemId: string) =>
   runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/safety`, { safety: { instantItem: itemId } }), t('settingsSaved'))
 
+// Locking the emergency potion pins the one shown (automatic = whatever is strongest on sale).
+const setLock = (key: 'isPotionLocked' | 'isInstantLocked', isLocked: boolean, instantItem?: string) =>
+  runAndReport(() => callApi('PUT', `/api/accounts/${account.value!.id}/safety`, { safety: { [key]: isLocked, ...(key === 'isInstantLocked' && isLocked && instantItem ? { instantItem } : {}) } }), t('settingsSaved'))
+
 async function showPassword() {
   const result = await runAndReport(() => callApi<{ password: string }>('POST', `/api/accounts/${account.value!.id}/password`, {}))
   if (result) prompt(`Password for ${account.value!.name} (copy it now):`, result.password)
@@ -94,11 +98,13 @@ async function showPassword() {
               <option v-for="itemId in choicesOf('potion', consumables?.autoDrink?.itemId)" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
             </select>
             <span>×{{ consumables?.autoDrink?.quantity ?? 0 }}</span>
+            <label class="checkbox" :title="t('lockPotionHint')"><input type="checkbox" :checked="account.safety.isPotionLocked" @change="setLock('isPotionLocked', ($event.target as HTMLInputElement).checked)"> {{ t('lockPotion') }}</label>
             <span>{{ t('instantPotion') }}</span>
             <select :value="consumables?.instant.itemId" :aria-label="t('instantPotion')" @change="setInstantPotion(($event.target as HTMLSelectElement).value)">
               <option v-for="itemId in choicesOf('instant', consumables?.instant.itemId)" :key="itemId" :value="itemId">{{ ITEMS[itemId]!.name }}</option>
             </select>
             <span>×{{ consumables?.instant.quantity ?? 0 }}</span>
+            <label class="checkbox" :title="t('lockPotionHint')"><input type="checkbox" :checked="account.safety.isInstantLocked" @change="setLock('isInstantLocked', ($event.target as HTMLInputElement).checked, consumables?.instant.itemId)"> {{ t('lockPotion') }}</label>
           </div>
         </div>
         <fieldset class="threshold-grid gear-grid">

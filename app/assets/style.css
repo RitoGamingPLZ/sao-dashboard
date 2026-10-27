@@ -314,7 +314,7 @@ main { padding-bottom: calc(30vh + 7rem); }
 
 .row-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: .1rem .75rem; }
 .row-stats .field { display: inline-flex; align-items: center; gap: .25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
-.row-stats .field b { color: var(--dim); font-weight: 700; font-size: 11px; flex: none; }
+.row-stats .field b { color: var(--dim); font-weight: 700; font-size: 11px; flex: none; width: 3.2em; } /* same width: values line up */
 
 .row-bottom { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: .5rem; }
 /* Always 3 lines tall, so every card is the same height with or without alerts. */
@@ -355,7 +355,7 @@ main { padding-bottom: calc(30vh + 7rem); }
 .member-chips { list-style: none; margin: 0 0 .4rem; padding: 0; display: flex; flex-wrap: wrap; gap: .3rem; }
 .member-chips li { display: inline-flex; align-items: center; gap: .3rem; border: 1px solid var(--line); padding-left: .5rem; font-size: 13px; }
 .member-chips .icon-button { border-width: 0 0 0 1px; }
-.potion-grid { display: grid; grid-template-columns: auto 1fr auto; gap: .4rem .6rem; align-items: center; font-size: 13px; }
+.potion-grid { display: grid; grid-template-columns: auto 1fr auto auto; gap: .4rem .6rem; align-items: center; font-size: 13px; }
 
 .plain-list { margin: 0; padding: 0 0 0 1.1em; }
 .plain-list li { padding: .05rem 0; }
