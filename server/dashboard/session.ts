@@ -975,11 +975,13 @@ export class Session extends EventEmitter<SessionEvents> {
   }
 
   // 強化: a few tries per worn piece while the game allows (materials, tries left).
-  // The forge opens after floor 1's boss. Weapons on attack, everything else on max HP.
+  // The forge opens after floor 1's boss. Weapon first, on attack; everything else on max HP.
   private async enhanceGear(): Promise<number> {
     if (!(this.player?.clearedFloors ?? []).includes(1)) return 0
     let successes = 0
-    for (const slot of Object.keys(this.player?.equipment ?? {})) {
+    // Weapon first: materials and gold run out, and it matters most.
+    const slots = Object.keys(this.player?.equipment ?? {}).sort((first, second) => Number(second === 'weapon') - Number(first === 'weapon'))
+    for (const slot of slots) {
       const player = this.player!
       const dir = survivalDirection(slot)
       for (let attempt = 0; attempt < ENHANCE_TRIES_PER_REFIT; attempt++) {
