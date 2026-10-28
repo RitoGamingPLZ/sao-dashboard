@@ -108,7 +108,7 @@ const statsTitle = computed(() => (player.value?.stats?.isEstimated ? t('statsEs
       <span v-if="player.nextBoss.hpBars != null" :class="{ 'form-error': player.nextBoss.hpBars > 4 }">
         {{ t('bossCost', { seconds: player.nextBoss.fightSeconds ?? '?', bars: player.nextBoss.hpBars }) }}
       </span>
-      <span v-if="player.nextBoss.hpNeeded == null" class="muted">{{ t('bossUnknown') }}</span>
+      <span v-if="player.nextBoss.hpNeeded == null" :class="(player.level ?? 0) < (player.nextBoss.needLevel ?? 0) ? 'form-error' : 'muted'">{{ t('bossUnknown', { level: player.nextBoss.needLevel ?? '?' }) }}</span>
     </div>
     <div v-if="player && showActions" class="row-potion">
       <b>{{ t('potion') }}</b>

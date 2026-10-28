@@ -36,8 +36,8 @@ describe('pure rules', () => {
     expect(isAreaSafeFor('f1-labyrinth', 7)).toBe(true)
     expect(safeAreaFor(1, 'field', 1)).toMatch(/^f1-(west|outskirts)$/)
     expect(safeAreaFor(10, 'field', 1)).toMatch(/^f1-(horunka|depths)$/) // floor 2 still locked
-    expect(safeAreaFor(9, 'bossroom', 1)).toBeNull() // boss is Lv7: needs Lv10 (3-level margin)
-    expect(safeAreaFor(10, 'bossroom', 1)).toBe('f1-bossroom')
+    expect(safeAreaFor(7, 'bossroom', 1)).toBeNull() // boss is Lv7: needs Lv8 (1-level margin)
+    expect(safeAreaFor(8, 'bossroom', 1)).toBe('f1-bossroom')
   })
 
   test('patch apply handles set and delete', () => {
@@ -263,10 +263,10 @@ describe('against the practice server', () => {
   test('王戰 farms the highest boss it can beat, fights it again after each kill, and stops on a second press', async () => {
     const session = sessionNamed('tank_one')
     const player = mock.accountsByName.get('tank_one').player // Lv34, floors 1–24 cleared
-    expect(session.bestBossFloor()).toBe(20) // floor 20 boss is Lv31 (needs 34); 21+ are Lv32+
+    expect(session.bestBossFloor()).toBe(22) // floor 22 boss is Lv33 (needs 34); 23+ are Lv35+
     expect(await runAccountAction(session, { action: 'startBoss' })).toMatchObject({ ok: true })
     expect(await waitUntil(() => player.activity.type === 'boss', 15000)).toBe(true)
-    expect(player.areaId).toBe('f20-bossroom')
+    expect(player.areaId).toBe('f22-bossroom')
     player.activity = { type: 'idle' } // the boss dies…
     await waitUntil(() => session.player?.activity?.type === 'idle')
     await session.keepBossFarming() // …and the next round starts as soon as it's back
@@ -304,13 +304,13 @@ describe('against the practice server', () => {
     session.setAutoFarm(null)
     const bossLevel = (floor: number) => areaLevel(`f${floor}-bossroom`)!
     expect(player.level).toBe(16)
-    // Never fought a boss without the 3-level margin
-    for (const fight of bossFights) expect(fight.level).toBeGreaterThanOrEqual(bossLevel(fight.floor) + 3)
+    // Never fought a boss below its level + 1
+    for (const fight of bossFights) expect(fight.level).toBeGreaterThanOrEqual(bossLevel(fight.floor) + 1)
     // Floors cleared in order, none skipped, none fought twice
     expect(bossFights.map((fight) => fight.floor)).toEqual(bossFights.map((_, index) => index + 1))
-    // Kept pace: at Lv16 every boss up to Lv13 is beaten (floor 6's), and floor 7's (Lv15, needs 18) isn't
-    expect(player.clearedFloors).toEqual([1, 2, 3, 4, 5, 6])
-    expect(bossLevel(7) + 3).toBeGreaterThan(16)
+    // Kept pace: at Lv16 every boss up to Lv15 is beaten (floor 7's), and floor 8's (Lv16, needs 17) isn't
+    expect(player.clearedFloors).toEqual([1, 2, 3, 4, 5, 6, 7])
+    expect(bossLevel(8) + 1).toBeGreaterThan(16)
   }, 180_000)
 
   test('party: leader leads, tank fights first, others follow, in-game sync sends invites', async () => {
@@ -381,7 +381,7 @@ describe('against the practice server', () => {
 
   test('練功 challenges the next floor boss once strong enough', async () => {
     const session = sessionNamed('fresh_alt')
-    const player = mock.accountsByName.get('fresh_alt').player // floors 1–24 cleared: next boss is floor 25, Lv37 → needs Lv40
+    const player = mock.accountsByName.get('fresh_alt').player // floors 1–24 cleared: next boss is floor 25, Lv37 → needs Lv38
     await waitUntil(() => session.busyLabel == null)
     player.level = 41 // also enough for floor 26 (Lv38) after the win
     player.inventory['potion-1'] = 200
@@ -405,7 +405,7 @@ describe('against the practice server', () => {
   })
 
   test('a boss met before is fought once max HP is 2× its worst 3 seconds, whatever the level', () => {
-    const session = sessionNamed('fresh_alt') // Lv31: the level rule says the floor 25 boss (Lv37) needs Lv40
+    const session = sessionNamed('fresh_alt') // Lv31: the level rule says the floor 25 boss (Lv37) needs Lv38
     expect(session.bossBlocker(25)?.code).toBe('needLevel')
     const maxHp = session.stats()!.maxHp
     const teach = (bossId: string, dmg: number) => {

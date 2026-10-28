@@ -67,7 +67,7 @@ export interface PlayerSummary {
   hpPct: number | null
   attack: number | null
   // Next uncleared floor's boss, from stats learned in fights (worstDamage: its most damage within 3 s, once its attack is known).
-  nextBoss: { fightSeconds?: number | null, hpBars?: number | null, floor: number, level: number | null, maxHp: number | null, atk: number | null, def: number | null, worstDamage?: number, hpNeeded?: number, normalHit?: number, chargeHit?: number, hp?: number } | null
+  nextBoss: { needLevel: number | null, fightSeconds?: number | null, hpBars?: number | null, floor: number, level: number | null, maxHp: number | null, atk: number | null, def: number | null, worstDamage?: number, hpNeeded?: number, normalHit?: number, chargeHit?: number, hp?: number } | null
   // From the game client's stat formula (level + gear); isEstimated when a worn piece isn't in our table.
   stats: { def: number, speed: number, crit: number, critDmg: number, isEstimated: boolean } | null
   equipment: Record<string, string> | null

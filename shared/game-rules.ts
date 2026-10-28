@@ -4,9 +4,9 @@
 import type { Kit, RestockLimits } from './types'
 
 export const TOP_FLOOR = 40
-// Fight a boss only this many levels above it: at +1, four characters died to
-// charged attacks and summoned adds (2026-10-27).
-export const BOSS_LEVEL_MARGIN = 3
+// A boss never met (no learned stats yet) is fought at its level + this.
+// Bosses met before go by learned HP checks instead (see bossRequirement).
+export const BOSS_LEVEL_MARGIN = 1
 // How many characters one dashboard runs.
 export const MAX_ACCOUNTS = 10
 

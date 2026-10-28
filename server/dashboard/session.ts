@@ -782,7 +782,8 @@ export class Session extends EventEmitter<SessionEvents> {
     if (!player || !stats) return null
     const floor = frontierFloor(player.clearedFloors)
     const boss = this.bestiary.get(`f${floor}-boss`)
-    return { floor, level: boss?.level ?? null, maxHp: boss?.maxHp ?? null, atk: boss?.atk ?? null, def: boss?.def ?? null, ...bossRequirement(boss, stats, this.measuredDps()) }
+    const bossLevel = areaLevel(`f${floor}-bossroom`)
+    return { floor, needLevel: bossLevel == null ? null : bossLevel + BOSS_LEVEL_MARGIN, level: boss?.level ?? null, maxHp: boss?.maxHp ?? null, atk: boss?.atk ?? null, def: boss?.def ?? null, ...bossRequirement(boss, stats, this.measuredDps()) }
   }
 
   // Why this character can't fight a floor's boss yet, or null if it can.
